@@ -25,7 +25,7 @@ var gatheringTasks = {
     respawn : function(relatedCreepNumber){
         if(relatedCreepNumber < getGathererNumberRequired(Game.spawns["Spawn1"].room)){
             var creepName = "Gatherer"+Game.time;
-            var assignedContainerID = getAssignedContainerID();
+            var assignedContainerID = getAssignedContainerID(Game.spawns["Spawn1"].room);
             Game.spawns["Spawn1"].spawnCreep([MOVE, MOVE, MOVE, MOVE, CARRY, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, containerID:assignedContainerID}});}
     }
 }
@@ -34,13 +34,38 @@ function getGathererNumberRequired(room){
     var containerNumber = room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_CONTAINER) && (structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) )}});
     return 2*containerNumber.length;
 }
-function getAssignedContainerID(){
+function getAssignedContainerID(room){
     /*
     ################################
     ## CONTAINER WILL NEED REPAIR ##
-    ################################
+    ######################################
+    ## HAVE THIS STORED AND JUST UPDATE ##
+    ######################################
     */
-    return "0";
+    //Finds number of gatherers looking after each container
+    var containers = room.find(FIND_STRUCTURES, {filter : (structure) => {return (structure.structureType == STRUCTURE_CONTAINER)}});
+    var allGatherers = _.filter(Game.creeps, function(creep) { return (creep.memory.role == "Gatherer") });
+    var gatherersAssigned = [];
+    for(var i in containers){
+        gatherersAssigned.push(0);}
+    for(var gathererIndex in allGatherers){
+        for(var containerIndex in containers){
+            if(allGatherers[gathererIndex].memory.containerID == containers[containerIndex].id){
+                gatherersAssigned[containerIndex] = gatherersAssigned[containerIndex]+1;        //## TRY WITH ++, LIST MAY NOT LIKE IT ##
+                break;
+            }
+            containerIndex++;
+        }
+    }
+    //Find spaces for this new guy
+    var containerID = "0";
+    for(var containerIndex in containers){
+        if( gatherersAssigned[sourceIndex] < 2){    //If has free space
+            containerID = containers[containerIndex].id;
+            break;
+        }
+    }
+    return containerID
 }
 
 module.exports = gatheringTasks;

@@ -33,7 +33,7 @@ var respawnManager = {
                 warriorTasks.respawn(armyFilter.length);            //4
                 defenderTasks.respawn(armyFilter.length);
                 if(armyFilter.length >= 4){
-                    upgradingTasks.respawn(upgraderFilter.length);   //5
+                    upgradingTasks.respawn(upgraderFilter.length);  //5
                 }
             }
         }

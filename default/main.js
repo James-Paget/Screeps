@@ -26,7 +26,7 @@ module.exports.loop = function () {
         if(creeps[name].memory.role == "Miner"){
             miningTasks.goMine(creeps[name]);}
         if(creeps[name].memory.role == "Gatherer"){
-            miningTasks.goGather(creeps[name]);}
+            gatheringTasks.goGather(creeps[name]);}
         if(creeps[name].memory.role == "Upgrader"){
             upgradingTasks.goUpgrade(creeps[name]);}
         if(creeps[name].memory.role == "Builder"){
