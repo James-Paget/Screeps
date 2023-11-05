@@ -29,24 +29,12 @@ var miningTasks = {
             var creepName = "Miner"+Game.time;
             var assignedSourceID = getSourceID(Game.spawns["Spawn1"].room);
             if(relatedCreepNumber == 0){
-                Game.spawns["Spawn1"].spawnCreep([WORK, CARRY, MOVE], creepName, {memory:{role:"Miner"}}, {memory:{isMining:true}}, {memory:{sourceID:assignedSourceID}});}
+                console.log("SPAWNED FROM HERE");
+                Game.spawns["Spawn1"].spawnCreep([WORK, CARRY, MOVE], creepName, {memory:{role:"Miner", isMining:true, sourceID:assignedSourceID}});}
             else{
-                Game.spawns["Spawn1"].spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], creepName, {memory:{role:"Miner"}}, {memory:{isMining:true}}, {memory:{sourceID:assignedSourceID}});}
+                Game.spawns["Spawn1"].spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], creepName, {memory:{role:"Miner", isMining:true, sourceID:assignedSourceID}});}
         }
     }
-
-    /*
-    respawn_initial : function(){
-        var creepName = "Miner"+Game.time;
-        Game.spawns["Spawn1"].spawnCreep([WORK, CARRY, MOVE], creepName, {memory:{role:"Miner"}}, {memory:{isMining:true}});
-    },
-    respawn_strong : function(relatedCreepNumber){
-        if(relatedCreepNumber < 6){
-            var creepName = "Miner"+Game.time;
-            Game.spawns["Spawn1"].spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], creepName, {memory:{role:"Miner"}}, {memory:{isMining:true}});
-        }
-    }
-    */
 };
 
 function getMinerNumberRequired(){
@@ -58,50 +46,48 @@ function getMinerNumberRequired(){
 function getSourceID(room){
     /*
     Gets a source ID to give to a new miner, such that all sources are not oversubscribed
+    
+    #################################################################
+    ## SAVE THIS RESULT AND JUST UPDATE IT AS CREEPS SPAWN AND DIE ##
+    #################################################################
     */
-    console.log("Looking for source...");
     //Finds number of free spots at each source
     var sources = room.find(FIND_SOURCES);
     var sourceFreeTiles = [];
-    for(var i in sources){
+    for(var z in sources){
         var totalFreeTiles = 0;
         //For 3x3 tiles around this source
-        console.log("Pos.y -> ",sources[i].pos.y);
-        for(var j=sources[i].pos.y-1; j<=sources[i].pos.y+1; j++){
-            for(var i=sources[i].pos.x-1; i<=sources[i].pos.x+1; i++){
-                if(room.lookAt(i,j) != "terrain"){
+        for(var j=sources[z].pos.y-1; j<=sources[z].pos.y+1; j++){
+            for(var i=sources[z].pos.x-1; i<=sources[z].pos.x+1; i++){
+                if( (Game.map.getRoomTerrain(room.name).get(i,j) == 0) || (Game.map.getRoomTerrain(room.name).get(i,j) == 2) ){
                     totalFreeTiles++;
                 }
             }
         }
         sourceFreeTiles.push(totalFreeTiles);
     }
-    console.log("Free tiles -> ",sourceFreeTiles[0],", ", sourceFreeTiles[1]);
     //Finds number
     var allMiners = _.filter(Game.creeps, function(creep) { return (creep.memory.role == "Miner") });
-    var minerAssigned = [];
-    for(var source in sources){
+    var minersAssigned = [];
+    for(var i in sources){
         minersAssigned.push(0);}
-    for(var miner in allMiners){
-        var sourceIndex = 0;
-        for(var source in sources){
-            if(miner.memory.sourceID == source.id){
-                minerAssigned[sourceIndex] = minerAssigned[sourceIndex]+1;  //## TRY WITH ++, LIST MAY NOT LIKE IT ##
+    for(var minerIndex in allMiners){
+        for(var sourceIndex in sources){
+            if(allMiners[minerIndex].memory.sourceID == sources[sourceIndex].id){
+                minersAssigned[sourceIndex] = minersAssigned[sourceIndex]+1;        //## TRY WITH ++, LIST MAY NOT LIKE IT ##
                 break;
             }
             sourceIndex++;
         }
     }
     //Find spaces for this new guy
-    var sourceID;
-    for(var i in minersAssigned.length){
-        if( (sourceFreeTiles[i] -minersAssigned[i]) > 0){    //If has free space
-            sourceID = sources[i].id;
-            console.log("SourceIndex -> ",i);
+    var sourceID = "0";
+    for(var sourceIndex in sources){
+        if( (sourceFreeTiles[sourceIndex] -minersAssigned[sourceIndex]) > 0){    //If has free space
+            sourceID = sources[sourceIndex].id;
             break;
         }
     }
-    console.log("Done");
     return sourceID
 }
 
