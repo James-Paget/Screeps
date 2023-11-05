@@ -32,7 +32,7 @@ var gatheringTasks = {
 
 function getGathererNumberRequired(room){
     var containerNumber = room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_CONTAINER) && (structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) )}});
-    return 2*containerNumber;
+    return 2*containerNumber.length;
 }
 function getAssignedContainerID(){
     /*
