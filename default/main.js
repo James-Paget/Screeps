@@ -1,4 +1,5 @@
 var miningTasks    = require("behaviour_Miner");
+var gatheringTasks = require("behaviour_Gatherer");
 var upgradingTasks = require("behaviour_Upgrader");
 var buildingTasks  = require("behaviour_Builder");
 var warriorTasks   = require("behaviour_Warrior");
@@ -24,6 +25,8 @@ module.exports.loop = function () {
     {
         if(creeps[name].memory.role == "Miner"){
             miningTasks.goMine(creeps[name]);}
+        if(creeps[name].memory.role == "Gatherer"){
+            miningTasks.goGather(creeps[name]);}
         if(creeps[name].memory.role == "Upgrader"){
             upgradingTasks.goUpgrade(creeps[name]);}
         if(creeps[name].memory.role == "Builder"){

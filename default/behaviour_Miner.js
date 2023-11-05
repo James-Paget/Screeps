@@ -11,8 +11,13 @@ var miningTasks = {
         }
         else{
             //Move resources to storage
-            var transferTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) ||(structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
-            var target  = creep.pos.findClosestByPath(transferTargets);
+            var target;
+            var containers = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_CONTAINER) && (structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) )}});
+            if(containers.length > 0){   //Try to put into nearby container
+                target = creep.pos.findClosestByPath(containers);}
+            else{   //If no other option, deliver it yourself
+                var transferTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) ||(structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
+                target = creep.pos.findClosestByPath(transferTargets);}
             if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                 creep.moveTo(target);
             }
@@ -24,7 +29,7 @@ var miningTasks = {
         }
     },
     respawn : function(relatedCreepNumber){
-        if(relatedCreepNumber < getMinerNumberRequired(Game.spawns["Spawn1"].room)){         //* Always prioritise this spawn -> Better
+        if(relatedCreepNumber < getMinerNumberRequired(Game.spawns["Spawn1"].room)){
             var creepName = "Miner"+Game.time;
             var assignedSourceID = getSourceID(Game.spawns["Spawn1"].room);
             if(relatedCreepNumber == 0){
