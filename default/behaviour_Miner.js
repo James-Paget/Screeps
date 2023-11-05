@@ -28,7 +28,6 @@ var miningTasks = {
             var creepName = "Miner"+Game.time;
             var assignedSourceID = getSourceID(Game.spawns["Spawn1"].room);
             if(relatedCreepNumber == 0){
-                console.log("SPAWNED FROM HERE");
                 Game.spawns["Spawn1"].spawnCreep([WORK, CARRY, MOVE], creepName, {memory:{role:"Miner", isMining:true, sourceID:assignedSourceID}});}
             else{
                 Game.spawns["Spawn1"].spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], creepName, {memory:{role:"Miner", isMining:true, sourceID:assignedSourceID}});}
