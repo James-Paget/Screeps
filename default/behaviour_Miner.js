@@ -8,17 +8,6 @@ var miningTasks = {
             if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
                 creep.memory.isMining = false;
             }
-
-            /*
-            var sources = creep.room.find(FIND_SOURCES);
-            var closestSource = creep.pos.findClosestByPath(sources);
-            if(creep.harvest(closestSource) == ERR_NOT_IN_RANGE){
-                creep.moveTo(closestSource)
-            }
-            if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
-                creep.memory.isMining = false;
-            }
-            */
         }
         else{
             //Move resources to storage
@@ -49,9 +38,25 @@ var miningTasks = {
 
 function getMinerNumberRequired(){
     /*
-    Finds total number of spaces available at all sources in 
+    Finds total number of spaces available at all sources in room
+    #################################################################
+    ## SAVE THIS RESULT AND JUST UPDATE IT AS CREEPS SPAWN AND DIE ##
+    #################################################################
     */
-    return 6;
+    //Finds number of free spots at each source
+    var sources = room.find(FIND_SOURCES);
+    var totalFreeTiles = 0;
+    for(var z in sources){
+        //For 3x3 tiles around this source
+        for(var j=sources[z].pos.y-1; j<=sources[z].pos.y+1; j++){
+            for(var i=sources[z].pos.x-1; i<=sources[z].pos.x+1; i++){
+                if( (Game.map.getRoomTerrain(room.name).get(i,j) == 0) || (Game.map.getRoomTerrain(room.name).get(i,j) == 2) ){
+                    totalFreeTiles++;
+                }
+            }
+        }
+    }
+    return totalFreeTiles;
 }
 function getSourceID(room){
     /*
