@@ -25,9 +25,9 @@ var respawnManager = {
         
         miningTasks.respawn(minerFilter.length);                    //1 & 2
         if(minerFilter.length > gathererFilter.length){
-            gatheringTasks.respawn();}      //Ensure you have some as you go
+            gatheringTasks.respawn(gathererFilter.length);}      //Ensure you have some as you go
         if(minerFilter.length >= 6){
-            gatheringTasks.respawn();       //Then try to reach maximum quickly
+            gatheringTasks.respawn(gathererFilter.length);       //Then try to reach maximum quickly
             buildingTasks.respawn(builderFilter.length);            //3
             if(builderFilter.length >= 1){
                 warriorTasks.respawn(armyFilter.length);            //4
