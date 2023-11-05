@@ -63,12 +63,12 @@ function getSourceID(room){
     //Finds number of free spots at each source
     var sources = room.find(FIND_SOURCES);
     var sourceFreeTiles = [];
-    for(var source in sources){
+    for(var i in sources){
         var totalFreeTiles = 0;
         //For 3x3 tiles around this source
-        console.log("Pos.y -> ",source.pos.y);
-        for(var j=source.pos.y-1; j<=source.pos.y+1; j++){
-            for(var i=source.pos.x-1; i<=source.pos.x+1; i++){
+        console.log("Pos.y -> ",sources[i].pos.y);
+        for(var j=sources[i].pos.y-1; j<=sources[i].pos.y+1; j++){
+            for(var i=sources[i].pos.x-1; i<=sources[i].pos.x+1; i++){
                 if(room.lookAt(i,j) != "terrain"){
                     totalFreeTiles++;
                 }
