@@ -24,7 +24,7 @@ var miningTasks = {
         }
     },
     respawn : function(relatedCreepNumber){
-        if(relatedCreepNumber < getMinerNumberRequired()){         //* Always prioritise this spawn -> Better
+        if(relatedCreepNumber < getMinerNumberRequired(Game.spawns["Spawn1"].room)){         //* Always prioritise this spawn -> Better
             var creepName = "Miner"+Game.time;
             var assignedSourceID = getSourceID(Game.spawns["Spawn1"].room);
             if(relatedCreepNumber == 0){
@@ -36,7 +36,7 @@ var miningTasks = {
     }
 };
 
-function getMinerNumberRequired(){
+function getMinerNumberRequired(room){
     /*
     Finds total number of spaces available at all sources in room
     #################################################################
