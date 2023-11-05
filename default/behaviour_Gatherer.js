@@ -1,7 +1,7 @@
 var gatheringTasks = {
     goGather : function(creep){
         if(creep.memory.isGathering){
-            var target = Game.findObjectById(creep.memory.containerID);
+            var target = Game.getObjectById(creep.memory.containerID);
             if(creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                 creep.moveTo(target);
             }
