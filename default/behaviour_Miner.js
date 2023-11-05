@@ -1,6 +1,15 @@
 var miningTasks = {
     goMine : function(creep){
         if(creep.memory.isMining){
+            var targetSource = Game.getObjectById(creep.memory.sourceID);
+            if(creep.harvest(targetSource) == ERR_NOT_IN_RANGE){
+                creep.moveTo(targetSource)
+            }
+            if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
+                creep.memory.isMining = false;
+            }
+
+            /*
             var sources = creep.room.find(FIND_SOURCES);
             var closestSource = creep.pos.findClosestByPath(sources);
             if(creep.harvest(closestSource) == ERR_NOT_IN_RANGE){
@@ -9,6 +18,7 @@ var miningTasks = {
             if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
                 creep.memory.isMining = false;
             }
+            */
         }
         else{
             //Move resources to storage
