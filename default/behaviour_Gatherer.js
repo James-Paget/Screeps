@@ -60,7 +60,7 @@ function getAssignedContainerID(room){
     //Find spaces for this new guy
     var containerID = "0";
     for(var containerIndex in containers){
-        if( gatherersAssigned[sourceIndex] < 2){    //If has free space
+        if( gatherersAssigned[containerIndex] < 2){    //If has free space
             containerID = containers[containerIndex].id;
             break;
         }
