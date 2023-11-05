@@ -3,7 +3,7 @@ var upgradingTasks = require("behaviour_Upgrader");
 var buildingTasks  = require("behaviour_Builder");
 var warriorTasks   = require("behaviour_Warrior");
 var defenderTasks  = require("behaviour_Defender");
-var structureManager = require("manager_Structure");
+var structureManager = require("manager_Structures");
 var respawnManager   = require("manager_Respawn");
 
 module.exports.loop = function () {
@@ -17,10 +17,9 @@ module.exports.loop = function () {
     }
     
     //Spawn required dudes
-    spawnManager.decideSpawn();
+    respawnManager.decideSpawn();
     
     //Make each dude do his job
-    console.log("Jobs Being done");
     for(name in creeps)
     {
         if(creeps[name].memory.role == "Miner"){
