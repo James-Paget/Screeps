@@ -24,6 +24,18 @@ var miningTasks = {
             }
         }
     },
+    respawn : function(relatedCreepNumber){
+        if(relatedCreepNumber < getMinerNumberRequired()){         //* Always prioritise this spawn -> Better
+            var creepName = "Miner"+Game.time;
+            var assignedSourceID = getSourceID(Game.spawns["Spawn1"].room);
+            if(relatedCreepNumber == 0){
+                Game.spawns["Spawn1"].spawnCreep([WORK, CARRY, MOVE], creepName, {memory:{role:"Miner"}}, {memory:{isMining:true}}, {memory:{sourceID:assignedSourceID}});}
+            else{
+                Game.spawns["Spawn1"].spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], creepName, {memory:{role:"Miner"}}, {memory:{isMining:true}}, {memory:{sourceID:assignedSourceID}});}
+        }
+    }
+
+    /*
     respawn_initial : function(){
         var creepName = "Miner"+Game.time;
         Game.spawns["Spawn1"].spawnCreep([WORK, CARRY, MOVE], creepName, {memory:{role:"Miner"}}, {memory:{isMining:true}});
@@ -34,6 +46,62 @@ var miningTasks = {
             Game.spawns["Spawn1"].spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], creepName, {memory:{role:"Miner"}}, {memory:{isMining:true}});
         }
     }
+    */
 };
+
+function getMinerNumberRequired(){
+    /*
+    Finds total number of spaces available at all sources in 
+    */
+    return 6;
+}
+function getSourceID(room){
+    /*
+    Gets a source ID to give to a new miner, such that all sources are not oversubscribed
+    */
+    console.log("Looking for source...");
+    //Finds number of free spots at each source
+    var sources = room.find(FIND_SOURCES);
+    var sourceFreeTiles = [];
+    for(var source in sources){
+        var totalFreeTiles = 0;
+        //For 3x3 tiles around this source
+        for(var j=source.pos.y-1; j<=source.pos.y+1; j++){
+            for(var i=source.pos.x-1; i<=source.pos.x+1; i++){
+                if(room.lookAt(i,j) != "terrain"){
+                    totalFreeTiles++;
+                }
+            }
+        }
+        sourceFreeTiles.push(totalFreeTiles);
+    }
+    console.log("Free tiles -> ",sourceFreeTiles[0],", ", sourceFreeTiles[1]);
+    //Finds number
+    var allMiners = _.filter(Game.creeps, function(creep) { return (creep.memory.role == "Miner") });
+    var minerAssigned = [];
+    for(var source in sources){
+        minersAssigned.push(0);}
+    for(var miner in allMiners){
+        var sourceIndex = 0;
+        for(var source in sources){
+            if(miner.memory.sourceID == source.id){
+                minerAssigned[sourceIndex] = minerAssigned[sourceIndex]+1;  //## TRY WITH ++, LIST MAY NOT LIKE IT ##
+                break;
+            }
+            sourceIndex++;
+        }
+    }
+    //Find spaces for this new guy
+    var sourceID;
+    for(var i in minersAssigned.length){
+        if( (sourceFreeTiles[i] -minersAssigned[i]) > 0){    //If has free space
+            sourceID = sources[i].id;
+            console.log("SourceIndex -> ",i);
+            break;
+        }
+    }
+    console.log("Done");
+    return sourceID
+}
 
 module.exports = miningTasks;

@@ -21,18 +21,14 @@ var respawnManager = {
         var upgraderFilter = _.filter(creeps, function(creep) { return (creep.memory.role == "Upgrader") });
         var armyFilter     = _.filter(creeps, function(creep) { return (creep.memory.role == "Warrior" || creep.memory.role == "Defender") });
         
-        if(minerFilter.length == 0){                                    //1
-            miningTasks.respawn_initial();}
-        else{
-            miningTasks.respawn_strong(minerFilter.length);             //2
-            if(minerFilter.length >= 6){
-                buildingTasks.respawn(builderFilter.length);             //3
-                if(builderFilter.length >= 1){
-                    warriorTasks.respawn(armyFilter.length);            //4
-                    defenderTasks.respawn(armyFilter.length);
-                    if(armyFilter.length >= 4){
-                        upgradingTasks.respawn(upgraderFilter.length);   //5
-                    }
+        miningTasks.respawn(minerFilter.length);                    //1 & 2
+        if(minerFilter.length >= 6){
+            buildingTasks.respawn(builderFilter.length);            //3
+            if(builderFilter.length >= 1){
+                warriorTasks.respawn(armyFilter.length);            //4
+                defenderTasks.respawn(armyFilter.length);
+                if(armyFilter.length >= 4){
+                    upgradingTasks.respawn(upgraderFilter.length);   //5
                 }
             }
         }
