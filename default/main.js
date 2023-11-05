@@ -8,8 +8,6 @@ var respawnManager   = require("manager_Respawn");
 
 module.exports.loop = function () {
     var creeps  = Game.creeps;
-
-    console.log("Test Log");
     
     //Clean dead dudes
     for(var memoryName in Memory.creeps){
