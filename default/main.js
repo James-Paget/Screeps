@@ -20,6 +20,7 @@ module.exports.loop = function () {
     spawnManager.decideSpawn();
     
     //Make each dude do his job
+    console.log("Jobs Being done");
     for(name in creeps)
     {
         if(creeps[name].memory.role == "Miner"){
