@@ -13,7 +13,8 @@ var miningTasks = {
             //Move resources to storage
             var target;
             var containers = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_CONTAINER) && (structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) )}});
-            if(containers.length > 0){   //Try to put into nearby container
+            var minerFilter= _.filter(Game.creeps, function(creep) { return (creep.memory.role == "Miner") });   //### CURSED CODE RIGHT HERE ##
+            if( (containers.length > 0) && (minerFilter.length > 2)){   //Try to put into nearby container (after 2 dudes in )
                 target = creep.pos.findClosestByPath(containers);}
             else{   //If no other option, deliver it yourself
                 var transferTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) ||(structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
