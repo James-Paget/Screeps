@@ -6,12 +6,8 @@ var funTask = {
             targetLocation = new RoomPosition(6,49,creep.room.name);}
         else{
             targetLocation = new RoomPosition(22,21,creep.room.name);}
-        console.log(targetLocation);
         creep.moveTo(targetLocation);
-        if(creep.room.creeps.length == 0){
-            creep.say('🤡🍆☠️🍑💨🍆');}
-        else{
-            creep.say('🤡👽🥵👽🥵');}
+        creep.say('🤡🍆☠️🍑💨🍆');
     },
     respawn : function(relatedCreepNumber){
         if(relatedCreepNumber < 1){
