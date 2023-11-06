@@ -28,7 +28,7 @@ var respawnManager = {
         miningTasks.respawn(minerFilter.length);                            //1 & 2
         if(minerFilter.length >= 4){                //########################################################## BIG PROBLEM, MAKE VARIABLE #######
             gatheringTasks.respawn(gathererFilter.length);
-            if(gathererFilter.length >= 3){         //########################################################## BIG PROBLEM, MAKE VARIABLE #######
+            if(gathererFilter.length >= 2){         //########################################################## BIG PROBLEM, MAKE VARIABLE #######
                 buildingTasks.respawn(builderFilter.length);                //3
                 if(builderFilter.length >= 1){
                     repairingTasks.respawn(repairerFilter.length);
