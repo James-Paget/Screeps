@@ -8,7 +8,7 @@ var funTask = {
             targetLocation = new RoomPosition(22,21,creep.room.name);}
         console.log(targetLocation);
         creep.moveTo(targetLocation);
-        creep.say('🤡🤡🤡🤡🤡');
+        creep.say('🤡🍆☠️🍑💨🍆🤡👽🥵👽🥵');
     },
     respawn : function(relatedCreepNumber){
         if(relatedCreepNumber < 1){
