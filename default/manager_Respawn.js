@@ -31,7 +31,7 @@ var respawnManager = {
             if(gathererFilter.length >= 3){         //########################################################## BIG PROBLEM, MAKE VARIABLE #######
                 buildingTasks.respawn(builderFilter.length);                //3
                 if(builderFilter.length >= 1){
-                    repairingTasks.respawn(repairerFilter);
+                    repairingTasks.respawn(repairerFilter.length);
                     if(repairerFilter.length >= 1){
                         warriorTasks.respawn(armyFilter.length);            //4
                         defenderTasks.respawn(armyFilter.length);
