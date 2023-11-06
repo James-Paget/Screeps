@@ -11,7 +11,7 @@ var upgradingTasks = {
         else{
             if(creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0){
                 var energyCaches = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_SPAWN && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_EXTENSION && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) )}});
-                if(creep.room.energyCapacityAvailable -creep.room.energyAvailable <= 100){   //If 100 less than total energy available, then take it and use it to upgrade
+                if(creep.room.energyAvailable >= 500){   //If at least 500 total energy available, then take it and use it to upgrade
                     var target = creep.pos.findClosestByPath(energyCaches);
                     if(creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                         creep.moveTo(target);
