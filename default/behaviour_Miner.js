@@ -11,14 +11,9 @@ var miningTasks = {
         }
         else{
             //Move resources to storage
-            var target;
-            var containers     = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_CONTAINER) && (structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) )}});
-            var gathererFilter = _.filter(Game.creeps, function(creep) { return (creep.memory.role == "Gatherer") });   //### CURSED CODE RIGHT HERE ##
-            if( (containers.length > 0) && (gathererFilter.length > 0)){   //Try to put into nearby container (after 2 dudes in )
-                target = creep.pos.findClosestByPath(containers);}
-            else{   //If no other option, deliver it yourself
-                var transferTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) ||(structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
-                target = creep.pos.findClosestByPath(transferTargets);}
+            //#### MAY WANT TO CHECK IF HAS SPACE TOO, BUT I WOULD RATHER THEY QUEUE AT THEIR CLOSEST CONTAINER ####
+            var transferTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION) || (structure.structureType == STRUCTURE_SPAWN) || (structure.structureType == STRUCTURE_CONTAINER))}});
+            var target = creep.pos.findClosestByPath(transferTargets);
             if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                 creep.moveTo(target);
             }
@@ -36,7 +31,8 @@ var miningTasks = {
             if(relatedCreepNumber == 0){
                 Game.spawns["Spawn1"].spawnCreep([WORK, CARRY, MOVE], creepName, {memory:{role:"Miner", isMining:true, sourceID:assignedSourceID}});}
             else{
-                Game.spawns["Spawn1"].spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], creepName, {memory:{role:"Miner", isMining:true, sourceID:assignedSourceID}});}
+                Game.spawns["Spawn1"].spawnCreep([WORK, WORK, CARRY, MOVE, MOVE], creepName, {memory:{role:"Miner", isMining:true, sourceID:assignedSourceID}});}
+                //Game.spawns["Spawn1"].spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], creepName, {memory:{role:"Miner", isMining:true, sourceID:assignedSourceID}});}
         }
     }
 };

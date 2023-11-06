@@ -26,7 +26,8 @@ var gatheringTasks = {
         if(relatedCreepNumber < getGathererNumberRequired(Game.spawns["Spawn1"].room)){
             var creepName = "Gatherer"+Game.time;
             var assignedContainerID = getAssignedContainerID(Game.spawns["Spawn1"].room);
-            Game.spawns["Spawn1"].spawnCreep([MOVE, MOVE, MOVE, MOVE, CARRY, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, containerID:assignedContainerID}});}
+            Game.spawns["Spawn1"].spawnCreep([MOVE, MOVE, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, containerID:assignedContainerID}});}
+            //Game.spawns["Spawn1"].spawnCreep([MOVE, MOVE, MOVE, MOVE, CARRY, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, containerID:assignedContainerID}});}
     }
 }
 
