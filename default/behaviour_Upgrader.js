@@ -24,7 +24,7 @@ var upgradingTasks = {
         }
     },
     respawn : function(relatedCreepNumber){
-        if(relatedCreepNumber < 2){
+        if(relatedCreepNumber < 4){
             var creepName = "Upgrader"+Game.time;
             Game.spawns["Spawn1"].spawnCreep([MOVE, CARRY, WORK, WORK], creepName, {memory:{role:"Upgrader"}}, {memory:{isUpgrading:false}});
         }
