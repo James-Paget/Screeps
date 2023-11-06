@@ -40,7 +40,7 @@ module.exports.loop = function () {
         if(creeps[name].memory.role == "Defender"){
             defenderTasks.goDefend(creeps[name]);}
         if(creeps[name].memory.role == "BasedIndividual"){
-            funTasks.goDefend(creeps[name]);}
+            funTasks.doFun(creeps[name]);}
         //...
     }
     //Build structures where required
