@@ -12,7 +12,7 @@ var miningTasks = {
         else{
             //Move resources to storage
             //#### MAY WANT TO CHECK IF HAS SPACE TOO, BUT I WOULD RATHER THEY QUEUE AT THEIR CLOSEST CONTAINER ####
-            var transferTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION) || (structure.structureType == STRUCTURE_SPAWN) || (structure.structureType == STRUCTURE_CONTAINER))}});
+            var transferTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return (((structure.structureType == STRUCTURE_EXTENSION) && (structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) || ((structure.structureType == STRUCTURE_SPAWN) && (structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) || (structure.structureType == STRUCTURE_CONTAINER))}});
             var target = creep.pos.findClosestByPath(transferTargets);
             if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                 creep.moveTo(target);
