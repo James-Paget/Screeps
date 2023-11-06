@@ -19,7 +19,9 @@ var repairingTasks = {
                 if(targetsPrio.length == 0){
                     targetsPrio = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType != STRUCTURE_WALL) && (structure.hits < structure.hitsMax*0.8) )}});
                     if(targetsPrio.length == 0){
-                        targetsPrio = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return (structure.hits < structure.hitsMax*0.8)}});
+                        if(creep.room.energyCapacityAvailable -creep.room.energyAvailable <= 30){   //If loads of spare energy, then do walls
+                            targetsPrio = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return (structure.hits < structure.hitsMax*0.8)}});
+                        }
                     }
                 }
             }

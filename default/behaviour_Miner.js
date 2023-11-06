@@ -31,7 +31,7 @@ var miningTasks = {
             if(relatedCreepNumber == 0){
                 Game.spawns["Spawn1"].spawnCreep([WORK, CARRY, MOVE], creepName, {memory:{role:"Miner", isMining:true, sourceID:assignedSourceID}});}
             else{
-                Game.spawns["Spawn1"].spawnCreep([WORK, WORK, CARRY, MOVE, MOVE], creepName, {memory:{role:"Miner", isMining:true, sourceID:assignedSourceID}});}
+                Game.spawns["Spawn1"].spawnCreep([WORK, WORK, WORK, CARRY, MOVE], creepName, {memory:{role:"Miner", isMining:true, sourceID:assignedSourceID}});}
                 //Game.spawns["Spawn1"].spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], creepName, {memory:{role:"Miner", isMining:true, sourceID:assignedSourceID}});}
         }
     }
