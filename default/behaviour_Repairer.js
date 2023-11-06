@@ -30,7 +30,7 @@ var repairingTasks = {
     respawn : function(relatedCreepNumber){
         if(relatedCreepNumber < 1){
             var creepName = "Repairer"+Game.time;
-            Game.spawns["Spawn1"].spawnCreep([WORK, MOVE, CARRY], creepName, {memory:{role:"Repairer", isRepairing:true});
+            Game.spawns["Spawn1"].spawnCreep([WORK, MOVE, CARRY], creepName, {memory:{role:"Repairer", isRepairing:true}});
         }
     }
 }
