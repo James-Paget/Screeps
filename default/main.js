@@ -5,6 +5,7 @@ var buildingTasks  = require("behaviour_Builder");
 var repairingTasks = require("behaviour_Repairer");
 var warriorTasks   = require("behaviour_Warrior");
 var defenderTasks  = require("behaviour_Defender");
+var funTasks       = require("behaviour_funDudes");
 var structureManager = require("manager_Structures");
 var respawnManager   = require("manager_Respawn");
 
@@ -38,6 +39,8 @@ module.exports.loop = function () {
             warriorTasks.goFight(creeps[name]);}
         if(creeps[name].memory.role == "Defender"){
             defenderTasks.goDefend(creeps[name]);}
+        if(creeps[name].memory.role == "BasedIndividual"){
+            funTasks.goDefend(creeps[name]);}
         //...
     }
     //Build structures where required

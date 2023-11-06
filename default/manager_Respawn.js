@@ -5,6 +5,7 @@ var buildingTasks  = require("behaviour_Builder");
 var repairingTasks = require("behaviour_Repairer");
 var warriorTasks   = require("behaviour_Warrior");
 var defenderTasks  = require("behaviour_Defender");
+var funTasks       = require("behaviour_funDudes");
 
 var respawnManager = {
     decideSpawn : function(){
@@ -24,6 +25,7 @@ var respawnManager = {
         var repairerFilter = _.filter(creeps, function(creep) { return (creep.memory.role == "Repairer") });
         var upgraderFilter = _.filter(creeps, function(creep) { return (creep.memory.role == "Upgrader") });
         var armyFilter     = _.filter(creeps, function(creep) { return (creep.memory.role == "Warrior" || creep.memory.role == "Defender") });
+        var funFilter      = _.filter(creeps, function(creep) { return (creep.memory.role == "BasedIndividual") });
         
         miningTasks.respawn(minerFilter.length);                            //1 & 2
         if(minerFilter.length >= 4){                //########################################################## BIG PROBLEM, MAKE VARIABLE #######
@@ -37,6 +39,7 @@ var respawnManager = {
                         defenderTasks.respawn(armyFilter.length);
                         if(armyFilter.length >= 4){
                             upgradingTasks.respawn(upgraderFilter.length);  //5
+                            funTasks.respawn(funFilter.length);
                         }
                     }
                 }
