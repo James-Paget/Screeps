@@ -32,11 +32,11 @@ var gatheringTasks = {
         //############################################################
         //## SCUFFED BODGE, BUT MORE EFFICENT MY CURRENT BASE SETUP ## --> IN FUTURE, MAKE [1 GATHERER PER MINER]
         //############################################################
-        else if(relatedCreepNumber == getGathererNumberRequired(Game.spawns["Spawn1"].room)){    //Spawn an extra dude for my realy full container
-            var creepName = "Gatherer"+Game.time;
-            var assignedContainerID = "65486785aae59028a30b7876";
-            //Game.spawns["Spawn1"].spawnCreep([MOVE, MOVE, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, containerID:assignedContainerID}});}
-            Game.spawns["Spawn1"].spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, containerID:assignedContainerID}});}
+        //else if(relatedCreepNumber == getGathererNumberRequired(Game.spawns["Spawn1"].room)){    //Spawn an extra dude for my realy full container
+        //    var creepName = "Gatherer"+Game.time;
+        //    var assignedContainerID = "65486785aae59028a30b7876";
+        //    //Game.spawns["Spawn1"].spawnCreep([MOVE, MOVE, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, containerID:assignedContainerID}});}
+        //    Game.spawns["Spawn1"].spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, containerID:assignedContainerID}});}
     }
 }
 
