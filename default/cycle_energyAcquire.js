@@ -1,5 +1,10 @@
 var miner_tasks = {
     goMine : function(creep){
+
+        console.log("This Room Name; ",creep.room.name);
+        //init_energyRoom("Simulation Room");
+        //remove_energyRoom("Simulation Room");
+
         if(creep.memory.isMining){
             var targetSource = Game.getObjectById(creep.memory.sourceID);
             if(creep.harvest(targetSource) == ERR_NOT_IN_RANGE){
@@ -77,6 +82,50 @@ var gatherer_tasks = {
         //    Game.spawns["Spawn1"].spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, containerID:assignedContainerID}});}
     }
 };
+
+function init_energyRoom(roomName){
+    /*
+    . Initialises an empty array structure for a new room (if the room is not currently registered)
+    . This will allow miners & gatherers to enter this room and be assigned sources, containers, etc
+    . All rooms being mined will require one of these structures
+    . A given structure can be removed from here using the "removeEnergyRoom()" function
+
+    Structure is as follows;
+    {{...}, {[(),(),...], [...], ...}, ...}
+    (1)Room --> roomName in 0th element of corresponding list; e.g {roomName, [source1Data], [source2Data], ...}
+        (2)Source Index --> Its ID in 0th element of corresponding list; e.g {SourceID, [containerIDs], [minerIDs], [gathererIDs]}, Indexed as according to FIND_SOURCES index
+            (3)Assigned Info --> IDs of objects assigned to this source; e.g {containerID_1} or {minerID_1, minerID_2, minerID_3} or {gathererID_1, gathererID_2}
+    
+    1. Make sure copy doesnt already exist there
+    2. If not, then
+    */
+    //1
+    var copyExists = false;
+    for(var roomIndex in Memory.energyRooms){
+        if(Memory.energyRooms[roomIndex].ID == roomName){   //ID of room is its roomName here
+            copyExists = true;
+            break;
+        }
+    }
+    //2
+    if(!copyExists){
+        //pass
+    }
+}
+function remove_energyRoom(roomName){
+    /*
+    . Removes the given energyRoom from the memory list structure
+    . This will prevent miners being smartly assigned sources for the room
+    */
+    for(var roomIndex in Memory.energyRooms){
+        if(Memory.energyRooms[roomIndex].ID == roomName){   //ID of room is its roomName here
+            delete Memory.energyRooms[roomIndex];
+            break;
+        }
+    }
+}
+
+
 
 function getMinerNumberRequired(room){
     /*
