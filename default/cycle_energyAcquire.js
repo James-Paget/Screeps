@@ -86,13 +86,13 @@ function init_energyRoom(room){
     . A given structure can be removed from here using the "removeEnergyRoom()" function
 
     Structure is as follows;
-    { {}, {ID, [{ID, [], [], []}, ...]}, ... }
+    [ {}, {ID, [{ID, FreeSpace, [], [], []}, ...]}, ... ]
     (1)Room --> roomName in 0th element of corresponding list; e.g {roomName, [source1Data], [source2Data], ...}
         (2)Source Index --> Its ID in 0th element of corresponding list; e.g {SourceID, [containerIDs], [minerIDs], [gathererIDs]}, Indexed as according to FIND_SOURCES index
-            (3)Assigned Info --> IDs of objects assigned to this source; e.g {containerID_1} or {minerID_1, minerID_2, minerID_3} or {gathererID_1, gathererID_2}
+            (3)Assigned Info --> IDs of objects assigned to this source; e.g {containerID_1} or {minerID_1, minerID_2, minerID_3} or ...
     
     1. Make sure copy doesnt already exist there
-    2. If not, then
+    2. If not, then create structure;
     */
     //1
     var copyExists = false;
@@ -103,7 +103,7 @@ function init_energyRoom(room){
         }
     }
     //2
-    var thresholdDist_container = 4;   //Within this radius of source
+    var thresholdDist_container = 4;   //Within this radius of source => assign this container to this source (container can be assigned to multiple sources, and vice versa)
     if(!copyExists){
         if(!Memory.energyRooms){
             Memory.energyRooms = [];}
@@ -112,9 +112,8 @@ function init_energyRoom(room){
             var roomContainer_Objects = room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_CONTAINER)}});   //# Note here, only recognises containers that exist when the room is initially registered => may want to have a function to update these values periodically
             var sources = [];
             for(var sourceIndex in roomSource_Objects){
-                var cSource = []
-                
-                cSource.push(roomSource_Objects[sourceIndex].id); //(1) ID 0th
+                cSource_ID        = roomSource_Objects[sourceIndex].id;
+                cSource_FreeSpace = getSource_freeSpace( roomSource_Objects[sourceIndex] );
                 var containerIDs = [];  //Populated below with nearby containers
                 var minerIDs     = [];  //These left empty to be populated when spawning
                 var gathererIDs  = [];  //"" ""
@@ -123,11 +122,7 @@ function init_energyRoom(room){
                         containerIDs.push(roomContainer_Objects[containerIndex].id);
                     }
                 }
-                cSource.push(containerIDs);
-                cSource.push(minerIDs);
-                cSource.push(gathererIDs);
-
-                sources.push(cSource);
+                sources.push({ID:cSource_ID, free:cSource_FreeSpace, containers:containerIDs, miners:minerIDs, gatherers:gathererIDs});
             }
             Memory.energyRooms.push({ID:room.name, sources:sources});
         }
@@ -145,6 +140,29 @@ function remove_energyRoom(room){
         }
     }
 }
+
+// . MAKE FUNCTION TO REMAKE THE CONTAINER SET FOR EACH SOURCE
+// . MAKE FUNCTION TO REASSIGN ALL MINERS TO SOURCES AGAIN; WILL FIX SITUATIONS WHEN EVERYONE IS CONFUSED WHERE THEY ARE --> GlobalReassignment
+
+function getSource_freeSpace(cSource){
+    /*
+    . Finds the number of free spaces around a source
+    . ### This can be improved to make sure all the spaces found can be pathed to ### <------------
+    */
+    var totalFreeTiles = 0;
+    //For 3x3 tiles around this source
+    for(var j=sources[z].pos.y-1; j<=sources[z].pos.y+1; j++){
+        for(var i=sources[z].pos.x-1; i<=sources[z].pos.x+1; i++){
+            if( (Game.map.getRoomTerrain(room.name).get(i,j) == 0) || (Game.map.getRoomTerrain(room.name).get(i,j) == 2) ){
+                totalFreeTiles++;
+            }
+        }
+    }
+    return totalFreeTiles;
+}
+
+
+
 
 
 
