@@ -39,7 +39,7 @@ var respawnManager = {
                         defenderTasks.respawn(armyFilter.length);
                         if(armyFilter.length >= 4){
                             upgradingTasks.respawn(upgraderFilter.length);  //5
-                            funTasks.respawn(funFilter.length);
+                            //funTasks.respawn(funFilter.length);
                         }
                     }
                 }
