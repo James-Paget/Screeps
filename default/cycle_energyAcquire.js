@@ -112,8 +112,8 @@ function init_energyRoom(room){
             var roomContainer_Objects = room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_CONTAINER)}});   //# Note here, only recognises containers that exist when the room is initially registered => may want to have a function to update these values periodically
             var sources = [];
             for(var sourceIndex in roomSource_Objects){
-                cSource_ID        = roomSource_Objects[sourceIndex].id;
-                cSource_FreeSpace = getSource_freeSpace( roomSource_Objects[sourceIndex] );
+                var cSource_ID        = roomSource_Objects[sourceIndex].id;
+                var cSource_FreeSpace = getSource_freeSpace( roomSource_Objects[sourceIndex] );
                 var containerIDs = [];  //Populated below with nearby containers
                 var minerIDs     = [];  //These left empty to be populated when spawning
                 var gathererIDs  = [];  //"" ""
