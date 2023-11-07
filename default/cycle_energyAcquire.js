@@ -2,8 +2,8 @@ var miner_tasks = {
     goMine : function(creep){
 
         console.log("This Room Name; ",creep.room.name);
-        //init_energyRoom("Simulation Room");
-        //remove_energyRoom("Simulation Room");
+        init_energyRoom("sim");
+        //remove_energyRoom("sim");
 
         if(creep.memory.isMining){
             var targetSource = Game.getObjectById(creep.memory.sourceID);
@@ -83,7 +83,7 @@ var gatherer_tasks = {
     }
 };
 
-function init_energyRoom(roomName){
+function init_energyRoom(room){
     /*
     . Initialises an empty array structure for a new room (if the room is not currently registered)
     . This will allow miners & gatherers to enter this room and be assigned sources, containers, etc
@@ -91,7 +91,7 @@ function init_energyRoom(roomName){
     . A given structure can be removed from here using the "removeEnergyRoom()" function
 
     Structure is as follows;
-    {{...}, {[(),(),...], [...], ...}, ...}
+    { {}, {ID, [{ID, [], [], []}, ...]}, ... }
     (1)Room --> roomName in 0th element of corresponding list; e.g {roomName, [source1Data], [source2Data], ...}
         (2)Source Index --> Its ID in 0th element of corresponding list; e.g {SourceID, [containerIDs], [minerIDs], [gathererIDs]}, Indexed as according to FIND_SOURCES index
             (3)Assigned Info --> IDs of objects assigned to this source; e.g {containerID_1} or {minerID_1, minerID_2, minerID_3} or {gathererID_1, gathererID_2}
@@ -100,29 +100,63 @@ function init_energyRoom(roomName){
     2. If not, then
     */
     //1
+    console.log("Looking for copy...");
+    //console.log("eRoom Length ->",Memory.energyRooms.length);
     var copyExists = false;
     for(var roomIndex in Memory.energyRooms){
-        if(Memory.energyRooms[roomIndex].ID == roomName){   //ID of room is its roomName here
+        if(Memory.energyRooms[roomIndex].ID == room.name){   //ID of room is its roomName here
+            console.log("COPY FOUND!");
             copyExists = true;
             break;
         }
     }
     //2
+    var thresholdDist_container = 4;   //Within this radius of source
     if(!copyExists){
-        //pass
+        console.log("Copy doesnt exist, CONTINUE...");
+        if(Memory.energyRooms.length == 0){
+            Memory.energyRooms = [];}
+        else{
+            roomSource_Objects    = room.find(FIND_SOURCES);
+            roomContainer_Objects = room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.type == STRUCTURE_CONTAINER)}});   //# Note here, only recognises containers that exist when the room is initially registered => may want to have a function to update these values periodically
+            sources = [];
+            for(var sourceIndex in roomSource_Objects){
+                source = []
+                source.push(roomSource_Objects[0].id); //(1) ID 0th
+                containerIDs = [];  //Populated below with nearby containers
+                minerIDs     = [];  //These left empty to be populated when spawning
+                gathererIDs  = [];  //"" ""
+                for(var containerIndex in roomContainer_Objects){
+                    if( roomSource_Objects[sourceIndex].pos.inRangeTo(roomContainer_Objects[containerIndex], thresholdDist_container) ){
+                        containerIDs.push(roomContainer_Objects[containerIndex].id);
+                    }
+                }
+                source.push(containerIDs);
+                source.push(minerIDs);
+                source.push(gathererIDs);
+
+                sources.push(source);
+            }
+            Memory.energyRooms.push({ID:room.name, sources:sources});
+        }
     }
+    console.log("Ending...");
 }
-function remove_energyRoom(roomName){
+function remove_energyRoom(room){
     /*
     . Removes the given energyRoom from the memory list structure
     . This will prevent miners being smartly assigned sources for the room
     */
+    console.log("Looking to REMOVE room...");
     for(var roomIndex in Memory.energyRooms){
-        if(Memory.energyRooms[roomIndex].ID == roomName){   //ID of room is its roomName here
+        if(Memory.energyRooms[roomIndex].ID == room.name){   //ID of room is its roomName here
+            console.log("Removing Room...");
             delete Memory.energyRooms[roomIndex];
+            console.log("ROOM REMOVED!");
             break;
         }
     }
+    console.log("Ending removal");
 }
 
 
