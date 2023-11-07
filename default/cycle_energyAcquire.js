@@ -1,10 +1,5 @@
 var miner_tasks = {
     goMine : function(creep){
-
-        console.log("This Room Name; ",creep.room.name);
-        init_energyRoom("sim");
-        //remove_energyRoom("sim");
-
         if(creep.memory.isMining){
             var targetSource = Game.getObjectById(creep.memory.sourceID);
             if(creep.harvest(targetSource) == ERR_NOT_IN_RANGE){
@@ -100,12 +95,9 @@ function init_energyRoom(room){
     2. If not, then
     */
     //1
-    console.log("Looking for copy...");
-    //console.log("eRoom Length ->",Memory.energyRooms.length);
     var copyExists = false;
     for(var roomIndex in Memory.energyRooms){
         if(Memory.energyRooms[roomIndex].ID == room.name){   //ID of room is its roomName here
-            console.log("COPY FOUND!");
             copyExists = true;
             break;
         }
@@ -113,50 +105,45 @@ function init_energyRoom(room){
     //2
     var thresholdDist_container = 4;   //Within this radius of source
     if(!copyExists){
-        console.log("Copy doesnt exist, CONTINUE...");
-        if(Memory.energyRooms.length == 0){
+        if(!Memory.energyRooms){
             Memory.energyRooms = [];}
         else{
-            roomSource_Objects    = room.find(FIND_SOURCES);
-            roomContainer_Objects = room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.type == STRUCTURE_CONTAINER)}});   //# Note here, only recognises containers that exist when the room is initially registered => may want to have a function to update these values periodically
-            sources = [];
+            var roomSource_Objects    = room.find(FIND_SOURCES);
+            var roomContainer_Objects = room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_CONTAINER)}});   //# Note here, only recognises containers that exist when the room is initially registered => may want to have a function to update these values periodically
+            var sources = [];
             for(var sourceIndex in roomSource_Objects){
-                source = []
-                source.push(roomSource_Objects[0].id); //(1) ID 0th
-                containerIDs = [];  //Populated below with nearby containers
-                minerIDs     = [];  //These left empty to be populated when spawning
-                gathererIDs  = [];  //"" ""
+                var cSource = []
+                
+                cSource.push(roomSource_Objects[sourceIndex].id); //(1) ID 0th
+                var containerIDs = [];  //Populated below with nearby containers
+                var minerIDs     = [];  //These left empty to be populated when spawning
+                var gathererIDs  = [];  //"" ""
                 for(var containerIndex in roomContainer_Objects){
                     if( roomSource_Objects[sourceIndex].pos.inRangeTo(roomContainer_Objects[containerIndex], thresholdDist_container) ){
                         containerIDs.push(roomContainer_Objects[containerIndex].id);
                     }
                 }
-                source.push(containerIDs);
-                source.push(minerIDs);
-                source.push(gathererIDs);
+                cSource.push(containerIDs);
+                cSource.push(minerIDs);
+                cSource.push(gathererIDs);
 
-                sources.push(source);
+                sources.push(cSource);
             }
             Memory.energyRooms.push({ID:room.name, sources:sources});
         }
     }
-    console.log("Ending...");
 }
 function remove_energyRoom(room){
     /*
     . Removes the given energyRoom from the memory list structure
     . This will prevent miners being smartly assigned sources for the room
     */
-    console.log("Looking to REMOVE room...");
     for(var roomIndex in Memory.energyRooms){
         if(Memory.energyRooms[roomIndex].ID == room.name){   //ID of room is its roomName here
-            console.log("Removing Room...");
-            delete Memory.energyRooms[roomIndex];
-            console.log("ROOM REMOVED!");
+            Memory.energyRooms.pop(roomIndex);
             break;
         }
     }
-    console.log("Ending removal");
 }
 
 
