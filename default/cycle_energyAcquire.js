@@ -1,7 +1,5 @@
 var miner_tasks = {
     goMine : function(creep){
-        init_energyRoom(creep.room);
-        //remove_energyRoom(creep.room);
         if(creep.memory.isMining){
             var targetSource = Game.getObjectById(creep.memory.sourceID);
             if(creep.harvest(targetSource) == ERR_NOT_IN_RANGE){
