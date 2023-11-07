@@ -1,5 +1,7 @@
 var miner_tasks = {
     goMine : function(creep){
+        init_energyRoom(creep.room);
+        //remove_energyRoom(creep.room);
         if(creep.memory.isMining){
             var targetSource = Game.getObjectById(creep.memory.sourceID);
             if(creep.harvest(targetSource) == ERR_NOT_IN_RANGE){
@@ -113,7 +115,7 @@ function init_energyRoom(room){
             var sources = [];
             for(var sourceIndex in roomSource_Objects){
                 var cSource_ID        = roomSource_Objects[sourceIndex].id;
-                var cSource_FreeSpace = getSource_freeSpace( roomSource_Objects[sourceIndex] );
+                var cSource_FreeSpace = getSource_freeSpace(room, roomSource_Objects[sourceIndex]);
                 var containerIDs = [];  //Populated below with nearby containers
                 var minerIDs     = [];  //These left empty to be populated when spawning
                 var gathererIDs  = [];  //"" ""
@@ -144,15 +146,15 @@ function remove_energyRoom(room){
 // . MAKE FUNCTION TO REMAKE THE CONTAINER SET FOR EACH SOURCE
 // . MAKE FUNCTION TO REASSIGN ALL MINERS TO SOURCES AGAIN; WILL FIX SITUATIONS WHEN EVERYONE IS CONFUSED WHERE THEY ARE --> GlobalReassignment
 
-function getSource_freeSpace(cSource){
+function getSource_freeSpace(room, cSource){
     /*
     . Finds the number of free spaces around a source
     . ### This can be improved to make sure all the spaces found can be pathed to ### <------------
     */
     var totalFreeTiles = 0;
     //For 3x3 tiles around this source
-    for(var j=sources[z].pos.y-1; j<=sources[z].pos.y+1; j++){
-        for(var i=sources[z].pos.x-1; i<=sources[z].pos.x+1; i++){
+    for(var j=cSource.pos.y-1; j<=cSource.pos.y+1; j++){
+        for(var i=cSource.pos.x-1; i<=cSource.pos.x+1; i++){
             if( (Game.map.getRoomTerrain(room.name).get(i,j) == 0) || (Game.map.getRoomTerrain(room.name).get(i,j) == 2) ){
                 totalFreeTiles++;
             }
