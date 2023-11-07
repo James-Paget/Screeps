@@ -1,4 +1,5 @@
-var {miner_tasks, gatherer_tasks} = require("cycle_energyAcquire");
+var miningTasks    = require("behaviour_Miner");
+var gatheringTasks = require("behaviour_Gatherer");
 var upgradingTasks = require("behaviour_Upgrader");
 var buildingTasks  = require("behaviour_Builder");
 var repairingTasks = require("behaviour_Repairer");
@@ -26,9 +27,9 @@ var respawnManager = {
         var armyFilter     = _.filter(creeps, function(creep) { return (creep.memory.role == "Warrior" || creep.memory.role == "Defender") });
         var funFilter      = _.filter(creeps, function(creep) { return (creep.memory.role == "BasedIndividual") });
         
-        miner_tasks.respawn(minerFilter.length);                            //1 & 2
+        miningTasks.respawn(minerFilter.length);                            //1 & 2
         if(minerFilter.length >= 4){                //########################################################## BIG PROBLEM, MAKE VARIABLE #######
-            gatherer_tasks.respawn(gathererFilter.length);
+            gatheringTasks.respawn(gathererFilter.length);
             if(gathererFilter.length >= 2){         //########################################################## BIG PROBLEM, MAKE VARIABLE #######
                 buildingTasks.respawn(builderFilter.length);                //3
                 if(builderFilter.length >= 1){

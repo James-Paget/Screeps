@@ -1,4 +1,5 @@
-var {miner_tasks, gatherer_tasks} = require("cycle_energyAcquire");
+var miningTasks    = require("behaviour_Miner");
+var gatheringTasks = require("behaviour_Gatherer");
 var upgradingTasks = require("behaviour_Upgrader");
 var buildingTasks  = require("behaviour_Builder");
 var repairingTasks = require("behaviour_Repairer");
@@ -25,9 +26,9 @@ module.exports.loop = function () {
     for(name in creeps)
     {
         if(creeps[name].memory.role == "Miner"){
-            miner_tasks.goMine(creeps[name]);}
+            miningTasks.goMine(creeps[name]);}
         if(creeps[name].memory.role == "Gatherer"){
-            gatherer_tasks.goGather(creeps[name]);}
+            gatheringTasks.goGather(creeps[name]);}
         if(creeps[name].memory.role == "Upgrader"){
             upgradingTasks.goUpgrade(creeps[name]);}
         if(creeps[name].memory.role == "Builder"){
