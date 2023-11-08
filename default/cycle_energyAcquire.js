@@ -3,6 +3,9 @@ var miner_tasks = {
         //############### TESTING
         //init_energyRoom(creep.room);
         //remove_energyRoom(creep.room);
+        //queueCreeps_energyRooms();
+        //assignCreeps_energyRooms();
+        //clearSpawnQueue_queue();
 
 
         if(creep.ticksToLive <= 5){         //####### TRY REQWORK THIS, ITS BODGE BUT IM TIRED MY DUDE ####
@@ -248,11 +251,11 @@ function queueCreeps_energyRooms(){
                 var total_workParts = 0;
                 for(var minerIndex in Memory.energyRooms[roomIndex].sources.miners){
                     total_workParts += _.filter(Game.getObjectById(Memory.energyRooms[roomIndex].sources.miners[minerIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == WORK)}}).length;}
-                var isSaturated_mining = (total_workParts < 5);             //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
+                var isSaturated_mining = (total_workParts >= 5);            //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
                 if(!isSaturated_mining){
                     //Put new miners into the queue
                     var partsSet = [WORK, WORK, WORK, CARRY, MOVE];         //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
-                    var creepSpec = {roomID:roomIndex, sourceID:sourceIndex, parts:partsSet, role:"Miner"};
+                    var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:partsSet, role:"Miner"};
                     Memory.spawnQueue.queue.push(creepSpec);
                 }
 
@@ -260,11 +263,11 @@ function queueCreeps_energyRooms(){
                 var total_carryParts = 0;
                 for(var gathererIndex in Memory.energyRooms[roomIndex].sources.gatherers){
                     total_carryParts += _.filter(Game.getObjectById(Memory.energyRooms[roomIndex].sources.gatherers[gathererIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == CARRY)}}).length;}
-                var isSaturated_gathering = total_carryParts < 12;                          //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
+                var isSaturated_gathering = total_carryParts >= 12;                         //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
                 if(!isSaturated_gathering){
                     //Put new gatherers into the queue
                     var partsSet = [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];    //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
-                    var creepSpec = {roomID:roomIndex, sourceID:sourceIndex, parts:partsSet, role:"Gatherer"};
+                    var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:partsSet, role:"Gatherer"};
                     Memory.spawnQueue.queue.push(creepSpec);
                 }
 
@@ -310,6 +313,12 @@ function assignCreeps_energyRooms(){
             }
         }
     }
+}
+function clearSpawnQueue_queue(){
+    Memory.spawnQueue.queue = [];
+}
+function clearSpawnQueue_unassigned(){
+    Memory.spawnQueue.unassigned = [];
 }
 // . MAKE FUNCTION TO REMAKE THE CONTAINER SET FOR EACH SOURCE
 // . MAKE FUNCTION TO REASSIGN ALL MINERS TO SOURCES AGAIN; WILL FIX SITUATIONS WHEN EVERYONE IS CONFUSED WHERE THEY ARE --> GlobalReassignment
