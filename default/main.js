@@ -2,7 +2,6 @@ var {miner_tasks, gatherer_tasks} = require("cycle_energyAcquire");
 var upgradingTasks = require("behaviour_Upgrader");
 var buildingTasks  = require("behaviour_Builder");
 var repairingTasks = require("behaviour_Repairer");
-var warriorTasks   = require("behaviour_Warrior");
 var defenderTasks  = require("behaviour_Defender");
 var funTasks       = require("behaviour_funDudes");
 var structureManager = require("manager_Structures");
@@ -15,6 +14,8 @@ module.exports.loop = function () {
     for(var memoryName in Memory.creeps){
         if(!Game.creeps[memoryName]){
             delete Memory.creeps[memoryName];
+
+            ///######### DEAHT TASKS ###############
         }
     }
     
@@ -25,21 +26,19 @@ module.exports.loop = function () {
     for(name in creeps)
     {
         if(creeps[name].memory.role == "Miner"){
-            miner_tasks.goMine(creeps[name]);}
+            miner_tasks.task(creeps[name]);}
         if(creeps[name].memory.role == "Gatherer"){
-            gatherer_tasks.goGather(creeps[name]);}
+            gatherer_tasks.task(creeps[name]);}
         if(creeps[name].memory.role == "Upgrader"){
-            upgradingTasks.goUpgrade(creeps[name]);}
+            upgradingTasks.task(creeps[name]);}
         if(creeps[name].memory.role == "Builder"){
-            buildingTasks.goBuild(creeps[name]);}
+            buildingTasks.task(creeps[name]);}
         if(creeps[name].memory.role == "Repairer"){
-            repairingTasks.goRepair(creeps[name]);}
-        if(creeps[name].memory.role == "Warrior"){
-            warriorTasks.goFight(creeps[name]);}
+            repairingTasks.task(creeps[name]);}
         if(creeps[name].memory.role == "Defender"){
-            defenderTasks.goDefend(creeps[name]);}
+            defenderTasks.task(creeps[name]);}
         if(creeps[name].memory.role == "BasedIndividual"){
-            funTasks.doFun(creeps[name]);}
+            funTasks.task(creeps[name]);}
         //...
     }
     //Build structures where required

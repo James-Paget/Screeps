@@ -1,5 +1,5 @@
 var miner_tasks = {
-    goMine : function(creep){
+    task : function(creep){
         if(creep.memory.isMining){
             var targetSource = Game.getObjectById(creep.memory.sourceID);
             if(creep.harvest(targetSource) == ERR_NOT_IN_RANGE){
@@ -50,7 +50,7 @@ var miner_tasks = {
     }
 };
 var gatherer_tasks = {
-    goGather : function(creep){
+    task : function(creep){
         if(creep.memory.isGathering){
             var target = Game.getObjectById(creep.memory.containerID);
             if(creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){

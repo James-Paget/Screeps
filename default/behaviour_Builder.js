@@ -1,5 +1,5 @@
 var buildingTasks = {
-    goBuild : function(creep){
+    task : function(creep){
         if(creep.memory.isBuilding){
             if(creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0){
                 //var targets = creep.room.find(Game.constructionSites);

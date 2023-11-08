@@ -1,5 +1,5 @@
 var repairingTasks = {
-    goRepair : function(creep){
+    task : function(creep){
         /*
         Repair priority;
         1. Containers

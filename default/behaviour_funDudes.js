@@ -1,5 +1,5 @@
 var funTask = {
-    doFun : function(creep){
+    task : function(creep){
         //Run to other base and spam words
         var targetLocation;
         if(creep.room.name == "E53N22"){

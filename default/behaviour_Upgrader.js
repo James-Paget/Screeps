@@ -1,5 +1,5 @@
 var upgradingTasks = {
-    goUpgrade : function(creep){
+    task : function(creep){
         if(creep.memory.isUpgrading){
             if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE){
                 creep.moveTo(creep.room.controller);

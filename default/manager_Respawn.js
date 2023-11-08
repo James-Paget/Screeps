@@ -2,7 +2,6 @@ var {miner_tasks, gatherer_tasks} = require("cycle_energyAcquire");
 var upgradingTasks = require("behaviour_Upgrader");
 var buildingTasks  = require("behaviour_Builder");
 var repairingTasks = require("behaviour_Repairer");
-var warriorTasks   = require("behaviour_Warrior");
 var defenderTasks  = require("behaviour_Defender");
 var funTasks       = require("behaviour_funDudes");
 
@@ -23,9 +22,12 @@ var respawnManager = {
         var builderFilter  = _.filter(creeps, function(creep) { return (creep.memory.role == "Builder") });
         var repairerFilter = _.filter(creeps, function(creep) { return (creep.memory.role == "Repairer") });
         var upgraderFilter = _.filter(creeps, function(creep) { return (creep.memory.role == "Upgrader") });
-        var armyFilter     = _.filter(creeps, function(creep) { return (creep.memory.role == "Warrior" || creep.memory.role == "Defender") });
+        var armyFilter     = _.filter(creeps, function(creep) { return (creep.memory.role == "Defender") });
         var funFilter      = _.filter(creeps, function(creep) { return (creep.memory.role == "BasedIndividual") });
         
+        //#########################################################
+        //## WILL NEED SOME REQORKING WITH NEW ASSIGNMENT SYSTEM ##
+        //#########################################################
         miner_tasks.respawn(minerFilter.length);                            //1 & 2
         if(minerFilter.length >= 4){                //########################################################## BIG PROBLEM, MAKE VARIABLE #######
             gatherer_tasks.respawn(gathererFilter.length);
@@ -34,8 +36,7 @@ var respawnManager = {
                 if(builderFilter.length >= 1){
                     repairingTasks.respawn(repairerFilter.length);
                     if(repairerFilter.length >= 1){
-                        warriorTasks.respawn(armyFilter.length);            //4
-                        defenderTasks.respawn(armyFilter.length);
+                        defenderTasks.respawn(armyFilter.length);           //4
                         if(armyFilter.length >= 4){
                             upgradingTasks.respawn(upgraderFilter.length);  //5
                             //funTasks.respawn(funFilter.length);
