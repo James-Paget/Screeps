@@ -27,14 +27,13 @@ var miner_tasks = {
             }
         }
     },
-    respawn : function(creepSpec){
+    respawn : function(creepName, creepSpec){
         /*
         . Occurs when creep reaches the front of the queue and spawner is not busy
         . Creates specified creep
         . Unique qualities for a given role => each role has its own respawn functionality ########### THIS CAN DEFINATELY BE GENERALISED ############
         */
         var spawner   = Game.spawns["Spawn1"];
-        var creepName = creepSpec.role+Game.time;
         var houseKey  = {roomID:creepSpec.roomID, sourceID:creepSpec.sourceID};
         spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, houseKey:houseKey, isMining:true}});
     },
@@ -77,14 +76,13 @@ var gatherer_tasks = {
             }
         }
     },
-    respawn : function(creepSpec){
+    respawn : function(creepName, creepSpec){
         /*
         . Occurs when creep reaches the front of the queue and spawner is not busy
         . Creates specified creep
         . Unique qualities for a given role => each role has its own respawn functionality ########### THIS CAN DEFINATELY BE GENERALISED ############
         */
         var spawner   = Game.spawns["Spawn1"];
-        var creepName = creepSpec.role+Game.time;
         var houseKey  = {roomID:creepSpec.roomID, sourceID:creepSpec.sourceID};
         spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, houseKey:houseKey, isGathering:true}});
     },
@@ -249,7 +247,7 @@ function queueCreeps_energyRooms(){
                 var isSaturated_mining = (total_workParts >= 5);            //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
                 if(!isSaturated_mining){
                     //Put new miners into the queue
-                    var partsSet = [WORK, WORK, WORK, CARRY, MOVE];         //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
+                    var partsSet = [WORK, WORK, CARRY, MOVE];         //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
                     var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:partsSet, role:"Miner"};
                     Memory.spawnQueue.queue.push(creepSpec);
                 }
@@ -261,7 +259,7 @@ function queueCreeps_energyRooms(){
                 var isSaturated_gathering = total_carryParts >= 12;                         //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
                 if(!isSaturated_gathering){
                     //Put new gatherers into the queue
-                    var partsSet = [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];    //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
+                    var partsSet = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];    //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
                     var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:partsSet, role:"Gatherer"};
                     Memory.spawnQueue.queue.push(creepSpec);
                 }

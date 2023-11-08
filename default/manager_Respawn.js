@@ -22,17 +22,18 @@ var respawnManager = {
         . Only attempts to spawn when spawner is finished spawning last and has enough energy
         . Moves certain roles to unassigned list when processed in queue
         */
-        var spawner = Game.spawns["Spawn1"];
         if(Memory.spawnQueue.queue.length > 0){                                             //If anything to spawn
+            var spawner = Game.spawns["Spawn1"];
             if(!spawner.spawning){                                                          //And not busy
-                var energyRequired = getPartsEnergyCost(Memory.spawnQueue.queue[0].parts);  //And have enough energy
-                if(energyRequired <= spawner.room.energyAvailable){                         //
+                var energyRequired = getPartsEnergyCost(Memory.spawnQueue.queue[0].parts);
+                if(energyRequired <= spawner.room.energyAvailable){                         //And have enough energy
+                    var creepName = Memory.spawnQueue.queue[0].role+Game.time;
                     if(Memory.spawnQueue.queue[0].role == "Miner"){
-                        miner_tasks.respawn(Memory.spawnQueue.queue[0]);
-                        Memory.spawnQueue.unassigned.push(spawner.spawning.name);}  //energyRoom unit, => requires assigning
+                        miner_tasks.respawn(creepName, Memory.spawnQueue.queue[0]);
+                        Memory.spawnQueue.unassigned.push(creepName);}  //energyRoom unit, => requires assigning
                     if(Memory.spawnQueue.queue[0].role == "Gatherer"){
-                        gatherer_tasks.respawn(Memory.spawnQueue.queue[0]);
-                        Memory.spawnQueue.unassigned.push(spawner.spawning.name);}  //energyRoom unit, => requires assigning
+                        gatherer_tasks.respawn(creepName, Memory.spawnQueue.queue[0]);
+                        Memory.spawnQueue.unassigned.push(creepName);}  //energyRoom unit, => requires assigning
                     if(Memory.spawnQueue.queue[0].role == "Repairer"){
                         repairingTasks.respawn(Memory.spawnQueue.queue[0]);}
                     if(Memory.spawnQueue.queue[0].role == "Builder"){

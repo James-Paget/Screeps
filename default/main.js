@@ -9,9 +9,6 @@ var respawnManager   = require("manager_Respawn");
 
 module.exports.loop = function () {
     var creeps  = Game.creeps;
-
-    var spec = [Game.spawns["Spawn1"].name, Game.spawns["Spawn1"].room.find(FIND_SOURCES)[0].id, [MOVE, WORK], "Miner"];
-    //miner_tasks.respawn(spec);
     
     //Clean dead dudes
     for(var memoryName in Memory.creeps){
