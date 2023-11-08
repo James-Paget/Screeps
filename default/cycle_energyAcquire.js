@@ -1,5 +1,8 @@
 var miner_tasks = {
     task : function(creep){
+        if(creep.ticksToLive <= 5){         //####### TRY REQWORK THIS, ITS BODGE BUT IM TIRED MY DUDE ####
+            creep.memory.ID = creep.id;}    //#############################################################
+
         if(creep.memory.isMining){
             var targetSource = Game.getObjectById(creep.memory.sourceID);
             if(creep.harvest(targetSource) == ERR_NOT_IN_RANGE){
@@ -37,7 +40,7 @@ var miner_tasks = {
                 //spawner.spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], creepName, {memory:{role:"Miner", isMining:true, sourceID:assignedSourceID}});}
         }
     },
-    death : function(){
+    death : function(houseKey, creepID){
         /*
         . Death task to perform
         . Removes itself from relevent lists
@@ -46,11 +49,14 @@ var miner_tasks = {
         2. ...
         */
         //1
-        removeCreep_energyRooms(this);
+        removeCreep_energyRooms(houseKey, creepID);
     }
 };
 var gatherer_tasks = {
     task : function(creep){
+        if(creep.ticksToLive <= 5){         //####### TRY REQWORK THIS, ITS BODGE BUT IM TIRED MY DUDE ####
+            creep.memory.ID = creep.id;}    //#############################################################
+            
         if(creep.memory.isGathering){
             var target = Game.getObjectById(creep.memory.containerID);
             if(creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
@@ -82,7 +88,7 @@ var gatherer_tasks = {
             //spawner.spawnCreep([MOVE, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, houseKey:houseKey}});}
             spawner.spawnCreep([MOVE, MOVE, MOVE, CARRY, CARRY, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, houseKey:houseKey}});}
     },
-    death : function(){
+    death : function(houseKey, creepID){
         /*
         . Death task to perform
         . Removes itself from relevent lists
@@ -91,7 +97,7 @@ var gatherer_tasks = {
         2. ...
         */
         //1
-        removeCreep_energyRooms(this);
+        removeCreep_energyRooms(houseKey, creepID);
     }
 };
 
@@ -157,7 +163,7 @@ function remove_energyRoom(room){
         }
     }
 }
-function removeCreep_energyRooms(creep){
+function removeCreep_energyRooms(houseKey, creepID){
     /*
     Takes a creep and removes them from all relevent lists 
     in the energyRooms global memory
@@ -166,15 +172,15 @@ function removeCreep_energyRooms(creep){
     ## REWORK TO DO THIS RECCURSIVELY, WOULD BE CLEANER AND MORE GENERAL ##
     #######################################################################
     */
-    var creepRoom   = creep.memory.houseKey.roomID;
-    var creepSource = creep.memory.houseKey.sourceID;
+    var creepRoom   = houseKey.roomID;
+    var creepSource = houseKey.sourceID;
     for(var roomIndex in Memory.energyRooms){
         if(creepRoom == Memory.energyRooms[roomIndex].ID){  //# Note the break later assumes that the creep is only assigned to 1 source, and therefore only 1 room
             for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
                 if(creepSource == Memory.energyRooms[roomIndex].sources[sourceIndex].ID){   //# "" ""
                     if(creep.memory.role == "Miner"){
                         for(var creepIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].miners){
-                            if(creep.ID == Memory.energyRooms[roomIndex].sources[sourceIndex].miners[creepIndex]){
+                            if(creepID == Memory.energyRooms[roomIndex].sources[sourceIndex].miners[creepIndex]){
                                 Memory.energyRooms[roomIndex].sources[sourceIndex].miners.pop(creepIndex);
                             }
                             break;
@@ -182,7 +188,7 @@ function removeCreep_energyRooms(creep){
                     }
                     if(creep.memory.role == "Gatherer"){
                         for(var creepIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers){
-                            if(creep.ID == Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers[creepIndex]){
+                            if(creepID == Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers[creepIndex]){
                                 Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.pop(creepIndex);
                             }
                             break;

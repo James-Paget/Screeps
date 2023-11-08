@@ -12,7 +12,7 @@ var funTask = {
     respawn : function(relatedCreepNumber){
         if(relatedCreepNumber < 1){
             var creepName = "The Updog";
-            Game.spawns["Spawn1"].spawnCreep([MOVE], creepName, {memory:{role:"BasedIndividual"}}, {memory:{isTrolling:true}});
+            Game.spawns["Spawn1"].spawnCreep([MOVE], creepName, {memory:{role:"BasedIndividual", isTrolling:true}});
         }
     },
     death : function(){

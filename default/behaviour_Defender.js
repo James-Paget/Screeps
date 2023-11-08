@@ -24,7 +24,7 @@ var defenderTasks = {
     respawn : function(relatedCreepNumber){
         if(relatedCreepNumber < 5){
             var creepName = "Defender"+Game.time;
-            Game.spawns["Spawn1"].spawnCreep([MOVE, ATTACK], creepName, {memory:{role:"Defender"}}, {memory:{isDefending:false}});
+            Game.spawns["Spawn1"].spawnCreep([MOVE, ATTACK], creepName, {memory:{role:"Defender", isDefending:false}});
         }
     },
     death : function(){

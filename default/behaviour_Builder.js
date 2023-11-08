@@ -28,7 +28,7 @@ var buildingTasks = {
     respawn : function(relatedCreepNumber){
         if(relatedCreepNumber < 1){
             var creepName = "Builder"+Game.time;
-            Game.spawns["Spawn1"].spawnCreep([WORK, CARRY, MOVE, MOVE, MOVE], creepName, {memory:{role:"Builder"}}, {memory:{isBuilding:false}});
+            Game.spawns["Spawn1"].spawnCreep([WORK, CARRY, MOVE, MOVE, MOVE], creepName, {memory:{role:"Builder", isBuilding:false}});
         }
     },
     death : function(){
