@@ -14,9 +14,9 @@ module.exports.loop = function () {
     for(var memoryName in Memory.creeps){
         if(!Game.creeps[memoryName]){
             if(Memory.creeps[memoryName].role == "Miner"){
-                miner_tasks.death(Memory.creeps[memoryName].houseKey, Memory.creeps[memoryName].ID);}
+                miner_tasks.death(Memory.creeps[memoryName].houseKey, Memory.creeps[memoryName].role, Memory.creeps[memoryName].ID);}
             if(Memory.creeps[memoryName].role == "Gatherer"){
-                gatherer_tasks.death(Memory.creeps[memoryName].houseKey, Memory.creeps[memoryName].ID);}
+                gatherer_tasks.death(Memory.creeps[memoryName].houseKey, Memory.creeps[memoryName].role, Memory.creeps[memoryName].ID);}
             if(Memory.creeps[memoryName].role == "Upgrader"){
                 upgradingTasks.death();}
             if(Memory.creeps[memoryName].role == "Builder"){
