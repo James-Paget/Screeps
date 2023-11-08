@@ -12,9 +12,9 @@ var funTask = {
     respawn : function(creepSpec){
         //[MOVE]
         var spawner   = Game.spawns["Spawn1"];
-        var creepName = creepSpec[3]+Game.time;
-        var houseKey  = {roomID:creepSpec[0], sourceID:creepSpec[1]};
-        spawner.spawnCreep(creepSpec[2], creepName, {memory:{role:creepSpec[3], houseKey:houseKey}});
+        var creepName = creepSpec.role+Game.time;
+        var houseKey  = {roomID:creepSpec.roomID, sourceID:creepSpec.sourceID};
+        spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, houseKey:houseKey}});
     },
     death : function(){
         /*
