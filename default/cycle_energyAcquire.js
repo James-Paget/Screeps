@@ -1,5 +1,10 @@
 var miner_tasks = {
     task : function(creep){
+        //############### TESTING
+        //init_energyRoom(creep.room);
+        //remove_energyRoom(creep.room);
+
+
         if(creep.ticksToLive <= 5){         //####### TRY REQWORK THIS, ITS BODGE BUT IM TIRED MY DUDE ####
             creep.memory.ID = creep.id;}    //#############################################################
 
@@ -134,9 +139,9 @@ function init_energyRoom(room){
     var thresholdDist_container = 4;   //Within this radius of source => assign this container to this source (container can be assigned to multiple sources, and vice versa)
     if(!copyExists){
         if(!Memory.energyRooms){
-            var spawnQueueSet = [];
-            var unassignedSet = [];
-            Memory.queue = {spawnQueue:spawnQueueSet, unassigned:unassignedSet};
+            var queueSet       = [];                                            //Spawn Queue init here too
+            var unassignedSet  = [];                                            //### MAYBE GOOD TO MOVE SOMEWHERE ELSE ###
+            Memory.spawnQueue  = {queue:queueSet, unassigned:unassignedSet};    //
             Memory.energyRooms = [];}
         else{
             var roomSource_Objects    = room.find(FIND_SOURCES);
