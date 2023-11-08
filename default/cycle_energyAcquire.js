@@ -164,7 +164,7 @@ function remove_energyRoom(room){
     */
     for(var roomIndex in Memory.energyRooms){
         if(Memory.energyRooms[roomIndex].ID == room.name){   //ID of room is its roomName here
-            Memory.energyRooms.pop(roomIndex);
+            delete Memory.energyRooms[roomIndex];
             break;
         }
     }
@@ -187,7 +187,7 @@ function removeCreep_energyRooms(houseKey, creepRole, creepID){
                     if(creepRole == "Miner"){
                         for(var creepIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].miners){
                             if(creepID == Memory.energyRooms[roomIndex].sources[sourceIndex].miners[creepIndex]){
-                                Memory.energyRooms[roomIndex].sources[sourceIndex].miners.pop(creepIndex);
+                                delete Memory.energyRooms[roomIndex].sources[sourceIndex].miners[creepIndex];
                             }
                             break;
                         }
@@ -195,7 +195,7 @@ function removeCreep_energyRooms(houseKey, creepRole, creepID){
                     if(creepRole == "Gatherer"){
                         for(var creepIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers){
                             if(creepID == Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers[creepIndex]){
-                                Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.pop(creepIndex);
+                                delete Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers[creepIndex];
                             }
                             break;
                         }
@@ -289,11 +289,11 @@ function assignCreeps_energyRooms(){
                             if(Memory.energyRooms[roomIndex].sources[sourceIndex].ID == sourceID){
                                 if(Memory.creeps[creepName].role == "Miner"){
                                     Memory.energyRooms[roomIndex].sources[sourceIndex].miners.push(Game.creeps[creepName].id);  //Assigned it correctly
-                                    Memory.spawnQueue.unassigned.pop(unassignedName);                                           //Now it must be removed from this "waiting list"
+                                    delete Memory.spawnQueue.unassigned[unassignedName];                                           //Now it must be removed from this "waiting list"
                                 }
                                 if(Memory.creeps[creepName].role == "Gatherer"){
                                     Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.push(Game.creeps[creepName].id);
-                                    Memory.spawnQueue.unassigned.pop(unassignedName);
+                                    delete Memory.spawnQueue.unassigned[unassignedName];
                                 }
                                 //...
                                 break;

@@ -45,7 +45,7 @@ var respawnManager = {
                     if(Memory.spawnQueue.queue[0].role == "BasedIndiviudal"){
                         funTasks.respawn(Memory.spawnQueue.queue[0]);}
                     //...
-                    Memory.spawnQueue.queue.pop(0);
+                    Memory.spawnQueue.queue.shift(0);
                 }
             }
         }
