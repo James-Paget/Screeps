@@ -25,15 +25,28 @@ var miner_tasks = {
         }
     },
     respawn : function(relatedCreepNumber){
-        if(relatedCreepNumber < getMinerNumberRequired(Game.spawns["Spawn1"].room)){
+        var spawner = Game.spawns["Spawn1"];            //## MAY WANT TO ADAPT SO THIS CAN SOMETIMES BE IN THE ROOM THEY ARE REQUIRED ##
+        var specs   = checkMinerRequired();
+        if(specs.length != 0){
             var creepName = "Miner"+Game.time;
-            var assignedSourceID = getSourceID(Game.spawns["Spawn1"].room);
+            var houseKey  = {roomID:specs[0], sourceID:specs[1]};
             if(relatedCreepNumber == 0){
-                Game.spawns["Spawn1"].spawnCreep([WORK, CARRY, MOVE], creepName, {memory:{role:"Miner", isMining:true, sourceID:assignedSourceID}});}
+                spawner.spawnCreep([WORK, CARRY, MOVE], creepName, {memory:{role:"Miner", isMining:true, houseKey:houseKey}});}
             else{
-                Game.spawns["Spawn1"].spawnCreep([WORK, WORK, WORK, CARRY, MOVE], creepName, {memory:{role:"Miner", isMining:true, sourceID:assignedSourceID}});}
-                //Game.spawns["Spawn1"].spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], creepName, {memory:{role:"Miner", isMining:true, sourceID:assignedSourceID}});}
+                spawner.spawnCreep([WORK, WORK, WORK, CARRY, MOVE], creepName, {memory:{role:"Miner", isMining:true, houseKey:houseKey}});}
+                //spawner.spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], creepName, {memory:{role:"Miner", isMining:true, sourceID:assignedSourceID}});}
         }
+    },
+    death : function(){
+        /*
+        . Death task to perform
+        . Removes itself from relevent lists
+
+        1. Remove itself from energyRooms->sources->miners
+        2. ...
+        */
+        //1
+        removeCreep_energyRooms(this);
     }
 };
 var gatherer_tasks = {
@@ -61,20 +74,25 @@ var gatherer_tasks = {
         }
     },
     respawn : function(relatedCreepNumber){
-        if(relatedCreepNumber < getGathererNumberRequired(Game.spawns["Spawn1"].room)){
+        var spawner = Game.spawns["Spawn1"];        //## MAY WANT TO ADAPT SO THIS CAN SOMETIMES BE IN THE ROOM THEY ARE REQUIRED ##
+        var specs   = checkGathererRequired();
+        if(specs.length != 0){
             var creepName = "Gatherer"+Game.time;
-            var assignedContainerID = getAssignedContainerID(Game.spawns["Spawn1"].room);
-            //Game.spawns["Spawn1"].spawnCreep([MOVE, MOVE, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, containerID:assignedContainerID}});}
-            Game.spawns["Spawn1"].spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, containerID:assignedContainerID}});}
-        
-        //############################################################
-        //## SCUFFED BODGE, BUT MORE EFFICENT MY CURRENT BASE SETUP ## --> IN FUTURE, MAKE [1 GATHERER PER MINER]
-        //############################################################
-        //else if(relatedCreepNumber == getGathererNumberRequired(Game.spawns["Spawn1"].room)){    //Spawn an extra dude for my realy full container
-        //    var creepName = "Gatherer"+Game.time;
-        //    var assignedContainerID = "65486785aae59028a30b7876";
-        //    //Game.spawns["Spawn1"].spawnCreep([MOVE, MOVE, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, containerID:assignedContainerID}});}
-        //    Game.spawns["Spawn1"].spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, containerID:assignedContainerID}});}
+            var houseKey  = {roomID:specs[0], sourceID:specs[1]};
+            //spawner.spawnCreep([MOVE, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, houseKey:houseKey}});}
+            spawner.spawnCreep([MOVE, MOVE, MOVE, CARRY, CARRY, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, houseKey:houseKey}});}
+        }
+    },
+    death : function(){
+        /*
+        . Death task to perform
+        . Removes itself from relevent lists
+
+        1. Remove from energyRooms
+        2. ...
+        */
+        //1
+        removeCreep_energyRooms(this);
     }
 };
 
@@ -140,10 +158,45 @@ function remove_energyRoom(room){
         }
     }
 }
+function removeCreep_energyRooms(creep){
+    /*
+    Takes a creep and removes them from all relevent lists 
+    in the energyRooms global memory
 
-// . MAKE FUNCTION TO REMAKE THE CONTAINER SET FOR EACH SOURCE
-// . MAKE FUNCTION TO REASSIGN ALL MINERS TO SOURCES AGAIN; WILL FIX SITUATIONS WHEN EVERYONE IS CONFUSED WHERE THEY ARE --> GlobalReassignment
-
+    #######################################################################
+    ## REWORK TO DO THIS RECCURSIVELY, WOULD BE CLEANER AND MORE GENERAL ##
+    #######################################################################
+    */
+    var creepRoom   = creep.memory.houseKey.roomID;
+    var creepSource = creep.memory.houseKey.sourceID;
+    for(var roomIndex in Memory.energyRooms){
+        if(creepRoom == Memory.energyRooms[roomIndex].ID){  //# Note the break later assumes that the creep is only assigned to 1 source, and therefore only 1 room
+            for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
+                if(creepSource == Memory.energyRooms[roomIndex].sources[sourceIndex].ID){   //# "" ""
+                    if(creep.memory.role == "Miner"){
+                        for(var creepIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].miners){
+                            if(creep.ID == Memory.energyRooms[roomIndex].sources[sourceIndex].miners[creepIndex]){
+                                Memory.energyRooms[roomIndex].sources[sourceIndex].miners.pop(creepIndex);
+                            }
+                            break;
+                        }
+                    }
+                    if(creep.memory.role == "Gatherer"){
+                        for(var creepIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers){
+                            if(creep.ID == Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers[creepIndex]){
+                                Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.pop(creepIndex);
+                            }
+                            break;
+                        }
+                    }
+                    //... -> If more roles become involved in energyRooms
+                }
+                break;
+            }
+            break;
+        }
+    }
+}
 function getSource_freeSpace(room, cSource){
     /*
     . Finds the number of free spaces around a source
@@ -160,81 +213,35 @@ function getSource_freeSpace(room, cSource){
     }
     return totalFreeTiles;
 }
-
-
-
-
-
-
-function getMinerNumberRequired(room){
+function checkMinerRequired(){
     /*
-    Finds total number of spaces available at all sources in room
-    #################################################################
-    ## SAVE THIS RESULT AND JUST UPDATE IT AS CREEPS SPAWN AND DIE ##
-    #################################################################
+    . Returns list containing room (at [0]) and source (at [1]) that requires another miner
+    . Returns empty list if not required
+
+    Read total # of WORK on a source, find required to saturate, assign miner
     */
-    //Finds number of free spots at each source
-    var sources = room.find(FIND_SOURCES);
-    var totalFreeTiles = 0;
-    for(var z in sources){
-        //For 3x3 tiles around this source
-        for(var j=sources[z].pos.y-1; j<=sources[z].pos.y+1; j++){
-            for(var i=sources[z].pos.x-1; i<=sources[z].pos.x+1; i++){
-                if( (Game.map.getRoomTerrain(room.name).get(i,j) == 0) || (Game.map.getRoomTerrain(room.name).get(i,j) == 2) ){
-                    totalFreeTiles++;
-                }
-            }
-        }
-    }
-    return totalFreeTiles;
+    var spec = [];
+    //pass
+    return spec;
 }
-function getSourceID(room){
+function checkGathererRequired(){
     /*
-    Gets a source ID to give to a new miner, such that all sources are not oversubscribed
-    
-    #################################################################
-    ## SAVE THIS RESULT AND JUST UPDATE IT AS CREEPS SPAWN AND DIE ##
-    #################################################################
+    . Returns list containing room (at [0]) and source (at [1]) that requires another miner
+    . Returns empty list if not required
+
+    Read total # of CARRY on a source, find required to saturate, assign gatherers
+    MOVE made to match CARRY as max speed is 1 (when matching 1:1 other parts)
     */
-    //Finds number of free spots at each source
-    var sources = room.find(FIND_SOURCES);
-    var sourceFreeTiles = [];
-    for(var z in sources){
-        var totalFreeTiles = 0;
-        //For 3x3 tiles around this source
-        for(var j=sources[z].pos.y-1; j<=sources[z].pos.y+1; j++){
-            for(var i=sources[z].pos.x-1; i<=sources[z].pos.x+1; i++){
-                if( (Game.map.getRoomTerrain(room.name).get(i,j) == 0) || (Game.map.getRoomTerrain(room.name).get(i,j) == 2) ){
-                    totalFreeTiles++;
-                }
-            }
-        }
-        sourceFreeTiles.push(totalFreeTiles);
-    }
-    //Finds number
-    var allMiners = _.filter(Game.creeps, function(creep) { return (creep.memory.role == "Miner") });
-    var minersAssigned = [];
-    for(var i in sources){
-        minersAssigned.push(0);}
-    for(var minerIndex in allMiners){
-        for(var sourceIndex in sources){
-            if(allMiners[minerIndex].memory.sourceID == sources[sourceIndex].id){
-                minersAssigned[sourceIndex] = minersAssigned[sourceIndex]+1;        //## TRY WITH ++, LIST MAY NOT LIKE IT ##
-                break;
-            }
-            sourceIndex++;
-        }
-    }
-    //Find spaces for this new guy
-    var sourceID = "0";
-    for(var sourceIndex in sources){
-        if( (sourceFreeTiles[sourceIndex] -minersAssigned[sourceIndex]) > 0){    //If has free space
-            sourceID = sources[sourceIndex].id;
-            break;
-        }
-    }
-    return sourceID
+    var spec = [];
+    //pass
+    return spec;
 }
+// . MAKE FUNCTION TO REMAKE THE CONTAINER SET FOR EACH SOURCE
+// . MAKE FUNCTION TO REASSIGN ALL MINERS TO SOURCES AGAIN; WILL FIX SITUATIONS WHEN EVERYONE IS CONFUSED WHERE THEY ARE --> GlobalReassignment
+
+
+
+
 
 //################################
 
