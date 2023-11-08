@@ -310,48 +310,8 @@ function assignCreeps_energyRooms(){
 // . MAKE FUNCTION TO REMAKE THE CONTAINER SET FOR EACH SOURCE
 // . MAKE FUNCTION TO REASSIGN ALL MINERS TO SOURCES AGAIN; WILL FIX SITUATIONS WHEN EVERYONE IS CONFUSED WHERE THEY ARE --> GlobalReassignment
 
-
-
-
-
-//################################
-
-function getGathererNumberRequired(room){
-    var containerNumber = room.find(FIND_STRUCTURES, {filter : (structure) => {return ( structure.structureType == STRUCTURE_CONTAINER )}});
-    return 2*containerNumber.length;
-}
-function getAssignedContainerID(room){
-    /*
-    ################################
-    ## CONTAINER WILL NEED REPAIR ##
-    ######################################
-    ## HAVE THIS STORED AND JUST UPDATE ##
-    ######################################
-    */
-    //Finds number of gatherers looking after each container
-    var containers = room.find(FIND_STRUCTURES, {filter : (structure) => {return (structure.structureType == STRUCTURE_CONTAINER)}});
-    var allGatherers = _.filter(Game.creeps, function(creep) { return (creep.memory.role == "Gatherer") });
-    var gatherersAssigned = [];
-    for(var i in containers){
-        gatherersAssigned.push(0);}
-    for(var gathererIndex in allGatherers){
-        for(var containerIndex in containers){
-            if(allGatherers[gathererIndex].memory.containerID == containers[containerIndex].id){
-                gatherersAssigned[containerIndex] = gatherersAssigned[containerIndex]+1;        //## TRY WITH ++, LIST MAY NOT LIKE IT ##
-                break;
-            }
-            containerIndex++;
-        }
-    }
-    //Find spaces for this new guy
-    var containerID = "0";
-    for(var containerIndex in containers){
-        if( gatherersAssigned[containerIndex] < 2){    //If has free space
-            containerID = containers[containerIndex].id;
-            break;
-        }
-    }
-    return containerID
-}
-
-module.exports = {miner_tasks, gatherer_tasks};
+module.exports = {
+    miner_tasks, 
+    gatherer_tasks,
+    queueCreeps_energyRooms:queueCreeps_energyRooms,
+    assignCreeps_energyRooms:assignCreeps_energyRooms};

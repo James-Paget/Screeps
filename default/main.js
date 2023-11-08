@@ -1,4 +1,4 @@
-var {miner_tasks, gatherer_tasks} = require("cycle_energyAcquire");
+var {miner_tasks, gatherer_tasks, queueCreeps_energyRooms, assignCreeps_energyRooms} = require("cycle_energyAcquire");
 var upgradingTasks = require("behaviour_Upgrader");
 var buildingTasks  = require("behaviour_Builder");
 var repairingTasks = require("behaviour_Repairer");
@@ -33,7 +33,9 @@ module.exports.loop = function () {
     }
     
     //Spawn required dudes
-    respawnManager.decideSpawn();
+    respawnManager.spawnFromQueue();
+    queueCreeps_energyRooms();
+    assignCreeps_energyRooms()
     
     //Make each dude do his job
     for(name in creeps)
