@@ -9,6 +9,13 @@ var respawnManager   = require("manager_Respawn");
 
 module.exports.loop = function () {
     var creeps  = Game.creeps;
+
+    if(!Memory.spawnQueue){
+        var queueSet       = [];    //Spawn Queue init here too
+        var unassignedSet  = [];    //### MAYBE GOOD TO MOVE SOMEWHERE ELSE ###
+        Memory.spawnQueue  = {queue:queueSet, unassigned:unassignedSet};}
+    if(!Memory.energyRooms){
+        Memory.energyRooms = [];}
     
     //Clean dead dudes
     for(var memoryName in Memory.creeps){
