@@ -81,7 +81,6 @@ var gatherer_tasks = {
             var houseKey  = {roomID:specs[0], sourceID:specs[1]};
             //spawner.spawnCreep([MOVE, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, houseKey:houseKey}});}
             spawner.spawnCreep([MOVE, MOVE, MOVE, CARRY, CARRY, CARRY], creepName, {memory:{role:"Gatherer", isGathering:true, houseKey:houseKey}});}
-        }
     },
     death : function(){
         /*
