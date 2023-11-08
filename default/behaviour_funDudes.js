@@ -14,6 +14,14 @@ var funTask = {
             var creepName = "The Updog";
             Game.spawns["Spawn1"].spawnCreep([MOVE], creepName, {memory:{role:"BasedIndividual"}}, {memory:{isTrolling:true}});
         }
+    },
+    death : function(){
+        /*
+        . Death task to perform
+        . Removes itself from relevent lists
+
+        1. ...
+        */
     }
 }
 

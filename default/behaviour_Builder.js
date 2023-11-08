@@ -30,6 +30,14 @@ var buildingTasks = {
             var creepName = "Builder"+Game.time;
             Game.spawns["Spawn1"].spawnCreep([WORK, CARRY, MOVE, MOVE, MOVE], creepName, {memory:{role:"Builder"}}, {memory:{isBuilding:false}});
         }
+    },
+    death : function(){
+        /*
+        . Death task to perform
+        . Removes itself from relevent lists
+
+        1. ...
+        */
     }
 }
 

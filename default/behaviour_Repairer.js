@@ -52,6 +52,14 @@ var repairingTasks = {
             var creepName = "Repairer"+Game.time;
             Game.spawns["Spawn1"].spawnCreep([WORK, MOVE, CARRY], creepName, {memory:{role:"Repairer", isRepairing:true}});
         }
+    },
+    death : function(){
+        /*
+        . Death task to perform
+        . Removes itself from relevent lists
+
+        1. ...
+        */
     }
 }
 

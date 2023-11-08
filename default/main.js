@@ -13,9 +13,22 @@ module.exports.loop = function () {
     //Clean dead dudes
     for(var memoryName in Memory.creeps){
         if(!Game.creeps[memoryName]){
+            if(Memory.creeps[memoryName].role == "Miner"){
+                miner_tasks.death();}
+            if(Memory.creeps[memoryName].role == "Gatherer"){
+                gatherer_tasks.death();}
+            if(Memory.creeps[memoryName].role == "Upgrader"){
+                upgradingTasks.death();}
+            if(Memory.creeps[memoryName].role == "Builder"){
+                buildingTasks.death();}
+            if(Memory.creeps[memoryName].role == "Repairer"){
+                repairingTasks.death();}
+            if(Memory.creeps[memoryName].role == "Defender"){
+                defenderTasks.death();}
+            if(Memory.creeps[memoryName].role == "BasedIndividual"){
+                funTasks.death();}
+            //...
             delete Memory.creeps[memoryName];
-
-            ///######### DEAHT TASKS ###############
         }
     }
     

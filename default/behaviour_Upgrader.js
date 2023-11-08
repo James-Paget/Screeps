@@ -28,6 +28,14 @@ var upgradingTasks = {
             var creepName = "Upgrader"+Game.time;
             Game.spawns["Spawn1"].spawnCreep([MOVE, CARRY, WORK, WORK], creepName, {memory:{role:"Upgrader"}}, {memory:{isUpgrading:false}});
         }
+    },
+    death : function(){
+        /*
+        . Death task to perform
+        . Removes itself from relevent lists
+
+        1. ...
+        */
     }
 }
 

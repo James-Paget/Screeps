@@ -26,6 +26,14 @@ var defenderTasks = {
             var creepName = "Defender"+Game.time;
             Game.spawns["Spawn1"].spawnCreep([MOVE, ATTACK], creepName, {memory:{role:"Defender"}}, {memory:{isDefending:false}});
         }
+    },
+    death : function(){
+        /*
+        . Death task to perform
+        . Removes itself from relevent lists
+
+        1. ...
+        */
     }
 }
 
