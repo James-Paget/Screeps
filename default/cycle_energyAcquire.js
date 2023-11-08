@@ -289,7 +289,7 @@ function assignCreeps_energyRooms(){
                             if(Memory.energyRooms[roomIndex].sources[sourceIndex].ID == sourceID){
                                 if(Memory.creeps[creepName].role == "Miner"){
                                     Memory.energyRooms[roomIndex].sources[sourceIndex].miners.push(Game.creeps[creepName].id);  //Assigned it correctly
-                                    delete Memory.spawnQueue.unassigned[unassignedName];                                           //Now it must be removed from this "waiting list"
+                                    delete Memory.spawnQueue.unassigned[unassignedName];                                        //Now it must be removed from this "waiting list"
                                 }
                                 if(Memory.creeps[creepName].role == "Gatherer"){
                                     Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.push(Game.creeps[creepName].id);
