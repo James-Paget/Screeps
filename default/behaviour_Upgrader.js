@@ -23,11 +23,11 @@ var upgradingTasks = {
             }
         }
     },
-    respawn : function(relatedCreepNumber){
-        if(relatedCreepNumber < 6){
-            var creepName = "Upgrader"+Game.time;
-            Game.spawns["Spawn1"].spawnCreep([MOVE, CARRY, WORK, WORK], creepName, {memory:{role:"Upgrader", isUpgrading:false}});
-        }
+    respawn : function(creepSpec){
+        //[WORK, WORK, MOVE, CARRY]
+        var creepName = creepSpec[3]+Game.time;
+        var houseKey  = {roomID:creepSpec[0], sourceID:creepSpec[1]};
+        spawner.spawnCreep(creepSpec[2], creepName, {memory:{role:creepSpec[3], houseKey:houseKey, isUpgrading:false}});
     },
     death : function(){
         /*

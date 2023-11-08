@@ -21,11 +21,12 @@ var defenderTasks = {
             creep.memory.isDefending = false;
         }
     },
-    respawn : function(relatedCreepNumber){
-        if(relatedCreepNumber < 5){
-            var creepName = "Defender"+Game.time;
-            Game.spawns["Spawn1"].spawnCreep([MOVE, ATTACK], creepName, {memory:{role:"Defender", isDefending:false}});
-        }
+    respawn : function(creepSpec){
+        //[MOVE, ATTACK]
+        var spawner   = Game.spawns["Spawn1"];
+        var creepName = creepSpec[3]+Game.time;
+        var houseKey  = {roomID:creepSpec[0], sourceID:creepSpec[1]};
+        spawner.spawnCreep(creepSpec[2], creepName, {memory:{role:creepSpec[3], houseKey:houseKey, isDefending:false}});
     },
     death : function(){
         /*

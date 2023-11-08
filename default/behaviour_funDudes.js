@@ -9,11 +9,12 @@ var funTask = {
         creep.moveTo(targetLocation);
         creep.say('📯📯📯');
     },
-    respawn : function(relatedCreepNumber){
-        if(relatedCreepNumber < 1){
-            var creepName = "The Updog";
-            Game.spawns["Spawn1"].spawnCreep([MOVE], creepName, {memory:{role:"BasedIndividual", isTrolling:true}});
-        }
+    respawn : function(creepSpec){
+        //[MOVE]
+        var spawner   = Game.spawns["Spawn1"];
+        var creepName = creepSpec[3]+Game.time;
+        var houseKey  = {roomID:creepSpec[0], sourceID:creepSpec[1]};
+        spawner.spawnCreep(creepSpec[2], creepName, {memory:{role:creepSpec[3], houseKey:houseKey}});
     },
     death : function(){
         /*

@@ -25,11 +25,17 @@ var buildingTasks = {
             }
         }
     },
-    respawn : function(relatedCreepNumber){
-        if(relatedCreepNumber < 1){
-            var creepName = "Builder"+Game.time;
-            Game.spawns["Spawn1"].spawnCreep([WORK, CARRY, MOVE, MOVE, MOVE], creepName, {memory:{role:"Builder", isBuilding:false}});
-        }
+    respawn : function(creepSpec){
+        /*
+        . Occurs when creep reaches the front of the queue and spawner is not busy
+        . Creates specified creep
+        . Unique qualities for a given role => each role has its own respawn functionality ########### THIS CAN DEFINATELY BE GENERALISED ############
+        */
+        //[WORK, CARRY, MOVE, MOVE]
+        var spawner   = Game.spawns["Spawn1"];
+        var creepName = creepSpec[3]+Game.time;
+        var houseKey  = {roomID:creepSpec[0], sourceID:creepSpec[1]};
+        spawner.spawnCreep(creepSpec[2], creepName, {memory:{role:creepSpec[3], houseKey:houseKey, isBuilding:false}});
     },
     death : function(){
         /*

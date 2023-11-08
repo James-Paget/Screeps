@@ -47,11 +47,12 @@ var repairingTasks = {
             }
         }
     },
-    respawn : function(relatedCreepNumber){
-        if(relatedCreepNumber < 1){
-            var creepName = "Repairer"+Game.time;
-            Game.spawns["Spawn1"].spawnCreep([WORK, MOVE, CARRY], creepName, {memory:{role:"Repairer", isRepairing:true}});
-        }
+    respawn : function(creepSpec){
+        //[WORK, MOVE, CARRY]
+        var spawner   = Game.spawns["Spawn1"];
+        var creepName = creepSpec[3]+Game.time;
+        var houseKey  = {roomID:creepSpec[0], sourceID:creepSpec[1]};
+        spawner.spawnCreep(creepSpec[2], creepName, {memory:{role:creepSpec[3], houseKey:houseKey, isRepairing:true}});
     },
     death : function(){
         /*

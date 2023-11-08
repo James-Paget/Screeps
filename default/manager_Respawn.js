@@ -5,6 +5,16 @@ var repairingTasks = require("behaviour_Repairer");
 var defenderTasks  = require("behaviour_Defender");
 var funTasks       = require("behaviour_funDudes");
 
+/*
+The current solution for spawning;
+. Certain roles (like builders, repairers, etc) spawn up to a fixed quantity -------------> MAKE BUILDERS SCALE WITH # OF CONSTRUCTION SITES IN FUTURE
+. Creeps involved in energyRooms (miners and gatherers) are periodically spawned based on saturation needs
+-   For example; A function will check whether any new creeps are needed, and if so will output the parts, 
+                room and source desired. On another tick, a function will then look through spawned assigned 
+                creeps of given roles, and assign them to the location they were intended for. This is separate 
+                because the ID of a creep can only be accessed after spawning.
+*/
+
 var respawnManager = {
     decideSpawn : function(){
         /*
