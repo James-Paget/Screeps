@@ -1,13 +1,5 @@
 var miner_tasks = {
     task : function(creep){
-        //############### TESTING
-        //init_energyRoom(creep.room);
-        //remove_energyRoom(creep.room);
-        //queueCreeps_energyRooms();
-        //assignCreeps_energyRooms();
-        //clearSpawnQueue_queue();
-
-
         if(creep.ticksToLive <= 5){         //####### TRY REQWORK THIS, ITS BODGE BUT IM TIRED MY DUDE ####
             creep.memory.ID = creep.id;}    //#############################################################
 
@@ -244,7 +236,10 @@ function queueCreeps_energyRooms(){
     The spawnQueue.queue      HOLDS [{roomID, sourceID, Parts, Role}, {...}, ...] <-- Specify what creeps to make                 <-*Only THIS list is touched here*
     The spawnQueue.unassigned HOLDS [creepNames, ...]                             <-- Specify the creeps who have just been made
     */
-    if(Memory.spawnQueue.unassigned.length == 0){  //Only do this when all unassigned positions have been resolved -> so when choosing new spawns, only have to consider energyRooms, not spawnQueue.unassigned
+    //#####################################
+    //## THIS IF COULD BE HANDLED BETTER ##
+    //#####################################
+    if((Memory.spawnQueue.queue.length == 0) && (Memory.spawnQueue.unassigned.length == 0)){  //Only do this when all unassigned positions have been resolved -> so when choosing new spawns, only have to consider energyRooms, not spawnQueue.unassigned
         for(var roomIndex in Memory.energyRooms){
             for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
                 //Check mining is saturated

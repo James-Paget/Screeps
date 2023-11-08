@@ -38,7 +38,7 @@ module.exports.loop = function () {
     //Spawn required dudes
     respawnManager.spawnFromQueue();
     queueCreeps_energyRooms();
-    assignCreeps_energyRooms()
+    assignCreeps_energyRooms();
     
     //Make each dude do his job
     for(name in creeps)
