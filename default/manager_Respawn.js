@@ -95,10 +95,24 @@ var respawnManager = {
     }
 }
 function getPartsEnergyCost(parts){
-    var partCost = {MOVE:50, WORK:100, CARRY:50, ATTACK:80, RANGED_ATTACK:150, HEAL:250, CLAIM:600, TOUGH:10};
     var total_cost = 0;
     for(var part in parts){
-        total_cost += partCost.parts[part];
+        if(parts[part] == "move"){
+            total_cost += 50;}
+        else if(parts[part] == "work"){
+            total_cost += 100;}
+        else if(parts[part] == "carry"){
+            total_cost += 50;}
+        else if(parts[part] == "attack"){
+            total_cost += 80;}
+        else if(parts[part] == "ranged_attack"){
+            total_cost += 150;}
+        else if(parts[part] == "heal"){
+            total_cost += 250;}
+        else if(parts[part] == "claim"){
+            total_cost += 600;}
+        else if(parts[part] == "tough"){
+            total_cost += 10;}
     }
     return total_cost;
 }
