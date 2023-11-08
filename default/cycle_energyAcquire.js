@@ -277,8 +277,8 @@ function assignCreeps_energyRooms(){
     . Then goes to their houseKey and leaves their ID in the energyRooms global memory (so they are assigned/registered)
     */
     var unassignedLength = Memory.spawnQueue.unassigned.length;         //Not by reference => constant value throughout popping
-    for(var unassignedName_from0 in unassignedLength){
-        var unassignedName = unassignedLength -unassignedName_from0;    //Means the list will iterate backwards through elements
+    for(var i=0; i<unassignedLength; i++){
+        var unassignedName = unassignedLength -i-1;    //Means the list will iterate backwards through elements
         for(var creepName in Game.creeps){                                                 //Look through creeps that exist, see if unassigned dude is there yet
             if(Memory.spawnQueue.unassigned[unassignedName] == creepName){    //If you find him, and he exists, put his houseKey in the energyRooms global memory & remove him from the unassigned
                 var roomID   = Memory.creeps[creepName].houseKey.roomID;
