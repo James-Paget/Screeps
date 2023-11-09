@@ -163,7 +163,7 @@ function remove_energyRoom(room){
     */
     for(var roomIndex in Memory.energyRooms){
         if(Memory.energyRooms[roomIndex].ID == room.name){   //ID of room is its roomName here
-            delete Memory.energyRooms[roomIndex];
+            Memory.energyRooms.splice(roomIndex,1);
             break;
         }
     }
@@ -186,7 +186,7 @@ function removeCreep_energyRooms(houseKey, creepRole, creepID){
                     if(creepRole == "Miner"){
                         for(var creepIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].miners){
                             if(creepID == Memory.energyRooms[roomIndex].sources[sourceIndex].miners[creepIndex]){
-                                delete Memory.energyRooms[roomIndex].sources[sourceIndex].miners[creepIndex];
+                                Memory.energyRooms[roomIndex].sources[sourceIndex].miners.splice(creepIndex,1);
                             }
                             break;
                         }
@@ -194,7 +194,7 @@ function removeCreep_energyRooms(houseKey, creepRole, creepID){
                     if(creepRole == "Gatherer"){
                         for(var creepIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers){
                             if(creepID == Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers[creepIndex]){
-                                delete Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers[creepIndex];
+                                Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.splice(creepIndex,1);
                             }
                             break;
                         }
