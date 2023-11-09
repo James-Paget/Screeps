@@ -20,11 +20,7 @@ module.exports.loop = function () {
     
     /*
     #################
-    This proves assignment works when unassigned is setup correctly, and houseKey/creep in general is correct
-    Queue is also being correctly added to, so has to be respawn
-    => There must be a problem with the respawn adding null name to unassigned
-
-    -->> THIS APPEARS TO WORK FINE WHEN DONE SLOWLY => MUST BE A TIMING THING -----> MAYBE TRY ASSIGNING THE FRAME AFTER CREATING (RESPAWNING???)
+    PROBLEMS WHEN REMOVING NAMES WHEN DYING, LEFT NULLS IN THERE. MAY ONLY OCCUR IF OTHER NULLS ARE IN THAT LIST
     #################
     */
     var cName = "Miner"+Game.time;
