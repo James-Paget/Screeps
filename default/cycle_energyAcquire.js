@@ -1,7 +1,6 @@
 var miner_tasks = {
     task : function(creep){
-        if(creep.ticksToLive <= 5){         //####### TRY REQWORK THIS, ITS BODGE BUT IM TIRED MY DUDE ####
-            creep.memory.ID = creep.id;}    //#############################################################
+        creep.memory.ID = creep.id; //####### TRY REQWORK THIS, ITS BODGE BUT IM TIRED MY DUDE ####
 
         if(creep.memory.isMining){
             var targetSource = Game.getObjectById(creep.memory.sourceID);
@@ -33,6 +32,7 @@ var miner_tasks = {
         . Creates specified creep
         . Unique qualities for a given role => each role has its own respawn functionality ########### THIS CAN DEFINATELY BE GENERALISED ############
         */
+        
         var spawner   = Game.spawns["Spawn1"];
         var houseKey  = {roomID:creepSpec.roomID, sourceID:creepSpec.sourceID};
         spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, houseKey:houseKey, isMining:true}});
@@ -51,8 +51,7 @@ var miner_tasks = {
 };
 var gatherer_tasks = {
     task : function(creep){
-        if(creep.ticksToLive <= 5){         //####### TRY REQWORK THIS, ITS BODGE BUT IM TIRED MY DUDE ####
-            creep.memory.ID = creep.id;}    //#############################################################
+        creep.memory.ID = creep.id; //####### TRY REQWORK THIS, ITS BODGE BUT IM TIRED MY DUDE ####
             
         if(creep.memory.isGathering){
             var target = Game.getObjectById(creep.memory.containerID);
@@ -272,39 +271,35 @@ function queueCreeps_energyRooms(){
 function assignCreeps_energyRooms(){
     /*
     -- Call this function continually
-    . Looks through all unassigned creeps
+    . Looks through 0th unassigned creeps
     . Waits until they are alive (so their ID is available)
     . Then goes to their houseKey and leaves their ID in the energyRooms global memory (so they are assigned/registered)
     */
-    var unassignedLength = Memory.spawnQueue.unassigned.length;         //Not by reference => constant value throughout popping
+    var unassignedLength = Memory.spawnQueue.unassigned.length;
     for(var i=0; i<unassignedLength; i++){
-        var unassignedName = unassignedLength -i-1;    //Means the list will iterate backwards through elements
-        for(var creepName in Game.creeps){                                                 //Look through creeps that exist, see if unassigned dude is there yet
-            if(Memory.spawnQueue.unassigned[unassignedName] == creepName){    //If you find him, and he exists, put his houseKey in the energyRooms global memory & remove him from the unassigned
-                var roomID   = Memory.creeps[creepName].houseKey.roomID;
-                var sourceID = Memory.creeps[creepName].houseKey.sourceID;
-                for(var roomIndex in Memory.energyRooms){
-                    if(Memory.energyRooms[roomIndex].ID == roomID){
-                        for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
-                            if(Memory.energyRooms[roomIndex].sources[sourceIndex].ID == sourceID){
-                                if(Memory.creeps[creepName].role == "Miner"){
-                                    Memory.energyRooms[roomIndex].sources[sourceIndex].miners.push(Game.creeps[creepName].id);  //Assigned it correctly
-                                    delete Memory.spawnQueue.unassigned[unassignedName];                                        //Now it must be removed from this "waiting list"
-                                }
-                                if(Memory.creeps[creepName].role == "Gatherer"){
-                                    Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.push(Game.creeps[creepName].id);
-                                    delete Memory.spawnQueue.unassigned[unassignedName];
-                                }
-                                //...
-                                break;
-                            }
+        var creepName = Memory.spawnQueue.unassigned[0];
+        var roomID    = Memory.creeps[creepName].houseKey.roomID;
+        var sourceID  = Memory.creeps[creepName].houseKey.sourceID;
+        for(var roomIndex in Memory.energyRooms){
+            if(Memory.energyRooms[roomIndex].ID == roomID){
+                for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
+                    if(Memory.energyRooms[roomIndex].sources[sourceIndex].ID == sourceID){
+                        if(Memory.creeps[creepName].role == "Miner"){
+                            Memory.energyRooms[roomIndex].sources[sourceIndex].miners.push(Game.creeps[creepName].id);  //Assigned it correctly
+                            Memory.spawnQueue.unassigned.shift();                                                       //Now it must be removed from this "waiting list"
                         }
+                        if(Memory.creeps[creepName].role == "Gatherer"){
+                            Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.push(Game.creeps[creepName].id);
+                            Memory.spawnQueue.unassigned.shift();
+                        }
+                        //...
                         break;
                     }
                 }
                 break;
             }
         }
+        break;
     }
 }
 function clearSpawnQueue_queue(){
