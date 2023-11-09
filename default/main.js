@@ -1,4 +1,4 @@
-var {miner_tasks, gatherer_tasks, queueCreeps_energyRooms, assignCreeps_energyRooms} = require("cycle_energyAcquire");
+var {miner_tasks, gatherer_tasks, init_energyRoom, queueCreeps_energyRooms, assignCreeps_energyRooms} = require("cycle_energyAcquire");
 var upgradingTasks = require("behaviour_Upgrader");
 var buildingTasks  = require("behaviour_Builder");
 var repairingTasks = require("behaviour_Repairer");
@@ -19,6 +19,7 @@ module.exports.loop = function () {
         Memory.spawnQueue  = {queue:queueSet, unassigned:unassignedSet};}
     if(!Memory.energyRooms){
         Memory.energyRooms = [];}
+    //init_energyRoom(Game.spawns["Spawn1"].room);
     
     //Clean dead dudes
     for(var memoryName in Memory.creeps){
