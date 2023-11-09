@@ -117,7 +117,7 @@ function getTarget_miner(creep){
         }
     }
     else{               //Go to closest of spawn, ext or container
-        if(returnTarget.room.name = creep.room.name){   //If already in correct room
+        if(creep.memory.houseKey.roomID = creep.room.name){   //If already in correct room
             /*
             (1) Try to give to a linked container
             (2) If no linked containers, then hand deliver
@@ -193,7 +193,7 @@ function getTarget_gatherer(creep){
         }
     }
     else{               //Go to closest of spawn, ext or container
-        if(returnTarget.room.name = creep.room.name){   //If already in correct room
+        if(creep.memory.houseKey.roomID = creep.room.name){   //If already in correct room
             var possibleTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
             target = creep.pos.findClosestByPath(possibleTargets);
         }
