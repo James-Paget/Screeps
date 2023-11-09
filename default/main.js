@@ -18,6 +18,15 @@ module.exports.loop = function () {
         Memory.energyRooms = [];}
     
     
+    /*
+    #################
+    This proves assignment works when unassigned is setup correctly, and houseKey/creep in general is correct
+    Queue is also being correctly added to, so has to be respawn
+    => There must be a problem with the respawn adding null name to unassigned
+
+    -->> THIS APPEARS TO WORK FINE WHEN DONE SLOWLY => MUST BE A TIMING THING -----> MAYBE TRY ASSIGNING THE FRAME AFTER CREATING (RESPAWNING???)
+    #################
+    */
     var cName = "Miner"+Game.time;
     var spec = {roomID:Game.spawns["Spawn1"].room.name, sourceID:Game.spawns["Spawn1"].room.find(FIND_SOURCES)[0].id, parts:[MOVE, MOVE, MOVE], role:"Miner"};
     var myCreep = Game.creeps[cName];
@@ -52,9 +61,9 @@ module.exports.loop = function () {
     }
     
     //Spawn required dudes
-    respawnManager.spawnFromQueue();
     queueCreeps_energyRooms();
-    assignCreeps_energyRooms();
+    assignCreeps_energyRooms();         //this order is important, prevents nulls occurring when spawning and istantly assigning, gives a frame of breather room
+    respawnManager.spawnFromQueue();    //assign -> respawn => respawn -> frame gap -> assign
     
     //Make each dude do his job
     for(name in creeps)
