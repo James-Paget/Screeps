@@ -21,6 +21,8 @@ module.exports.loop = function () {
     /*
     #################
     PROBLEMS WHEN REMOVING NAMES WHEN DYING, LEFT NULLS IN THERE. MAY ONLY OCCUR IF OTHER NULLS ARE IN THAT LIST
+
+    SEEMS LIKE BIG PROBLEM WITH REMOVING --> ALSO NEEDS TO CHECK UNASSIGN TOO MAYBE
     #################
     */
     var cName = "Miner"+Game.time;
