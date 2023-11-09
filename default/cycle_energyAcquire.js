@@ -1,25 +1,24 @@
 var miner_tasks = {
     task : function(creep){
-        creep.memory.ID = creep.id; //####### TRY REQWORK THIS, ITS BODGE BUT IM TIRED MY DUDE ####
+        if(creep.memory.ID == null){
+            creep.memory.ID = creep.id;}    //## NOT A GREAT METHOD BUT WORKS FOR NOW ##
 
+        var target = getTarget_miner(creep);
         if(creep.memory.isMining){
-            var targetSource = Game.getObjectById(creep.memory.sourceID);
-            if(creep.harvest(targetSource) == ERR_NOT_IN_RANGE){
-                creep.moveTo(targetSource)
+            //Mining source
+            if(creep.harvest(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
+                creep.moveTo(target);
             }
+            //Reset mining condition
             if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
                 creep.memory.isMining = false;
             }
         }
         else{
             //Move resources to storage
-            //#### MAY WANT TO CHECK IF HAS SPACE TOO, BUT I WOULD RATHER THEY QUEUE AT THEIR CLOSEST CONTAINER ####
-            var transferTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return (((structure.structureType == STRUCTURE_EXTENSION) && (structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) || ((structure.structureType == STRUCTURE_SPAWN) && (structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) || (structure.structureType == STRUCTURE_CONTAINER))}});
-            var target = creep.pos.findClosestByPath(transferTargets);
             if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                 creep.moveTo(target);
             }
-            
             //Reset mining condition
             if(creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0){
                 creep.memory.isMining = true;
@@ -35,7 +34,7 @@ var miner_tasks = {
         
         var spawner   = Game.spawns["Spawn1"];
         var houseKey  = {roomID:creepSpec.roomID, sourceID:creepSpec.sourceID};
-        spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, houseKey:houseKey, isMining:true}});
+        spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, houseKey:houseKey, ID:null, isMining:true}});
     },
     death : function(houseKey, creepRole, creepID){
         /*
@@ -51,25 +50,26 @@ var miner_tasks = {
 };
 var gatherer_tasks = {
     task : function(creep){
-        creep.memory.ID = creep.id; //####### TRY REQWORK THIS, ITS BODGE BUT IM TIRED MY DUDE ####
+        if(creep.memory.ID == null){
+            creep.memory.ID = creep.id;}    //## NOT A GREAT METHOD BUT WORKS FOR NOW ##
             
+        var target = getTarget_gatherer(creep);
         if(creep.memory.isGathering){
-            var target = Game.getObjectById(creep.memory.containerID);
+            //Collect resources
             if(creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                 creep.moveTo(target);
             }
-
+            //Reset gather condition
             if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
                 creep.memory.isGathering = false;
             }
         }
         else{
-            var transferTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) ||(structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
-            var target  = creep.pos.findClosestByPath(transferTargets);
+            //Drop off resources
             if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                 creep.moveTo(target);
             }
-
+            //Reset gather condition
             if(creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0){
                 creep.memory.isGathering = true;
             }
@@ -83,7 +83,7 @@ var gatherer_tasks = {
         */
         var spawner   = Game.spawns["Spawn1"];
         var houseKey  = {roomID:creepSpec.roomID, sourceID:creepSpec.sourceID};
-        spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, houseKey:houseKey, isGathering:true}});
+        spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, houseKey:houseKey, ID:null, isGathering:true}});
     },
     death : function(houseKey, creepRole, creepID){
         /*
@@ -98,6 +98,113 @@ var gatherer_tasks = {
     }
 };
 
+function getTarget_miner(creep){
+    /*
+    . Considers the source this MINER is assigned to (all miners will be assigned)
+    . Returns the target location this creep should move to
+    . If SOURCE in the same room as this, that is directly the target
+    . If SOURCE is in a different room to this, the target should be a route to the next room, that is closer to the target room (multi-room pathing)
+    */
+    var target = null;
+    if(creep.isMining){ //Go to source
+        if(creep.memory.houseKey.roomID == creep.room.name){    //If already in correct room
+            target = Game.getObjectById(creep.memory.houseKey.sourceID);   //Will be null if you have no vision of the room
+        }
+        else{                                                   //If need to path to correct room
+            //...
+            //Complex
+            //...
+        }
+    }
+    else{               //Go to closest of spawn, ext or container
+        if(returnTarget.room.name = creep.room.name){   //If already in correct room
+            /*
+            (1) Try to give to a linked container
+            (2) If no linked containers, then hand deliver
+            */
+            //(1)
+            var containerIDs = [];
+            for(var roomIndex in Memory.energyRooms){
+                if(creep.memory.houseKey.roomID == Memory.energyRooms[roomIndex].ID){
+                    for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
+                        if(creep.memory.houseKey.sourceID == Memory.energyRooms[roomIndex].source[sourceIndex].ID){
+                            containerIDs = Memory.energyRooms[roomIndex].source[sourceIndex].containers;
+                            break;}
+                    }
+                    break;}
+            }
+            if(containerIDs.length > 0){
+                var containerObjects = [];
+                for(var index in containerIDs){
+                    containerObjects.push(Game.getObjectById(containerIDs[index]));}
+                containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0) });    //Picks out containers with energy available
+                target = creep.pos.findClosestByPath(containerIDs);
+            }
+            else{
+                //(2)
+                var possibleTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
+                target = creep.pos.findClosestByPath(possibleTargets);
+            }
+        }
+        else{                                           //If need to path to correct room
+            //...
+            //Complex
+            //...
+        }
+    }
+    return target;
+}
+function getTarget_gatherer(creep){
+    /*
+    . Considers the source this GATHERER is assigned to (all gatherers will be assigned)
+    . Returns the target location this creep should move to
+    . If SOURCE in the same room as this, move to containers associated with this source
+    . If SOURCE is in a different room to this, the target should be a route to the next room, that is closer to the target room (multi-room pathing)
+    */
+    var target = null;
+    if(creep.isGathering){ //Go to source
+        if(creep.memory.houseKey.roomID == creep.room.name){    //If already in correct room
+            /*
+            (1) Look through containers linked to this creep's assigned source
+            (2) Cleverly choose which to extract from (closest with energy, until completely full)
+            */
+            //(1)
+            var containerIDs = [];
+            for(var roomIndex in Memory.energyRooms){
+                if(creep.memory.houseKey.roomID == Memory.energyRooms[roomIndex].ID){
+                    for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
+                        if(creep.memory.houseKey.sourceID == Memory.energyRooms[roomIndex].source[sourceIndex].ID){
+                            containerIDs = Memory.energyRooms[roomIndex].source[sourceIndex].containers;
+                            break;}
+                    }
+                    break;}
+            }
+            //(2)
+            var containerObjects = [];
+            for(var index in containerIDs){
+                containerObjects.push(Game.getObjectById(containerIDs[index]));}
+            containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getUsedCapacity(RESOURCE_ENERGY) > 0) });    //Picks out containers with energy available
+            target = creep.pos.findClosestByPath(containerIDs);
+        }
+        else{                                                   //If need to path to correct room
+            //...
+            //Complex
+            //...
+        }
+    }
+    else{               //Go to closest of spawn, ext or container
+        if(returnTarget.room.name = creep.room.name){   //If already in correct room
+            var possibleTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
+            target = creep.pos.findClosestByPath(possibleTargets);
+        }
+        else{                                           //If need to path to correct room
+            //...
+            //Complex
+            //...
+        }
+    }
+    return target;
+}
 function init_energyRoom(room){
     /*
     . Initialises an empty array structure for a new room (if the room is not currently registered)

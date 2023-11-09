@@ -10,33 +10,15 @@ var respawnManager   = require("manager_Respawn");
 module.exports.loop = function () {
     var creeps  = Game.creeps;
     
+    //#################
+    //NEEDS TO UPDATE CONTAINERS BEING REMOVED PERIODICALLY --> energyRooms global memory
+    //#################
     if(!Memory.spawnQueue){
         var queueSet       = [];    //Spawn Queue init here too
         var unassignedSet  = [];    //### MAYBE GOOD TO MOVE SOMEWHERE ELSE ###
         Memory.spawnQueue  = {queue:queueSet, unassigned:unassignedSet};}
     if(!Memory.energyRooms){
         Memory.energyRooms = [];}
-    
-    
-    /*
-    #################
-    NEEDS TO UPDATE CONTAINERS BEING REMOVED PERIODICALLY
-    
-    PROBLEMS WHEN REMOVING NAMES WHEN DYING, LEFT NULLS IN THERE. MAY ONLY OCCUR IF OTHER NULLS ARE IN THAT LIST
-
-    SEEMS LIKE BIG PROBLEM WITH REMOVING --> ALSO NEEDS TO CHECK UNASSIGN TOO MAYBE
-    #################
-    */
-    var cName = "Miner"+Game.time;
-    var spec = {roomID:Game.spawns["Spawn1"].room.name, sourceID:Game.spawns["Spawn1"].room.find(FIND_SOURCES)[0].id, parts:[MOVE, MOVE, MOVE], role:"Miner"};
-    var myCreep = Game.creeps[cName];
-    console.log("Name = ",cName);
-    if(Game.time == 65){
-        miner_tasks.respawn(cName, spec);
-        Memory.spawnQueue.unassigned.push(cName);}
-    console.log("unassigned AFTER = ",Memory.spawnQueue.unassigned);
-
-
     
     //Clean dead dudes
     for(var memoryName in Memory.creeps){
