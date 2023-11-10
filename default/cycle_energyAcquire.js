@@ -423,6 +423,6 @@ function clearSpawnQueue_unassigned(){
 module.exports = {
     miner_tasks, 
     gatherer_tasks,
-    init_energyRooms:init_energyRoom,
+    init_energyRoom:init_energyRoom,
     queueCreeps_energyRooms:queueCreeps_energyRooms,
     assignCreeps_energyRooms:assignCreeps_energyRooms};

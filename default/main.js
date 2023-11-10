@@ -15,7 +15,10 @@ module.exports.loop = function () {
     NEEDS TO UPDATE CONTAINERS BEING REMOVED PERIODICALLY --> energyRooms global memory
 
     . QUEUING UP FAR TOO MANY
-    . SOME DO NOT SEEM TO BE DELETED FROM ENERGYROOMS
+    . SOME DO NOT SEEM TO BE DELETED FROM ENERGYROOMS ---> straight up not occurring for almost all creeps
+        --> may be to do with the creeps = Game.creeps at the top -->[[[[[[[[[[[[[[[[[[[ not pulling from most up to date form of list]]]]]]]]]]]]]]]]]]]]]]]]]]]
+        
+        ================> MAYBE NEW ID NOT WORKING
     #################
     */
     if(!Memory.spawnQueue){
