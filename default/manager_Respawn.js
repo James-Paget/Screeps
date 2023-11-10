@@ -84,7 +84,7 @@ var respawnManager = {
         //#### -----> Assuming this functions how one spawner will be governed...
         //Sources covered
         var sourceOccupied_miners    = getSummed_potential_role("Miner")    > Game.spawns["Spawn1"].room.find(FIND_SOURCES).length;
-        var sourceOccupied_gatherers = getSummed_potential_role("Gatherer") > Game.spawns["Spawn1"].room.find(FIND_SOURCES).length;
+        var sourceOccupied_gatherers = getSummed_potential_role("Gatherer") > Game.spawns["Spawn1"].room.find(FIND_STRUCTURES, {filter:(structure)=>{return(structure.structureType == STRUCTURE_CONTAINER)}}).length;
         if(sourceOccupied_miners && sourceOccupied_gatherers){
             var repairerFilter = getSummed_potential_role("Repairer");
             if(repairerFilter > 0){
