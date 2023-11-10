@@ -272,10 +272,8 @@ function removeCreep_energyRooms(houseKey, creepRole, creepID){
     ## REWORK TO DO THIS RECCURSIVELY, WOULD BE CLEANER AND MORE GENERAL ##
     #######################################################################
     */
-    var creepRoom   = houseKey.roomID;
-    var creepSource = houseKey.sourceID;
-    var roomIndex   = searchEnergyRooms_roomIndex(roomID);
-    var sourceIndex = searchEnergyRooms_roomIndex(roomIndex, sourceID); //# Note the break later assumes that the creep is only assigned to 1 source, and therefore only 1 room
+    var roomIndex   = searchEnergyRooms_roomIndex(houseKey.roomID);
+    var sourceIndex = searchEnergyRooms_roomIndex(roomIndex, houseKey.sourceID); //# Note the break later assumes that the creep is only assigned to 1 source, and therefore only 1 room
     if(creepRole == "Miner"){
         for(var creepIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].miners){
             if(creepID == Memory.energyRooms[roomIndex].sources[sourceIndex].miners[creepIndex]){
