@@ -122,7 +122,7 @@ function getSummed_potential_role(role){
             total++;}
     }
     for(var element in Memory.spawnQueue.queue){
-        if(Memory.spawnQueue.queue[element].memory.role == role){
+        if(Memory.spawnQueue.queue[element].role == role){
             total++;}
     }
     return total;
