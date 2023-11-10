@@ -25,7 +25,7 @@ var respawnManager = {
         if(Memory.spawnQueue.queue.length > 0){                                             //If anything to spawn
             var spawner = Game.spawns["Spawn1"];
             if(!spawner.spawning){                                                          //And not busy
-                var energyRequired = getPartsEnergyCost(Memory.spawnQueue.queue[0].parts);
+                var energyRequired = _.sum(Memory.spawnQueue.queue[0].parts, part => BODYPART_COST[part]);
                 if(energyRequired <= spawner.room.energyAvailable){                         //And have enough energy
                     var creepName = Memory.spawnQueue.queue[0].role+Game.time;
                     if(Memory.spawnQueue.queue[0].role == "Miner"){
@@ -45,7 +45,7 @@ var respawnManager = {
                     if(Memory.spawnQueue.queue[0].role == "BasedIndiviudal"){
                         funTasks.respawn(Memory.spawnQueue.queue[0]);}
                     //...
-                    Memory.spawnQueue.queue.shift(0);
+                    Memory.spawnQueue.queue.shift();
                 }
             }
         }
@@ -94,28 +94,6 @@ var respawnManager = {
             }
         }
     }
-}
-function getPartsEnergyCost(parts){
-    var total_cost = 0;
-    for(var part in parts){
-        if(parts[part] == "move"){
-            total_cost += 50;}
-        else if(parts[part] == "work"){
-            total_cost += 100;}
-        else if(parts[part] == "carry"){
-            total_cost += 50;}
-        else if(parts[part] == "attack"){
-            total_cost += 80;}
-        else if(parts[part] == "ranged_attack"){
-            total_cost += 150;}
-        else if(parts[part] == "heal"){
-            total_cost += 250;}
-        else if(parts[part] == "claim"){
-            total_cost += 600;}
-        else if(parts[part] == "tough"){
-            total_cost += 10;}
-    }
-    return total_cost;
 }
 
 module.exports = respawnManager;

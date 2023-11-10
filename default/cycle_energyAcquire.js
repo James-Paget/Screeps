@@ -127,11 +127,14 @@ function getTarget_miner(creep){
             var roomIndex    = searchEnergyRooms_roomIndex(creep.memory.houseKey.roomID);
             var sourceIndex  = searchEnergyRooms_sourceIndex(roomIndex, creep.memory.houseKey.sourceID);
             containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;
-            if(containerIDs.length > 0){
-                var containerObjects = [];
-                for(var index in containerIDs){
-                    containerObjects.push(Game.getObjectById(containerIDs[index]));}
-                containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0) });    //Picks out containers with energy available
+
+            //Outside if, so if there are containers but they are all full he will hand deliver; prevents 0 energy deliver situations (so no 300 energy cap from spawn when spawning new workers)
+            var containerObjects = [];
+            for(var index in containerIDs){
+                containerObjects.push(Game.getObjectById(containerIDs[index]));}
+            containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0) });    //Picks out containers with energy available
+
+            if(containerObjects.length > 0){
                 target = creep.pos.findClosestByPath(containerObjects);
             }
             else{
@@ -340,33 +343,22 @@ function queueCreeps_energyRooms(){
     The spawnQueue.queue      HOLDS [{roomID, sourceID, Parts, Role}, {...}, ...] <-- Specify what creeps to make                 <-*Only THIS list is touched here*
     The spawnQueue.unassigned HOLDS [creepNames, ...]                             <-- Specify the creeps who have just been made
     */
-    //#####################################
-    //## THIS IF COULD BE HANDLED BETTER ##
-    //#####################################
+    //##############################################################
+    //## QUEUE PROBLEM COULD BE HANDLED BETTER, BUT WORKS FOR NOW ##
+    //##############################################################
     if((Memory.spawnQueue.queue.length == 0) && (Memory.spawnQueue.unassigned.length == 0)){  //Only do this when all unassigned positions have been resolved -> so when choosing new spawns, only have to consider energyRooms, not spawnQueue.unassigned
         for(var roomIndex in Memory.energyRooms){
             for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
-                //Check mining is saturated
-                var total_workParts = 0;
-                for(var minerIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].miners){
-                    total_workParts += _.filter(Game.getObjectById(Memory.energyRooms[roomIndex].sources[sourceIndex].miners[minerIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == WORK)}}).length;}
-                var isSaturated_mining = (total_workParts >= 5);      //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
-                if(!isSaturated_mining){
-                    //Put new miners into the queue
-                    var partsSet = [WORK, WORK, CARRY, MOVE];         //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
-                    var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:partsSet, role:"Miner"};
+                var saturationCondition_miners = getSaturationCondition_miners(Memory.energyRooms[roomIndex].sources[sourceIndex]);    //Check mining is saturated
+                if(saturationCondition_miners != null){                                                                                //Not saturated => put new miners into the queue
+                    var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_miners.parts, role:"Miner"};
                     Memory.spawnQueue.queue.push(creepSpec);
                 }
 
                 //Check gathering is saturated
-                var total_carryParts = 0;
-                for(var gathererIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers){
-                    total_carryParts += _.filter(Game.getObjectById(Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers[gathererIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == CARRY)}}).length;}
-                var isSaturated_gathering = total_carryParts >= 12;            //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
-                if(!isSaturated_gathering){
-                    //Put new gatherers into the queue
-                    var partsSet = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];    //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
-                    var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:partsSet, role:"Gatherer"};
+                var saturationCondition_gatherers = getSaturationCondition_gatherers(Memory.energyRooms[roomIndex].sources[sourceIndex]);   //Check gatherers are saturated
+                if(saturationCondition_gatherers != null){                                                                                  //not saturated => put new gatherers into the queue
+                    var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_gatherers.parts, role:"Gatherer"};
                     Memory.spawnQueue.queue.push(creepSpec);
                 }
 
@@ -374,6 +366,94 @@ function queueCreeps_energyRooms(){
             }
         }
     }
+}
+function getSaturationCondition_miners(energyRooms_info){
+    /*
+    . Checks if the miners are saturated
+    . If they are NOT, returns what the next miner parts should be in order to fulfil saturation
+    . If they are, returns null
+
+    The number of parts assigned to the next worker is based on (1)the number of spaces around the source to mine from, 
+    (2)the amount of WORK already at source, and (3)the largest amount of energy that could be spent on a creep
+
+    --> Note; Related to "energyMax", if miners do not deliver to extensions, then there will always be a cap a 300, or else the colony could fail if all gatherers die at once
+            This is currently fixed by letting miners walk to spawns or ext. when their containers are full, however this means if gathering is not efficient, mining will not 
+            be either (as they are leaving their post)
+    */
+    var condition = null;
+    //(1) If any spaces free for a worker
+    if(energyRooms_info.free > energyRooms_info.miners.length){
+        if( (energyRooms_info.miners.length == 0) && (energyRooms_info.free > 1) ){    //Start off each source (that can hold more than 1 miner) with an always affordable miner
+            condition = {parts:[WORK,CARRY,MOVE]};  //Cheapest miner
+        }
+        else{
+            //(2) Sum WORK parts assigned to source
+            var workRequired    = 5;                        //Work required to full deplete any source
+            var total_workParts = 0;
+            for(var minerIndex in energyRooms_info.miners){
+                total_workParts += _.filter(Game.getObjectById(Memory.energyRooms[roomIndex].sources[sourceIndex].miners[minerIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == WORK)}}).length;}
+            var workNeeded = workRequired -total_workParts;
+            if(workNeeded > 0){          //If actually need any more workers
+                //(3) Energy max
+                var energyMax = Game.spawns["Spawn1"].room.energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
+                //Now make decision
+                var workNeeded_perWorker = Math.ceil(workNeeded / (energyRooms_info.free -energyRooms_info.miners.length)); //Spreads work over spaces possible to be mined ==> This is probably not a good way to do this for larger bases, but overall should improve flowrate of energy (e.g no sudden spikes of nothing when they die of old age)
+                var partSet = [CARRY,MOVE];
+                for(var i=0; i<workNeeded_perWorker; i++){          //Attempts to spawn the most expensive (but not overkill) miner it can => however need to still have cheap miner above as extensions imply unreachable goals GIVEN you have 0 miners, => have to fullly rely on passive income
+                    partSet.unshift(WORK);
+                    var energyCost = _.sum(partSet, part => BODYPART_COST[part]);
+                    if(energyCost > energyMax){
+                        partSet.shift();
+                        break;}
+                }
+                condition = {parts:partSet};    //... Could add more returns for a condition if needed
+            }
+        }
+    }
+    return condition;
+}
+function getSaturationCondition_gatherers(energyRooms_info){
+    /*
+    . Checks if the gatherers are saturated
+    . If they are NOT, returns what the next gatherer parts should be in order to fulfil saturation
+    . If they are, returns null
+
+    The number of parts assigned to the next worker is based on (1)the distance to the source
+
+    --> Note; Related to "energyMax", make sure a cheap gatherer is spawned if no others are there to ensure some gathering always takes 
+            place, so miners can work efficiently, and gatherers are never falsely valued too highly so they never spawn (due to extensions)
+    */
+    var condition = null;
+    if(energyRooms_info.gatherers.length == 0){         //If this is the first gatherer, make them cheap so gathering will occur
+        condition = {parts:[CARRY,MOVE,CARRY,MOVE]};
+    }
+    else{
+        //(1) Sum CARRY parts assigned to source
+                                        //############################################## --> 12 is approx, change this
+        var carryRequired    = 12;      //### THIS SHOULD BE A FUNCTION OF DISTANCE #### CARRY required to fully empty whatever a source produces (10 energy tick^-1)
+        var total_carryParts = 0;       //############################################## -----> just assume dist to source, not each container, unnecessary
+        for(var gathererIndex in energyRooms_info.gatherers){
+            total_carryParts += _.filter(Game.getObjectById(Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers[minerIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == CARRY)}}).length;}
+        var carryNeeded = carryRequired -total_carryParts;
+        if(carryNeeded > 0){          //If actually need any more workers
+            //(3) Energy max
+            var energyMax = Game.spawns["Spawn1"].room.energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
+            //Now make decision
+            var carryNeeded_perWorker = Math.ceil(carryNeeded / Math.abs(3.0 -energyRooms_info.gatherers.length));   //Spreads work over multiple gatherers, not all on just one (3 workers used here)
+            var partSet = [CARRY,MOVE];
+            for(var i=0; i<carryNeeded_perWorker; i++){                     //Attempts to spawn the most expensive (but not overkill) miner it can => however need to still have cheap miner above as extensions imply unreachable goals GIVEN you have 0 miners, => have to fullly rely on passive income
+                partSet.unshift(MOVE);                                      //MOVES made alongside CARRYs to ensure they stay at max move speed (on regular ground)
+                partSet.unshift(CARRY);
+                var energyCost = _.sum(partSet, part => BODYPART_COST[part]);
+                if(energyCost > energyMax){
+                    partSet.shift();
+                    partSet.shift();
+                    break;}
+            }
+            condition = {parts:partSet};    //... Could add more returns for a condition if needed
+        }
+    }
+    return condition;
 }
 function assignCreeps_energyRooms(){
     /*
