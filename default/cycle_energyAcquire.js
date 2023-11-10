@@ -295,8 +295,8 @@ function removeCreep_energyRooms(houseKey, creepRole, creepID){
                             if(creepID == Memory.energyRooms[roomIndex].sources[sourceIndex].miners[creepIndex]){
                                 console.log("--Miner JUST removed");
                                 Memory.energyRooms[roomIndex].sources[sourceIndex].miners.splice(creepIndex,1);
+                                break;
                             }
-                            break;
                         }
                     }
                     if(creepRole == "Gatherer"){
@@ -304,8 +304,8 @@ function removeCreep_energyRooms(houseKey, creepRole, creepID){
                             if(creepID == Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers[creepIndex]){
                                 console.log("--Gatherer JUST removed");
                                 Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.splice(creepIndex,1);
+                                break;
                             }
-                            break;
                         }
                     }
                     //... -> If more roles become involved in energyRooms
