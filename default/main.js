@@ -17,6 +17,8 @@ module.exports.loop = function () {
     . QUEUING UP FAR TOO MANY
     . SOME DO NOT SEEM TO BE DELETED FROM ENERGYROOMS ---> straight up not occurring for almost all creeps
         --> may be to do with the creeps = Game.creeps at the top -->[[[[[[[[[[[[[[[[[[[ not pulling from most up to date form of list]]]]]]]]]]]]]]]]]]]]]]]]]]]
+
+    ---> WITNESSED A 0TH MINER DIE, REGISTER AS DEAD, BUT NOT BE REMOVED
     #################
     */
     if(!Memory.spawnQueue){
@@ -53,7 +55,7 @@ module.exports.loop = function () {
     //Spawn required dudes
     queueCreeps_energyRooms();
     assignCreeps_energyRooms();         //this order is important, prevents nulls occurring when spawning and istantly assigning, gives a frame of breather room
-    //respawnManager.spawnFromQueue();    //assign -> respawn => respawn -> frame gap -> assign
+    respawnManager.spawnFromQueue();    //assign -> respawn => respawn -> frame gap -> assign
     
     //Make each dude do his job
     for(name in creeps)
