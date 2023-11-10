@@ -12,7 +12,7 @@ var defenderTasks = {
             else{
                 creep.moveTo(creep.room.controller);}
         }
-        if(_.filter(Game.creeps, function(creep) { return (creep.memory.role == "Defender") }).length >= 3 ){    //Wait for 6 boys
+        if(_.filter(Game.creeps, function(creep) { return (creep.memory.role == "Defender") }).length >= 1 ){    //Wait for X boys
             if( creep.pos.getRangeTo(target) < 100 ){
                 creep.memory.isDefending = true;
             }
