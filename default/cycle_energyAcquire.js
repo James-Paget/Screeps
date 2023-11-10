@@ -138,7 +138,7 @@ function getTarget_miner(creep){
                 for(var index in containerIDs){
                     containerObjects.push(Game.getObjectById(containerIDs[index]));}
                 containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0) });    //Picks out containers with energy available
-                target = creep.pos.findClosestByPath(containerIDs);
+                target = creep.pos.findClosestByPath(containerObjects);
             }
             else{
                 //(2)
@@ -184,7 +184,7 @@ function getTarget_gatherer(creep){
             for(var index in containerIDs){
                 containerObjects.push(Game.getObjectById(containerIDs[index]));}
             containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getUsedCapacity(RESOURCE_ENERGY) > 0) });    //Picks out containers with energy available
-            target = creep.pos.findClosestByPath(containerIDs);
+            target = creep.pos.findClosestByPath(containerObjects);
         }
         else{                                                   //If need to path to correct room
             //...
