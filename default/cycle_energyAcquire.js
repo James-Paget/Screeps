@@ -391,7 +391,7 @@ function getSaturationCondition_miners(energyRooms_info){
             var workRequired    = 5;                        //Work required to full deplete any source
             var total_workParts = 0;
             for(var minerIndex in energyRooms_info.miners){
-                total_workParts += _.filter(Game.getObjectById(Memory.energyRooms[roomIndex].sources[sourceIndex].miners[minerIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == WORK)}}).length;}
+                total_workParts += _.filter(Game.getObjectById(energyRooms_info.miners[minerIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == WORK)}}).length;}
             var workNeeded = workRequired -total_workParts;
             if(workNeeded > 0){          //If actually need any more workers
                 //(3) Energy max
@@ -433,7 +433,7 @@ function getSaturationCondition_gatherers(energyRooms_info){
         var carryRequired    = 12;      //### THIS SHOULD BE A FUNCTION OF DISTANCE #### CARRY required to fully empty whatever a source produces (10 energy tick^-1)
         var total_carryParts = 0;       //############################################## -----> just assume dist to source, not each container, unnecessary
         for(var gathererIndex in energyRooms_info.gatherers){
-            total_carryParts += _.filter(Game.getObjectById(Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers[minerIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == CARRY)}}).length;}
+            total_carryParts += _.filter(Game.getObjectById(energyRooms_info.gatherers[minerIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == CARRY)}}).length;}
         var carryNeeded = carryRequired -total_carryParts;
         if(carryNeeded > 0){          //If actually need any more workers
             //(3) Energy max
