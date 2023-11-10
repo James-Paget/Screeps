@@ -30,6 +30,7 @@ var upgradingTasks = {
     },
     respawn : function(creepSpec){
         //[WORK, WORK, MOVE, CARRY]
+        var spawner   = Game.spawns["Spawn1"];
         var creepName = creepSpec.role+Game.time;
         var houseKey  = {roomID:creepSpec.roomID, sourceID:creepSpec.sourceID};
         spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, houseKey:houseKey, isUpgrading:false}});

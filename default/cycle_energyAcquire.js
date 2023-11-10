@@ -31,7 +31,6 @@ var miner_tasks = {
         . Creates specified creep
         . Unique qualities for a given role => each role has its own respawn functionality ########### THIS CAN DEFINATELY BE GENERALISED ############
         */
-        
         var spawner   = Game.spawns["Spawn1"];
         var houseKey  = {roomID:creepSpec.roomID, sourceID:creepSpec.sourceID};
         spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, houseKey:houseKey, ID:null, isMining:true}});
