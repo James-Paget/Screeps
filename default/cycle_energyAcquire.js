@@ -348,8 +348,8 @@ function queueCreeps_energyRooms(){
             for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
                 //Check mining is saturated
                 var total_workParts = 0;
-                for(var minerIndex in Memory.energyRooms[roomIndex].sources.miners){
-                    total_workParts += _.filter(Game.getObjectById(Memory.energyRooms[roomIndex].sources.miners[minerIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == WORK)}}).length;}
+                for(var minerIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].miners){
+                    total_workParts += _.filter(Game.getObjectById(Memory.energyRooms[roomIndex].sources[sourceIndex].miners[minerIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == WORK)}}).length;}
                 var isSaturated_mining = (total_workParts >= 5);      //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
                 if(!isSaturated_mining){
                     //Put new miners into the queue
@@ -360,8 +360,8 @@ function queueCreeps_energyRooms(){
 
                 //Check gathering is saturated
                 var total_carryParts = 0;
-                for(var gathererIndex in Memory.energyRooms[roomIndex].sources.gatherers){
-                    total_carryParts += _.filter(Game.getObjectById(Memory.energyRooms[roomIndex].sources.gatherers[gathererIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == CARRY)}}).length;}
+                for(var gathererIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers){
+                    total_carryParts += _.filter(Game.getObjectById(Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers[gathererIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == CARRY)}}).length;}
                 var isSaturated_gathering = total_carryParts >= 12;            //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
                 if(!isSaturated_gathering){
                     //Put new gatherers into the queue
