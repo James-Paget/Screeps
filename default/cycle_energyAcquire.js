@@ -452,7 +452,7 @@ function getSaturationCondition_gatherers(energyRooms_info){
                 //Now make decision
                 var carryNeeded_perWorker = Math.ceil(carryNeeded / Math.abs(3.0 -energyRooms_info.gatherers.length));   //Spreads work over multiple gatherers, not all on just one (3 workers used here)
                 var partSet = [CARRY,MOVE];
-                var partMax = 3;    //Max 5 sets of each
+                var partMax = 4;    //Max 4 sets of each => 4+initial = 5 full pairs 
                 for(var i=0; i<carryNeeded_perWorker; i++){                     //Attempts to spawn the most expensive (but not overkill) miner it can => however need to still have cheap miner above as extensions imply unreachable goals GIVEN you have 0 miners, => have to fullly rely on passive income
                     partSet.unshift(MOVE);                                      //MOVES made alongside CARRYs to ensure they stay at max move speed (on regular ground)
                     partSet.unshift(CARRY);
@@ -461,7 +461,7 @@ function getSaturationCondition_gatherers(energyRooms_info){
                         partSet.shift();
                         partSet.shift();
                         break;}
-                    if(i >= partMax){
+                    if(i >= partMax-1){
                         break;}
                 }
                 condition = {parts:partSet};    //... Could add more returns for a condition if needed
