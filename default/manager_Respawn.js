@@ -1,9 +1,8 @@
-var {miner_tasks, gatherer_tasks} = require("cycle_energyAcquire");
+var {miner_tasks, queueCreeps_energyRooms, gatherer_tasks} = require("cycle_energyAcquire");
 var upgradingTasks = require("behaviour_Upgrader");
 var buildingTasks  = require("behaviour_Builder");
 var repairingTasks = require("behaviour_Repairer");
 var defenderTasks  = require("behaviour_Defender");
-var funTasks       = require("behaviour_funDudes");
 
 /*
 The current solution for spawning;
@@ -50,50 +49,83 @@ var respawnManager = {
             }
         }
     },
-    populateQueue : function(){
+    extendQueue : function(){
         /*
-        Creeps must be built to these parameter;
-        1. An initial weak miner has to be made (to start colony off cheaply)
-        2. At least 2 fast miners should be made as soon as possible (Ideally 3 per source, so 6 ish total is pretty good)
-        3.      Once all miners exist, now start making builders (1 or 2) for base infrastructure
-        4.          Once builders are no longer busy, start building the army (change depending on spawn level)
-        5.              If there is now spare money, make upgraders (1 or 2) to improve spawn level
+        . Manages the turn-taking of the different 'factors' trying to add creeps to the queue
+        . Each 'factor' can add 1 creep to the queue each time this function is called (to give them all opportunity to populate their workers)
 
-        ###################################################
-        ## NEEDS REWORKING TO WORK WITH QUEUE BEFORE USE ##
-        ###################################################
+        For example, some factors are;
+        -energyRoom creeps
+        -General creeps
+        -...
+        */
+        if( (Memory.spawnQueue.queue.length == 0) && (Memory.spawnQueue.unassigned.length == 0) ){
+            queueCreeps_energyRooms();  //Can contribute 2 at once, maximum (miner and/or gatherer)
+            populateQueue_general();    //Can contribute 1 at once, maximum
+        }
+    },
+    populateQueue_general : function(){
+        /*
+        . Adds creeps NOT related to energy rooms (Miners and Gatherers) to the spawning queue
+        . This is performed such that energyRooms are utilised well before excess energy is spent on these other workers
+
+        Priorities are;
+        (1) Repairer
+        (2) Builders
+        (3) Upgraders
+        (4) Army
         */
         var creeps = Game.creeps;
         
-        var minerFilter    = _.filter(creeps, function(creep) { return (creep.memory.role == "Miner") });
-        var gathererFilter = _.filter(creeps, function(creep) { return (creep.memory.role == "Gatherer") });
-        var builderFilter  = _.filter(creeps, function(creep) { return (creep.memory.role == "Builder") });
-        var repairerFilter = _.filter(creeps, function(creep) { return (creep.memory.role == "Repairer") });
-        var upgraderFilter = _.filter(creeps, function(creep) { return (creep.memory.role == "Upgrader") });
-        var armyFilter     = _.filter(creeps, function(creep) { return (creep.memory.role == "Defender") });
-        var funFilter      = _.filter(creeps, function(creep) { return (creep.memory.role == "BasedIndividual") });
-        
-        //#########################################################
-        //## WILL NEED SOME REQORKING WITH NEW ASSIGNMENT SYSTEM ##
-        //#########################################################
-        miner_tasks.respawn(minerFilter.length);                            //1 & 2
-        if(minerFilter.length >= 4){                //########################################################## BIG PROBLEM, MAKE VARIABLE #######
-            gatherer_tasks.respawn(gathererFilter.length);
-            if(gathererFilter.length >= 2){         //########################################################## BIG PROBLEM, MAKE VARIABLE #######
-                buildingTasks.respawn(builderFilter.length);                //3
-                if(builderFilter.length >= 1){
-                    repairingTasks.respawn(repairerFilter.length);
-                    if(repairerFilter.length >= 1){
-                        defenderTasks.respawn(armyFilter.length);           //4
-                        if(armyFilter.length >= 4){
-                            upgradingTasks.respawn(upgraderFilter.length);  //5
-                            //funTasks.respawn(funFilter.length);
-                        }
+        //#######################################################################################################
+        //#### THIS WILL REQUIRE SOME INTERESTING THOUGHT FOR MULTI-ROOM STUFF, PARTICULARLY MULTI-SPAWNERS #####
+        //#######################################################################################################
+
+        //#### -----> Assuming this functions how one spawner will be governed...
+        //Sources covered
+        var sourceOccupied_miners    = getSummed_potential_role("Miner")    > Game.spawns["Spawn1"].room.find(FIND_SOURCES).length;
+        var sourceOccupied_gatherers = getSummed_potential_role("Gatherer") > Game.spawns["Spawn1"].room.find(FIND_SOURCES).length;
+        if(sourceOccupied_miners && sourceOccupied_gatherers){
+            var repairerFilter = getSummed_potential_role("Repairer");
+            if(repairerFilter > 0){
+                var builderFilter  = getSummed_potential_role("Builder");
+                if(builderFilter > 1){
+                    var upgraderFilter = getSummed_potential_role("Upgrader");
+                    if(upgraderFilter > 4){
+                        var armyFilter     = getSummed_potential_role("Defender");
+                        if(armyFilter < 4){
+                            defenderTasks.queue();}
                     }
+                    else{
+                        upgradingTasks.queue();}
                 }
+                else{
+                    buildingTasks.queue();}
             }
+            else{
+                repairingTasks.queue();}
         }
     }
+}
+function getSummed_potential_role(role){
+    /*
+    . Sums all the creeps with the given role
+    . Sums creep that are currently alive AND that are queued up
+
+    #####
+    ## HOPEFULLY NO PROBLEM IN THE 1 FRAME IT IS IN UNASSIGNED => BUT SHOULD STILL EXIST IN BOARD AT THIS POINT SO SHOULD BE FINE, BUT WORTH TESTING
+    #####
+    */
+    var total = 0;
+    for(var creepName in Game.creeps){
+        if(Game.creeps[creepName].memory.role == role){
+            total++;}
+    }
+    for(var element in Memory.spawnQueue.queue){
+        if(Memory.spawnQueue.queue[element].memory.role == role){
+            total++;}
+    }
+    return total;
 }
 
 module.exports = respawnManager;

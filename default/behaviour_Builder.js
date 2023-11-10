@@ -25,6 +25,11 @@ var buildingTasks = {
             }
         }
     },
+    queue : function(){
+        //Note; Have null for houseKey information as this is irrelevent to them
+        var creepSpec = {roomID:null, sourceID:null, parts:[WORK, CARRY, MOVE], role:"Builder"};
+        Memory.spawnQueue.queue.push(creepSpec);
+    },
     respawn : function(creepSpec){
         /*
         . Occurs when creep reaches the front of the queue and spawner is not busy

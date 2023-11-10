@@ -3,7 +3,6 @@ var upgradingTasks = require("behaviour_Upgrader");
 var buildingTasks  = require("behaviour_Builder");
 var repairingTasks = require("behaviour_Repairer");
 var defenderTasks  = require("behaviour_Defender");
-var funTasks       = require("behaviour_funDudes");
 var structureManager = require("manager_Structures");
 var respawnManager   = require("manager_Respawn");
 
@@ -15,8 +14,10 @@ module.exports.loop = function () {
     NEEDS TO UPDATE CONTAINERS BEING REMOVED PERIODICALLY --> energyRooms global memory
     ----> SPAWNED WITH MEMORY "Undefined" --> LOOKS LIKE A SIM BUG POSSIBLY
 
-    
-    . --> IMPLEMENT VARYING CARRY FUNCTION ----> WRITTEN DOWN SOMEWHERE
+    --> PUT QUEUE FUNCTION INTO ALL WORKERS
+
+    ----> FOR QUEUE, JUST LOOK AT THE ROLES ALREADY IN THE QUEUE; IF NONE OF SAME TYPE, PUT YOURS IN, DO 1 AT A TIME TYPE DEAL (OTHER THAN ENERGY ROOM WORKERS)
+    . AUTO PLACE NEW EXTENSIONS & Containers => AUTO ADD THEM TO THE GLOBAL MEMORY
     . THEN MAKE OTHERS GUYS GET ADDED TO THE QUEUE
     .       --> MAKE SURE THEY DO THEIR WORK PROPERLY
     ###
@@ -45,17 +46,15 @@ module.exports.loop = function () {
                 repairingTasks.death();}
             if(Memory.creeps[memoryName].role == "Defender"){
                 defenderTasks.death();}
-            if(Memory.creeps[memoryName].role == "BasedIndividual"){
-                funTasks.death();}
             //...
             delete Memory.creeps[memoryName];
         }
     }
     
-    //Spawn required dudes
-    queueCreeps_energyRooms();
+    //Spawn & assign required dudes
     assignCreeps_energyRooms();         //this order is important, prevents nulls occurring when spawning and istantly assigning, gives a frame of breather room
     respawnManager.spawnFromQueue();    //assign -> respawn => respawn -> frame gap -> assign
+    respawnManager.extendQueue();
     
     //Make each dude do his job
     for(name in creeps)
@@ -72,8 +71,6 @@ module.exports.loop = function () {
             repairingTasks.task(creeps[name]);}
         if(creeps[name].memory.role == "Defender"){
             defenderTasks.task(creeps[name]);}
-        if(creeps[name].memory.role == "BasedIndividual"){
-            funTasks.task(creeps[name]);}
         //...
     }
     //Build structures where required

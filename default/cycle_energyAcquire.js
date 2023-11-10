@@ -340,31 +340,40 @@ function queueCreeps_energyRooms(){
     . Calculates the type of creep (role, parts, etc) needed to satisfy this condition
     . Adds required creeps to the spawn queue (Note, when checking, it will add miners before gatherers, which is good behaviour)
 
+    -- This function will only assign the first unit it finds that is required
+    -- It is then called often by the respawn manager to populate all required units
+
     The spawnQueue.queue      HOLDS [{roomID, sourceID, Parts, Role}, {...}, ...] <-- Specify what creeps to make                 <-*Only THIS list is touched here*
     The spawnQueue.unassigned HOLDS [creepNames, ...]                             <-- Specify the creeps who have just been made
     */
     //##############################################################
     //## QUEUE PROBLEM COULD BE HANDLED BETTER, BUT WORKS FOR NOW ##
     //##############################################################
-    if((Memory.spawnQueue.queue.length == 0) && (Memory.spawnQueue.unassigned.length == 0)){  //Only do this when all unassigned positions have been resolved -> so when choosing new spawns, only have to consider energyRooms, not spawnQueue.unassigned
-        for(var roomIndex in Memory.energyRooms){
-            for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
-                var saturationCondition_miners = getSaturationCondition_miners(Memory.energyRooms[roomIndex].sources[sourceIndex]);    //Check mining is saturated
-                if(saturationCondition_miners != null){                                                                                //Not saturated => put new miners into the queue
-                    var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_miners.parts, role:"Miner"};
-                    Memory.spawnQueue.queue.push(creepSpec);
-                }
-
-                //Check gathering is saturated
-                var saturationCondition_gatherers = getSaturationCondition_gatherers(Memory.energyRooms[roomIndex].sources[sourceIndex]);   //Check gatherers are saturated
-                if(saturationCondition_gatherers != null){                                                                                  //not saturated => put new gatherers into the queue
-                    var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_gatherers.parts, role:"Gatherer"};
-                    Memory.spawnQueue.queue.push(creepSpec);
-                }
-
-                //...
+    //Only do this when all unassigned positions have been resolved -> so when choosing new spawns, only have to consider energyRooms, not spawnQueue.unassigned
+    var workerQueued = false;
+    for(var roomIndex in Memory.energyRooms){
+        for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
+            //Check mining is saturated
+            var saturationCondition_miners = getSaturationCondition_miners(Memory.energyRooms[roomIndex].sources[sourceIndex]);    //Check mining is saturated
+            if(saturationCondition_miners != null){                                                                                //Not saturated => put new miners into the queue
+                var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_miners.parts, role:"Miner"};
+                Memory.spawnQueue.queue.push(creepSpec);
+                workerQueued = true;
             }
+            //Check gathering is saturated
+            var saturationCondition_gatherers = getSaturationCondition_gatherers(Memory.energyRooms[roomIndex].sources[sourceIndex]);   //Check gatherers are saturated
+            if(saturationCondition_gatherers != null){                                                                                  //not saturated => put new gatherers into the queue
+                var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_gatherers.parts, role:"Gatherer"};
+                Memory.spawnQueue.queue.push(creepSpec);
+                workerQueued = true;
+            }
+            //...
+
+            if(workerQueued){
+                break;}
         }
+        if(workerQueued){
+            break;}
     }
 }
 function getSaturationCondition_miners(energyRooms_info){
