@@ -127,8 +127,8 @@ function getTarget_miner(creep){
             for(var roomIndex in Memory.energyRooms){
                 if(creep.memory.houseKey.roomID == Memory.energyRooms[roomIndex].ID){
                     for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
-                        if(creep.memory.houseKey.sourceID == Memory.energyRooms[roomIndex].source[sourceIndex].ID){
-                            containerIDs = Memory.energyRooms[roomIndex].source[sourceIndex].containers;
+                        if(creep.memory.houseKey.sourceID == Memory.energyRooms[roomIndex].sources[sourceIndex].ID){
+                            containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;
                             break;}
                     }
                     break;}
@@ -173,8 +173,8 @@ function getTarget_gatherer(creep){
             for(var roomIndex in Memory.energyRooms){
                 if(creep.memory.houseKey.roomID == Memory.energyRooms[roomIndex].ID){
                     for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
-                        if(creep.memory.houseKey.sourceID == Memory.energyRooms[roomIndex].source[sourceIndex].ID){
-                            containerIDs = Memory.energyRooms[roomIndex].source[sourceIndex].containers;
+                        if(creep.memory.houseKey.sourceID == Memory.energyRooms[roomIndex].sources[sourceIndex].ID){
+                            containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;
                             break;}
                     }
                     break;}
