@@ -439,8 +439,9 @@ function getSaturationCondition_gatherers(energyRooms_info){
         }
         else{
             //(1) Sum CARRY parts assigned to source
-            //Game.spawns["Spawn1"].pos.getRangeTo(Game.getObjectById(energyRooms_info.ID)); //Linear path, not great but works ish
-            var travelDistance   = PathFinder.search(Game.spawns["Spawn1"].pos, Game.getObjectById(energyRooms_info.containers[0]).pos).path.length;   //From spawn to source, actual path
+            var originObj = Game.spawns["Spawn1"].pos;
+            var goalObj   = {pos:Game.getObjectById(energyRooms_info.ID).pos, range:1};
+            var travelDistance   = PathFinder.search(originObj, goalObj).path.length;   //From spawn to source, actual path
             var carryRequired    = Math.max(Math.ceil(0.4*travelDistance), 3);                                                              //CARRY required to fully empty whatever a source produces (10 energy tick^-1) --> assumed travelling always at 1 tile tick^-1 --> sets a min so incorrect linear dist is slightly corrected
             var total_carryParts = 0;
             for(var gathererIndex in energyRooms_info.gatherers){
