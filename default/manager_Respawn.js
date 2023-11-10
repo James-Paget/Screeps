@@ -61,7 +61,7 @@ var respawnManager = {
         */
         if( (Memory.spawnQueue.queue.length == 0) && (Memory.spawnQueue.unassigned.length == 0) ){
             queueCreeps_energyRooms();  //Can contribute 2 at once, maximum (miner and/or gatherer)
-            populateQueue_general();    //Can contribute 1 at once, maximum
+            this.populateQueue_general();    //Can contribute 1 at once, maximum
         }
     },
     populateQueue_general : function(){
