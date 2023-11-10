@@ -393,7 +393,7 @@ function getSaturationCondition_miners(energyRooms_info){
             for(var minerIndex in energyRooms_info.miners){
                 total_workParts += _.filter(Game.getObjectById(energyRooms_info.miners[minerIndex]).body, function(part){return (part.type==WORK)}).length;}
             var workNeeded = workRequired -total_workParts;
-            console.log("WORK needed -> ",workNeeded);
+            //console.log("WORK needed -> ",workNeeded);
             if(workNeeded > 0){          //If actually need any more workers
                 //(3) Energy max
                 var energyMax = Game.spawns["Spawn1"].room.energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
@@ -436,7 +436,7 @@ function getSaturationCondition_gatherers(energyRooms_info){
         for(var gathererIndex in energyRooms_info.gatherers){
             total_carryParts += _.filter(Game.getObjectById(energyRooms_info.gatherers[gathererIndex]).body, function(part){return (part.type==CARRY)}).length;}
         var carryNeeded = carryRequired -total_carryParts;
-        console.log("CARRY needed -> ",carryNeeded);
+        //console.log("CARRY needed -> ",carryNeeded);
         if(carryNeeded > 0){          //If actually need any more workers
             //(3) Energy max
             var energyMax = Game.spawns["Spawn1"].room.energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
