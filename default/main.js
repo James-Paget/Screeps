@@ -13,11 +13,9 @@ module.exports.loop = function () {
     /*
     ###
     NEEDS TO UPDATE CONTAINERS BEING REMOVED PERIODICALLY --> energyRooms global memory
-
-
     ----> SPAWNED WITH MEMORY "Undefined" --> LOOKS LIKE A SIM BUG POSSIBLY
 
-    . --> GETTING 0 FOR total_work & total_carry, JUST REDO THE FILTER OBVIOUSLY NOT WORKING
+    
     . --> IMPLEMENT VARYING CARRY FUNCTION ----> WRITTEN DOWN SOMEWHERE
     . THEN MAKE OTHERS GUYS GET ADDED TO THE QUEUE
     .       --> MAKE SURE THEY DO THEIR WORK PROPERLY
