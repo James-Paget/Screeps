@@ -27,7 +27,7 @@ module.exports.loop = function () {
         Memory.spawnQueue  = {queue:queueSet, unassigned:unassignedSet};}
     if(!Memory.energyRooms){
         Memory.energyRooms = [];}
-    //init_energyRoom(Game.spawns["Spawn1"].room);
+    init_energyRoom(Game.spawns["Spawn1"].room);    //## HAVE A MANAGER FOR THIS ##
     
     //Clean dead dudes
     for(var memoryName in Memory.creeps){
