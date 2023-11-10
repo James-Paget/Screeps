@@ -465,17 +465,23 @@ function assignCreeps_energyRooms(){
     var unassignedLength = Memory.spawnQueue.unassigned.length;
     for(var i=0; i<unassignedLength; i++){
         var creepName = Memory.spawnQueue.unassigned[0];
-        var roomIndex    = searchEnergyRooms_roomIndex(Memory.creeps[creepName].houseKey.roomID);
-        var sourceIndex  = searchEnergyRooms_sourceIndex(roomIndex, Memory.creeps[creepName].houseKey.sourceID);
-        if(Memory.creeps[creepName].role == "Miner"){
-            Memory.energyRooms[roomIndex].sources[sourceIndex].miners.push(Game.creeps[creepName].id);  //Assigned it correctly
-            Memory.spawnQueue.unassigned.shift();                                                       //Now it must be removed from this "waiting list"
+        if(Memory.creeps[creepName]){   //Prevents a bug where the 1 time a creep, in sim, spawned with undefined memory => ignore his assignment and execute him
+            var roomIndex    = searchEnergyRooms_roomIndex(Memory.creeps[creepName].houseKey.roomID);
+            var sourceIndex  = searchEnergyRooms_sourceIndex(roomIndex, Memory.creeps[creepName].houseKey.sourceID);
+            if(Memory.creeps[creepName].role == "Miner"){
+                Memory.energyRooms[roomIndex].sources[sourceIndex].miners.push(Game.creeps[creepName].id);  //Assigned it correctly
+                Memory.spawnQueue.unassigned.shift();                                                       //Now it must be removed from this "waiting list"
+            }
+            if(Memory.creeps[creepName].role == "Gatherer"){
+                Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.push(Game.creeps[creepName].id);
+                Memory.spawnQueue.unassigned.shift();
+            }
+            //...
         }
-        if(Memory.creeps[creepName].role == "Gatherer"){
-            Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.push(Game.creeps[creepName].id);
+        else{
+            Game.creeps[creepName].suicide();       //May bug out if he is still spawning
             Memory.spawnQueue.unassigned.shift();
         }
-        //...
     }
 }
 function clearSpawnQueue_queue(){
