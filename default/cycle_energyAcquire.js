@@ -299,7 +299,7 @@ function removeCreep_energyRooms(houseKey, creepRole, creepID){
 function searchEnergyRooms_roomIndex(roomID){
     var index = null;
     for(var roomIndex in Memory.energyRooms){
-        if(roomID == Memory.energyRooms[index].ID){
+        if(roomID == Memory.energyRooms[roomIndex].ID){
             index = roomIndex;
             break;
         }
@@ -352,7 +352,7 @@ function queueCreeps_energyRooms(){
                 var total_workParts = 0;
                 for(var minerIndex in Memory.energyRooms[roomIndex].sources.miners){
                     total_workParts += _.filter(Game.getObjectById(Memory.energyRooms[roomIndex].sources.miners[minerIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == WORK)}}).length;}
-                var isSaturated_mining = (total_workParts >= 5);            //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
+                var isSaturated_mining = (total_workParts >= 5);      //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
                 if(!isSaturated_mining){
                     //Put new miners into the queue
                     var partsSet = [WORK, WORK, CARRY, MOVE];         //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
@@ -364,7 +364,7 @@ function queueCreeps_energyRooms(){
                 var total_carryParts = 0;
                 for(var gathererIndex in Memory.energyRooms[roomIndex].sources.gatherers){
                     total_carryParts += _.filter(Game.getObjectById(Memory.energyRooms[roomIndex].sources.gatherers[gathererIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == CARRY)}}).length;}
-                var isSaturated_gathering = total_carryParts >= 12;                         //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
+                var isSaturated_gathering = total_carryParts >= 12;            //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
                 if(!isSaturated_gathering){
                     //Put new gatherers into the queue
                     var partsSet = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];    //#### MAKE THIS A FUNCTION INPUT, SO IT CAN VARY #######
