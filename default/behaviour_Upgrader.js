@@ -17,6 +17,10 @@ var upgradingTasks = {
                         creep.moveTo(target);
                     }
                 }
+                else{
+                    //Move out of the way
+                    creep.moveTo(creep.room.controller);
+                }
             }
             else{
                 creep.memory.isUpgrading = true;

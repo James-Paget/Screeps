@@ -16,12 +16,19 @@ var buildingTasks = {
             }
         }
         else{
-            var spawn = Game.spawns["Spawn1"];
-            if(creep.withdraw(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
-                creep.moveTo(spawn);
+            if(creep.room.find(FIND_CONSTRUCTION_SITES).length > 0){
+                //Prepare for construction
+                var spawn = Game.spawns["Spawn1"];
+                if(creep.withdraw(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(spawn);
+                }
+                if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
+                    creep.memory.isBuilding = true;
+                }
             }
-            if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
-                creep.memory.isBuilding = true;
+            else{
+                //Move out the way
+                creep.moveTo(creep.room.controller);
             }
         }
     },
