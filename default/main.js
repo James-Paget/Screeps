@@ -10,9 +10,14 @@ var respawnManager   = require("manager_Respawn");
 module.exports.loop = function () {
     var creeps  = Game.creeps;
     
-    //#################
-    //NEEDS TO UPDATE CONTAINERS BEING REMOVED PERIODICALLY --> energyRooms global memory
-    //#################
+    /*
+    #################
+    NEEDS TO UPDATE CONTAINERS BEING REMOVED PERIODICALLY --> energyRooms global memory
+
+    . QUEUING UP FAR TOO MANY
+    . SOME DO NOT SEEM TO BE DELETED FROM ENERGYROOMS
+    #################
+    */
     if(!Memory.spawnQueue){
         var queueSet       = [];    //Spawn Queue init here too
         var unassignedSet  = [];    //### MAYBE GOOD TO MOVE SOMEWHERE ELSE ###
@@ -24,6 +29,7 @@ module.exports.loop = function () {
     //Clean dead dudes
     for(var memoryName in Memory.creeps){
         if(!Game.creeps[memoryName]){
+            console.log("CREEP JUST REGISTERED AS DEAD");
             if(Memory.creeps[memoryName].role == "Miner"){
                 miner_tasks.death(Memory.creeps[memoryName].houseKey, Memory.creeps[memoryName].role, Memory.creeps[memoryName].ID);}
             if(Memory.creeps[memoryName].role == "Gatherer"){
@@ -46,7 +52,7 @@ module.exports.loop = function () {
     //Spawn required dudes
     queueCreeps_energyRooms();
     assignCreeps_energyRooms();         //this order is important, prevents nulls occurring when spawning and istantly assigning, gives a frame of breather room
-    respawnManager.spawnFromQueue();    //assign -> respawn => respawn -> frame gap -> assign
+    //respawnManager.spawnFromQueue();    //assign -> respawn => respawn -> frame gap -> assign
     
     //Make each dude do his job
     for(name in creeps)
