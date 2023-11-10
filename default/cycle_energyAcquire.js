@@ -106,7 +106,7 @@ function getTarget_miner(creep){
     . If SOURCE is in a different room to this, the target should be a route to the next room, that is closer to the target room (multi-room pathing)
     */
     var target = null;
-    if(creep.isMining){ //Go to source
+    if(creep.memory.isMining){ //Go to source
         if(creep.memory.houseKey.roomID == creep.room.name){    //If already in correct room
             target = Game.getObjectById(creep.memory.houseKey.sourceID);   //Will be null if you have no vision of the room
         }
@@ -162,7 +162,7 @@ function getTarget_gatherer(creep){
     . If SOURCE is in a different room to this, the target should be a route to the next room, that is closer to the target room (multi-room pathing)
     */
     var target = null;
-    if(creep.isGathering){ //Go to source
+    if(creep.memory.isGathering){ //Go to source
         if(creep.memory.houseKey.roomID == creep.room.name){    //If already in correct room
             /*
             (1) Look through containers linked to this creep's assigned source
