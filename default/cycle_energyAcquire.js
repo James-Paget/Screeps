@@ -427,40 +427,42 @@ function getSaturationCondition_gatherers(energyRooms_info){
     . If they are NOT, returns what the next gatherer parts should be in order to fulfil saturation
     . If they are, returns null
 
-    The number of parts assigned to the next worker is based on (1)the distance to the source
+    The number of parts assigned to the next worker is based on (1)if containers exist to gather from and (2)the distance to the source
 
     --> Note; Related to "energyMax", make sure a cheap gatherer is spawned if no others are there to ensure some gathering always takes 
             place, so miners can work efficiently, and gatherers are never falsely valued too highly so they never spawn (due to extensions)
     */
     var condition = null;
-    if(energyRooms_info.gatherers.length == 0){         //If this is the first gatherer, make them cheap so gathering will occur
-        condition = {parts:[CARRY,MOVE,CARRY,MOVE]};
-    }
-    else{
-        //(1) Sum CARRY parts assigned to source
-        var travelDistance   = Game.spawns["Spawn1"].pos.getRangeTo(Game.getObjectById(energyRooms_info.ID));   //From spawn to source, linear dist => very approx, but good enough
-        var carryRequired    = Math.ceil(0.4*travelDistance);                                                   //CARRY required to fully empty whatever a source produces (10 energy tick^-1) --> assumed travelling always at 1 tile tick^-1
-        var total_carryParts = 0;
-        for(var gathererIndex in energyRooms_info.gatherers){
-            total_carryParts += _.filter(Game.getObjectById(energyRooms_info.gatherers[gathererIndex]).body, function(part){return (part.type==CARRY)}).length;}
-        var carryNeeded = carryRequired -total_carryParts;
-        //console.log("CARRY needed -> ",carryNeeded);
-        if(carryNeeded > 0){          //If actually need any more workers
-            //(3) Energy max
-            var energyMax = Game.spawns["Spawn1"].room.energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
-            //Now make decision
-            var carryNeeded_perWorker = Math.ceil(carryNeeded / Math.abs(3.0 -energyRooms_info.gatherers.length));   //Spreads work over multiple gatherers, not all on just one (3 workers used here)
-            var partSet = [CARRY,MOVE];
-            for(var i=0; i<carryNeeded_perWorker; i++){                     //Attempts to spawn the most expensive (but not overkill) miner it can => however need to still have cheap miner above as extensions imply unreachable goals GIVEN you have 0 miners, => have to fullly rely on passive income
-                partSet.unshift(MOVE);                                      //MOVES made alongside CARRYs to ensure they stay at max move speed (on regular ground)
-                partSet.unshift(CARRY);
-                var energyCost = _.sum(partSet, part => BODYPART_COST[part]);
-                if(energyCost > energyMax){
-                    partSet.shift();
-                    partSet.shift();
-                    break;}
+    if(energyRooms_info.containers.length > 0){
+        if(energyRooms_info.gatherers.length == 0){         //If this is the first gatherer, make them cheap so gathering will occur
+            condition = {parts:[CARRY,MOVE,CARRY,MOVE]};
+        }
+        else{
+            //(1) Sum CARRY parts assigned to source
+            var travelDistance   = Game.spawns["Spawn1"].pos.getRangeTo(Game.getObjectById(energyRooms_info.ID));   //From spawn to source, linear dist => very approx, but good enough
+            var carryRequired    = Math.ceil(0.4*travelDistance);                                                   //CARRY required to fully empty whatever a source produces (10 energy tick^-1) --> assumed travelling always at 1 tile tick^-1
+            var total_carryParts = 0;
+            for(var gathererIndex in energyRooms_info.gatherers){
+                total_carryParts += _.filter(Game.getObjectById(energyRooms_info.gatherers[gathererIndex]).body, function(part){return (part.type==CARRY)}).length;}
+            var carryNeeded = carryRequired -total_carryParts;
+            //console.log("CARRY needed -> ",carryNeeded);
+            if(carryNeeded > 0){          //If actually need any more workers
+                //(3) Energy max
+                var energyMax = Game.spawns["Spawn1"].room.energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
+                //Now make decision
+                var carryNeeded_perWorker = Math.ceil(carryNeeded / Math.abs(3.0 -energyRooms_info.gatherers.length));   //Spreads work over multiple gatherers, not all on just one (3 workers used here)
+                var partSet = [CARRY,MOVE];
+                for(var i=0; i<carryNeeded_perWorker; i++){                     //Attempts to spawn the most expensive (but not overkill) miner it can => however need to still have cheap miner above as extensions imply unreachable goals GIVEN you have 0 miners, => have to fullly rely on passive income
+                    partSet.unshift(MOVE);                                      //MOVES made alongside CARRYs to ensure they stay at max move speed (on regular ground)
+                    partSet.unshift(CARRY);
+                    var energyCost = _.sum(partSet, part => BODYPART_COST[part]);
+                    if(energyCost > energyMax){
+                        partSet.shift();
+                        partSet.shift();
+                        break;}
+                }
+                condition = {parts:partSet};    //... Could add more returns for a condition if needed
             }
-            condition = {parts:partSet};    //... Could add more returns for a condition if needed
         }
     }
     return condition;
