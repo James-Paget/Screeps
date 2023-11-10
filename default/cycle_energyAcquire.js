@@ -124,15 +124,9 @@ function getTarget_miner(creep){
             */
             //(1)
             var containerIDs = [];
-            for(var roomIndex in Memory.energyRooms){
-                if(creep.memory.houseKey.roomID == Memory.energyRooms[roomIndex].ID){
-                    for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
-                        if(creep.memory.houseKey.sourceID == Memory.energyRooms[roomIndex].sources[sourceIndex].ID){
-                            containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;
-                            break;}
-                    }
-                    break;}
-            }
+            var roomIndex    = searchEnergyRooms_roomIndex(creep.memory.houseKey.roomID);
+            var sourceIndex  = searchEnergyRooms_sourceIndex(roomIndex, creep.memory.houseKey.sourceID);
+            containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;
             if(containerIDs.length > 0){
                 var containerObjects = [];
                 for(var index in containerIDs){
@@ -170,15 +164,9 @@ function getTarget_gatherer(creep){
             */
             //(1)
             var containerIDs = [];
-            for(var roomIndex in Memory.energyRooms){
-                if(creep.memory.houseKey.roomID == Memory.energyRooms[roomIndex].ID){
-                    for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
-                        if(creep.memory.houseKey.sourceID == Memory.energyRooms[roomIndex].sources[sourceIndex].ID){
-                            containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;
-                            break;}
-                    }
-                    break;}
-            }
+            var roomIndex    = searchEnergyRooms_roomIndex(creep.memory.houseKey.roomID);
+            var sourceIndex  = searchEnergyRooms_sourceIndex(roomIndex, creep.memory.houseKey.sourceID);
+            containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;
             //(2)
             var containerObjects = [];
             for(var index in containerIDs){
@@ -286,35 +274,47 @@ function removeCreep_energyRooms(houseKey, creepRole, creepID){
     */
     var creepRoom   = houseKey.roomID;
     var creepSource = houseKey.sourceID;
-    for(var roomIndex in Memory.energyRooms){
-        if(creepRoom == Memory.energyRooms[roomIndex].ID){  //# Note the break later assumes that the creep is only assigned to 1 source, and therefore only 1 room
-            for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
-                if(creepSource == Memory.energyRooms[roomIndex].sources[sourceIndex].ID){   //# "" ""
-                    if(creepRole == "Miner"){
-                        for(var creepIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].miners){
-                            if(creepID == Memory.energyRooms[roomIndex].sources[sourceIndex].miners[creepIndex]){
-                                console.log("--Miner JUST removed");
-                                Memory.energyRooms[roomIndex].sources[sourceIndex].miners.splice(creepIndex,1);
-                                break;
-                            }
-                        }
-                    }
-                    if(creepRole == "Gatherer"){
-                        for(var creepIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers){
-                            if(creepID == Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers[creepIndex]){
-                                console.log("--Gatherer JUST removed");
-                                Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.splice(creepIndex,1);
-                                break;
-                            }
-                        }
-                    }
-                    //... -> If more roles become involved in energyRooms
-                }
+    var roomIndex   = searchEnergyRooms_roomIndex(roomID);
+    var sourceIndex = searchEnergyRooms_roomIndex(roomIndex, sourceID); //# Note the break later assumes that the creep is only assigned to 1 source, and therefore only 1 room
+    if(creepRole == "Miner"){
+        for(var creepIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].miners){
+            if(creepID == Memory.energyRooms[roomIndex].sources[sourceIndex].miners[creepIndex]){
+                console.log("--Miner JUST removed");
+                Memory.energyRooms[roomIndex].sources[sourceIndex].miners.splice(creepIndex,1);
                 break;
             }
+        }
+    }
+    if(creepRole == "Gatherer"){
+        for(var creepIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers){
+            if(creepID == Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers[creepIndex]){
+                console.log("--Gatherer JUST removed");
+                Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.splice(creepIndex,1);
+                break;
+            }
+        }
+    }
+    //... -> If more roles become involved in energyRooms
+}
+function searchEnergyRooms_roomIndex(roomID){
+    var index = null;
+    for(var roomIndex in Memory.energyRooms){
+        if(roomID == Memory.energyRooms[index].ID){
+            index = roomIndex;
             break;
         }
     }
+    return index;
+}
+function searchEnergyRooms_sourceIndex(roomIndex, sourceID){
+    var index = null;
+    for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
+        if(sourceID == Memory.energyRooms[roomIndex].sources[sourceIndex].ID){
+            index = sourceIndex;
+            break;
+        }
+    }
+    return index;
 }
 function getSource_freeSpace(room, cSource){
     /*
@@ -387,28 +387,17 @@ function assignCreeps_energyRooms(){
     var unassignedLength = Memory.spawnQueue.unassigned.length;
     for(var i=0; i<unassignedLength; i++){
         var creepName = Memory.spawnQueue.unassigned[0];
-        var roomID    = Memory.creeps[creepName].houseKey.roomID;
-        var sourceID  = Memory.creeps[creepName].houseKey.sourceID;
-        for(var roomIndex in Memory.energyRooms){
-            if(Memory.energyRooms[roomIndex].ID == roomID){
-                for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
-                    if(Memory.energyRooms[roomIndex].sources[sourceIndex].ID == sourceID){
-                        if(Memory.creeps[creepName].role == "Miner"){
-                            Memory.energyRooms[roomIndex].sources[sourceIndex].miners.push(Game.creeps[creepName].id);  //Assigned it correctly
-                            Memory.spawnQueue.unassigned.shift();                                                       //Now it must be removed from this "waiting list"
-                        }
-                        if(Memory.creeps[creepName].role == "Gatherer"){
-                            Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.push(Game.creeps[creepName].id);
-                            Memory.spawnQueue.unassigned.shift();
-                        }
-                        //...
-                        break;
-                    }
-                }
-                break;
-            }
+        var roomIndex    = searchEnergyRooms_roomIndex(Memory.creeps[creepName].houseKey.roomID);
+        var sourceIndex  = searchEnergyRooms_sourceIndex(roomIndex, Memory.creeps[creepName].houseKey.sourceID);
+        if(Memory.creeps[creepName].role == "Miner"){
+            Memory.energyRooms[roomIndex].sources[sourceIndex].miners.push(Game.creeps[creepName].id);  //Assigned it correctly
+            Memory.spawnQueue.unassigned.shift();                                                       //Now it must be removed from this "waiting list"
         }
-        break;
+        if(Memory.creeps[creepName].role == "Gatherer"){
+            Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.push(Game.creeps[creepName].id);
+            Memory.spawnQueue.unassigned.shift();
+        }
+        //...
     }
 }
 function clearSpawnQueue_queue(){
