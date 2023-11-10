@@ -479,7 +479,7 @@ function assignCreeps_energyRooms(){
             //...
         }
         else{
-            Game.creeps[creepName].suicide();       //May bug out if he is still spawning
+            //Game.creeps[creepName].suicide();       //May bug out if he is still spawning
             Memory.spawnQueue.unassigned.shift();
         }
     }
