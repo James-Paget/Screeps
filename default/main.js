@@ -16,6 +16,11 @@ module.exports.loop = function () {
 
 
     ----> SPAWNED WITH MEMORY "Undefined" --> LOOKS LIKE A SIM BUG POSSIBLY
+
+    . --> GETTING 0 FOR total_work & total_carry, JUST REDO THE FILTER OBVIOUSLY NOT WORKING
+    . --> IMPLEMENT VARYING CARRY FUNCTION ----> WRITTEN DOWN SOMEWHERE
+    . THEN MAKE OTHERS GUYS GET ADDED TO THE QUEUE
+    .       --> MAKE SURE THEY DO THEIR WORK PROPERLY
     ###
     */
     if(!Memory.spawnQueue){
@@ -29,7 +34,7 @@ module.exports.loop = function () {
     //Clean dead dudes
     for(var memoryName in Memory.creeps){
         if(!Game.creeps[memoryName]){
-            console.log("CREEP JUST REGISTERED AS DEAD");
+            //console.log("CREEP JUST REGISTERED AS DEAD");
             if(Memory.creeps[memoryName].role == "Miner"){
                 miner_tasks.death(Memory.creeps[memoryName].houseKey, Memory.creeps[memoryName].role, Memory.creeps[memoryName].ID);}
             if(Memory.creeps[memoryName].role == "Gatherer"){

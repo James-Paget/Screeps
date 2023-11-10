@@ -280,7 +280,7 @@ function removeCreep_energyRooms(houseKey, creepRole, creepID){
     if(creepRole == "Miner"){
         for(var creepIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].miners){
             if(creepID == Memory.energyRooms[roomIndex].sources[sourceIndex].miners[creepIndex]){
-                console.log("--Miner JUST removed");
+                //console.log("--Miner JUST removed");
                 Memory.energyRooms[roomIndex].sources[sourceIndex].miners.splice(creepIndex,1);
                 break;
             }
@@ -289,7 +289,7 @@ function removeCreep_energyRooms(houseKey, creepRole, creepID){
     if(creepRole == "Gatherer"){
         for(var creepIndex in Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers){
             if(creepID == Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers[creepIndex]){
-                console.log("--Gatherer JUST removed");
+                //console.log("--Gatherer JUST removed");
                 Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.splice(creepIndex,1);
                 break;
             }
@@ -391,8 +391,9 @@ function getSaturationCondition_miners(energyRooms_info){
             var workRequired    = 5;                        //Work required to full deplete any source
             var total_workParts = 0;
             for(var minerIndex in energyRooms_info.miners){
-                total_workParts += _.filter(Game.getObjectById(energyRooms_info.miners[minerIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == WORK)}}).length;}
+                total_workParts += _.filter(Game.getObjectById(energyRooms_info.miners[minerIndex]).body, function(part){return (part==WORK)}).length;}
             var workNeeded = workRequired -total_workParts;
+            console.log("WORK needed -> ",workNeeded);
             if(workNeeded > 0){          //If actually need any more workers
                 //(3) Energy max
                 var energyMax = Game.spawns["Spawn1"].room.energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
@@ -433,8 +434,9 @@ function getSaturationCondition_gatherers(energyRooms_info){
         var carryRequired    = 12;      //### THIS SHOULD BE A FUNCTION OF DISTANCE #### CARRY required to fully empty whatever a source produces (10 energy tick^-1)
         var total_carryParts = 0;       //############################################## -----> just assume dist to source, not each container, unnecessary
         for(var gathererIndex in energyRooms_info.gatherers){
-            total_carryParts += _.filter(Game.getObjectById(energyRooms_info.gatherers[gathererIndex]).body, {filter : (bodyPart) => {return (bodyPart.type == CARRY)}}).length;}
+            total_carryParts += _.filter(Game.getObjectById(energyRooms_info.gatherers[gathererIndex]).body, function(part){return (part==CARRY)}).length;}
         var carryNeeded = carryRequired -total_carryParts;
+        console.log("CARRY needed -> ",carryNeeded);
         if(carryNeeded > 0){          //If actually need any more workers
             //(3) Energy max
             var energyMax = Game.spawns["Spawn1"].room.energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
