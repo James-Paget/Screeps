@@ -68,7 +68,7 @@ module.exports.loop = function () {
             defenderTasks.task(creeps[name]);}
         var towers = Game.spawns["Spawn1"].room.find(FIND_STRUCTURES, {filter:(structure)=>{return(structure.structureType == STRUCTURE_TOWER)}});
         for(var tower in towers){
-            tower_tasks.tasks(tower);
+            tower_tasks.task(towers[tower]);
         }
         //...
     }
