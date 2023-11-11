@@ -1,8 +1,10 @@
 var upgradingTasks = {
     task : function(creep){
         if(creep.memory.isUpgrading){
-            if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE){
-                creep.moveTo(creep.room.controller);
+            if(Memory.spawnQueue.queue.length == 0){    //Only upgrade when no one is being spawned, e.g excess energy
+                if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(creep.room.controller);
+                }
             }
             if(creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0){
                 creep.memory.isUpgrading = false;
