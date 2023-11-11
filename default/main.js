@@ -3,6 +3,7 @@ var upgradingTasks = require("behaviour_Upgrader");
 var buildingTasks  = require("behaviour_Builder");
 var repairingTasks = require("behaviour_Repairer");
 var defenderTasks  = require("behaviour_Defender");
+var {military_tasks, tower_tasks} = require("behaviour_military");
 var structureManager = require("manager_Structures");
 var respawnManager   = require("manager_Respawn");
 
@@ -65,6 +66,10 @@ module.exports.loop = function () {
             repairingTasks.task(creeps[name]);}
         if(creeps[name].memory.role == "Defender"){
             defenderTasks.task(creeps[name]);}
+        var towers = Game.spawns["Spawn1"].find(FIND_STRUCTURES, {filter:(structure)=>{return(structure.structureType == STRUCTURE_TOWER)}});
+        for(var tower in towers){
+            tower_tasks.tasks(tower);
+        }
         //...
     }
     //Build structures where required
