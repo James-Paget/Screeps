@@ -50,7 +50,7 @@ var repairingTasks = {
     },
     queue : function(){
         //Note; Have null for houseKey information as this is irrelevent to them
-        var creepSpec = {roomID:null, sourceID:null, parts:[WORK, CARRY, MOVE], role:"Repairer"};
+        var creepSpec = {roomID:null, sourceID:null, parts:[WORK, CARRY, MOVE], role:"Repairer", time:Game.time};
         Memory.spawnQueue.queue.push(creepSpec);
     },
     respawn : function(creepSpec){

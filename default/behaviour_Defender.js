@@ -23,7 +23,7 @@ var defenderTasks = {
     },
     queue : function(){
         //Note; Have null for houseKey information as this is irrelevent to them
-        var creepSpec = {roomID:null, sourceID:null, parts:[ATTACK, MOVE], role:"Defender"};
+        var creepSpec = {roomID:null, sourceID:null, parts:[ATTACK, MOVE], role:"Defender", time:Game.time};
         Memory.spawnQueue.queue.push(creepSpec);
     },
     respawn : function(creepSpec){

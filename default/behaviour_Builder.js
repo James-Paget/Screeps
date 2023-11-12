@@ -34,7 +34,7 @@ var buildingTasks = {
     },
     queue : function(){
         //Note; Have null for houseKey information as this is irrelevent to them
-        var creepSpec = {roomID:null, sourceID:null, parts:[WORK, CARRY, MOVE], role:"Builder"};
+        var creepSpec = {roomID:null, sourceID:null, parts:[WORK, CARRY, MOVE], role:"Builder", time:Game.time};
         Memory.spawnQueue.queue.push(creepSpec);
     },
     respawn : function(creepSpec){

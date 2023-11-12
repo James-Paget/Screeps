@@ -24,6 +24,13 @@ module.exports.loop = function () {
     if(!Memory.energyRooms){
         Memory.energyRooms = [];}
     init_energyRoom(Game.spawns["Spawn1"].room);    //## HAVE A MANAGER FOR THIS ##
+    if(Game.time.toString().slice(-1) == 0){        //Every 10 frames
+        for(let i=Memory.spawnQueue.queue.length-1; i>=0; i--){              //################# MOVE ALL THIS ELSEWHERE
+            if(Memory.spawnQueue.queue[i].time -Game.time >= 100){           //#################
+                Memory.spawnQueue.queue.splice(i,1);    //If has been sat in queue for too long, get rid of it
+            }
+        }
+    }
     
     //Clean dead dudes
     for(var memoryName in Memory.creeps){
