@@ -117,27 +117,34 @@ function getTarget_miner(creep){
     }
     else{               //Go to closest of spawn, ext or container
         if(creep.memory.houseKey.roomID = creep.room.name){   //If already in correct room
-            /*
-            (1) Try to give to a linked container
-            (2) If no linked containers, then hand deliver
-            */
-            //(1)
-            var containerIDs = [];
             var roomIndex    = searchEnergyRooms_roomIndex(creep.memory.houseKey.roomID);
             var sourceIndex  = searchEnergyRooms_sourceIndex(roomIndex, creep.memory.houseKey.sourceID);
-            containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;
+            var hasGatherers = Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.length > 0;
+            if(hasGatherers){
+                /*
+                (1) Try to give to a linked container
+                (2) If no linked containers, then hand deliver
+                */
+                //(1)
+                var containerIDs = [];
+                containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;
 
-            //Outside if, so if there are containers but they are all full he will hand deliver; prevents 0 energy deliver situations (so no 300 energy cap from spawn when spawning new workers)
-            var containerObjects = [];
-            for(var index in containerIDs){
-                containerObjects.push(Game.getObjectById(containerIDs[index]));}
-            containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0) });    //Picks out containers with energy available
+                //Outside if, so if there are containers but they are all full he will hand deliver; prevents 0 energy deliver situations (so no 300 energy cap from spawn when spawning new workers)
+                var containerObjects = [];
+                for(var index in containerIDs){
+                    containerObjects.push(Game.getObjectById(containerIDs[index]));}
+                containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0) });    //Picks out containers with energy available
 
-            if(containerObjects.length > 0){
-                target = creep.pos.findClosestByPath(containerObjects);
+                if(containerObjects.length > 0){
+                    target = creep.pos.findClosestByPath(containerObjects);
+                }
+                else{
+                    //(2)
+                    var possibleTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
+                    target = creep.pos.findClosestByPath(possibleTargets);
+                }
             }
             else{
-                //(2)
                 var possibleTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
                 target = creep.pos.findClosestByPath(possibleTargets);
             }

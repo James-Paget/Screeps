@@ -15,6 +15,9 @@ module.exports.loop = function () {
     ----> SPAWNED WITH MEMORY "Undefined" --> LOOKS LIKE A SIM BUG POSSIBLY
     . AUTO PLACE NEW EXTENSIONS & Containers => AUTO ADD THEM TO THE GLOBAL MEMORY
     . NEEDS TO UPDATE CONTAINERS BEING REMOVED PERIODICALLY --> energyRooms global memory
+
+    ---> MAKE WORK FOR MULTIPLE ROOMS
+    ---> Make repairer also refill the TOWERS occasionally
     ###
     */
     if(!Memory.spawnQueue){
