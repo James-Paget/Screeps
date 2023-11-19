@@ -5,8 +5,8 @@ TODO list;
 ------> SPAWNED WITH MEMORY "Undefined" --> LOOKS LIKE A SIM BUG POSSIBLY
 
  0.) REASSEMBLY OST
- 1.) Change all "spawnQueues" to work with multi-room spawnQueue now
- 2.) Make sure all "Spawn1"s used are generalise for multi-rooms
+X1.) Change all "spawnQueues" to work with multi-room spawnQueue now
+~2.) Make sure all "Spawn1"s used are generalise for multi-rooms
  2.5.) [[Make other creep types SCALE with energy capacity properly]]
  3.) Have a periodic function, that checks for containers (& others) that have been destroyed, and removes them from lists
  3.5.) Periodic function that assigns containers to sources automatically (TO WORK WITH NEXT STEP)

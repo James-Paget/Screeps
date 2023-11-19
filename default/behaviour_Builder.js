@@ -28,7 +28,7 @@ var buildingTasks = {
         }
         else{
             //Prepare for construction
-            var spawn = Game.getObjectById(creep.spawnKey.spawnID);
+            var spawn = Game.getObjectById(creep.memory.spawnKey.spawnID);
             if(creep.withdraw(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                 creep.moveTo(spawn);
             }
