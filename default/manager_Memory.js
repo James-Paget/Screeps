@@ -23,7 +23,7 @@ function manageMemory_queue(){
         }
     }
 }
-function init_spawnQueue(roomID){
+function init_spawnQueues(roomID){
     /*
     . Creates a space in the "Memory.spawnQueue" for a spawner in a room not currently assigned
     . If this is left empty for some time, it will be removed
@@ -81,7 +81,7 @@ function manageMemory_dead_cleanup(){
 
 module.exports = {
     manageMemory_energyRooms,
-    manageMemory_queue,
+    manageMemory_queues,
     manageMemory_towers,
     manageMemory_dead_cleanup
 };
