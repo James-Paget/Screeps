@@ -27,6 +27,10 @@ var miner_tasks = {
             }
         }
     },
+    queue : function(roomID, sourceID, parts){
+        var creepSpec = {roomID:roomID, sourceID:sourceID, parts:parts, role:"Miner", time:Game.time};
+        Memory.spawnQueue[getSpawnQueueIndex(roomID)].queue.push(creepSpec);
+    },
     respawn : function(creepName, spawnerID, creepSpec){
         /*
         . Occurs when creep reaches the front of the queue and spawner is not busy
