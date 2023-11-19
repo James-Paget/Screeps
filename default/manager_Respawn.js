@@ -84,8 +84,6 @@ var respawnManager = {
         (3) Upgraders
         (4) Army
         */
-        var creeps = Game.creeps;
-        
         //#######################################################################################################
         //#### THIS WILL REQUIRE SOME INTERESTING THOUGHT FOR MULTI-ROOM STUFF, PARTICULARLY MULTI-SPAWNERS #####
         //#######################################################################################################
