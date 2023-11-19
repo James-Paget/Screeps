@@ -26,7 +26,7 @@ var respawnManager = {
         */
         for(var spawnQueueIndex in Memory.spawnQueue){
             if(Memory.spawnQueue[spawnQueueIndex].queue.length > 0){                            //If anything to spawn
-                var spawnerID = Game.rooms[Memory.spawnQueue[spawnQueueIndex].roomID].find(FIND_STRUCTURE, {filter:(structure) => {return(structure.structureType == STRUCTURE_SPAWN)}})[0].id;
+                var spawnerID = Game.rooms[Memory.spawnQueue[spawnQueueIndex].roomID].find(FIND_STRUCTURES, {filter:(structure) => {return(structure.structureType == STRUCTURE_SPAWN)}})[0].id;
                 var spawner   = Game.getObjectById(spawnerID);
                 var creepSpec = Memory.spawnQueue[spawnQueueIndex].queue[0];
                 if(!spawner.spawning){                                                          //And not busy
