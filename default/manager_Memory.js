@@ -36,13 +36,13 @@ function init_spawnQueues(roomID){
     var spawnQueue_elem = {roomID:roomID, queue:queueSet, unassigned:unassignedSet};
     Memory.spawnQueue.push(spawnQueue_elem);
 }
-function getSpawnQueueIndex(roomName){
+function getSpawnQueueIndex(roomID){
     /*
     . Takes a room name, finds the index in the "spawnQueues" corresponding to it
     */
     var requiredIndex = null;
     for(var spawnQueueIndex in Memory.spawnQueue){
-        if(Memory.spawnQueue[spawnQueueIndex].roomID == roomName){
+        if(Memory.spawnQueue[spawnQueueIndex].roomID == roomID){
             requiredIndex = spawnQueueIndex;
             break;
         }

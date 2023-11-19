@@ -417,6 +417,6 @@ function clearSpawnQueue_unassigned(roomID){
 module.exports = {
     getTarget_miner,
     getTarget_gatherer,
-    init_energyRoom:init_energyRoom,
-    queueCreeps_energyRooms:queueCreeps_energyRooms,
-    assignCreeps_energyRooms:assignCreeps_energyRooms};
+    init_energyRoom,
+    queueCreeps_energyRooms,
+    assignCreeps_energyRooms};

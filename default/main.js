@@ -39,8 +39,8 @@ module.exports.loop = function () {
     init_energyRoom(Game.spawns["Spawn1"].room);    //### MOVE THIS OUT ### ---> HAVE A PERIODIC CHECK FOR E_ROOMS, CONTAAINERS LOST, ETC --> e.g every 5/10/20 frames
     
     //Spawn & assign required dudes
-    assignCreeps_energyRooms();         //this order is important, prevents nulls occurring when spawning and istantly assigning, gives a frame of breather room
-    respawnManager.spawnFromQueue();    //assign -> respawn => respawn -> frame gap -> assign
+    assignCreeps_energyRooms(Game.spawns["Spawn1"].room.name);      //this order is important, prevents nulls occurring when spawning and istantly assigning, gives a frame of breather room
+    respawnManager.spawnFromQueue();                                //assign -> respawn => respawn -> frame gap -> assign
     respawnManager.extendQueue();
     
     //Make each dude do his job
