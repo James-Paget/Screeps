@@ -1,6 +1,6 @@
 var {getSpawnQueueIndex} = require("manager_Memory");
 
-var repairingTasks = {
+var repairing_tasks = {
     task : function(creep){
         /*
         Repair priority;
@@ -76,4 +76,4 @@ var repairingTasks = {
     }
 }
 
-module.exports = repairingTasks;
+module.exports = repairing_tasks;

@@ -1,9 +1,9 @@
-var miner_tasks    = require("behaviour_Miner");
-var gatherer_tasks = require("behaviour_Gatherer");
-var upgradingTasks = require("behaviour_Upgrader");
-var buildingTasks  = require("behaviour_Builder");
-var repairingTasks = require("behaviour_Repairer");
-var defenderTasks  = require("behaviour_Defender");
+var miner_tasks     = require("behaviour_Miner");
+var gatherer_tasks  = require("behaviour_Gatherer");
+var upgrading_tasks = require("behaviour_Upgrader");
+var building_tasks  = require("behaviour_Builder");
+var repairing_tasks = require("behaviour_Repairer");
+var defender_tasks  = require("behaviour_Defender");
 var {getSpawnQueueIndex} = require("manager_Memory");
 var {queueCreeps_energyRooms} = require("cycle_energyAcquire");
 
@@ -40,13 +40,13 @@ var respawnManager = {
                             gatherer_tasks.respawn(creepName, spawnerID, creepSpec);
                             Memory.spawnQueue[spawnQueueIndex].unassigned.push(creepName);}     //energyRoom unit, => requires assigning
                         if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Repairer"){
-                            repairingTasks.respawn(creepName, spawnerID, creepSpec);}
+                            repairing_tasks.respawn(creepName, spawnerID, creepSpec);}
                         if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Builder"){
-                            buildingTasks.respawn(creepName, spawnerID, creepSpec);}
+                            building_tasks.respawn(creepName, spawnerID, creepSpec);}
                         if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Upgrader"){
-                            upgradingTasks.respawn(creepName, spawnerID, creepSpec);}
+                            upgrading_tasks.respawn(creepName, spawnerID, creepSpec);}
                         if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Defender"){
-                            defenderTasks.respawn(creepName, spawnerID, creepSpec);}
+                            defender_tasks.respawn(creepName, spawnerID, creepSpec);}
                         //...
                         Memory.spawnQueue[spawnQueueIndex].queue.shift();
                     }
@@ -102,16 +102,16 @@ var respawnManager = {
                     if(upgraderFilter >= 3){
                         var armyFilter     = getSummed_potential_role(roomID, "Defender");
                         if(armyFilter < 6){
-                            defenderTasks.queue(roomID);}
+                            defender_tasks.queue(roomID);}
                     }
                     else{
-                        upgradingTasks.queue(roomID);}
+                        upgrading_tasks.queue(roomID);}
                 }
                 else{
-                    buildingTasks.queue(roomID);}
+                    building_tasks.queue(roomID);}
             }
             else{
-                repairingTasks.queue(roomID);}
+                repairing_tasks.queue(roomID);}
         }
     }
 }

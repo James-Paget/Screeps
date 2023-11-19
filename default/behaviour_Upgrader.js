@@ -1,6 +1,6 @@
 var {getSpawnQueueIndex} = require("manager_Memory");
 
-var upgradingTasks = {
+var upgrading_tasks = {
     task : function(creep){
         if(creep.memory.isUpgrading){
             if(Memory.spawnQueue[getSpawnQueueIndex(creep.memory.spawnKey.roomID)].queue.length == 0){    //Only upgrade when no one is being spawned at YOUR spawner, e.g excess energy
@@ -54,4 +54,4 @@ var upgradingTasks = {
     }
 }
 
-module.exports = upgradingTasks;
+module.exports = upgrading_tasks;

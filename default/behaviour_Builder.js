@@ -1,6 +1,6 @@
 var {getSpawnQueueIndex} = require("manager_Memory");
 
-var buildingTasks = {
+var building_tasks = {
     task : function(creep){
         if(creep.memory.isBuilding){
             if(creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0){
@@ -65,4 +65,4 @@ var buildingTasks = {
     }
 }
 
-module.exports = buildingTasks;
+module.exports = building_tasks;

@@ -1,10 +1,10 @@
-var miner_tasks    = require("behaviour_Miner");
-var gatherer_tasks = require("behaviour_Gatherer");
-var upgradingTasks = require("behaviour_Upgrader");
-var buildingTasks  = require("behaviour_Builder");
-var repairingTasks = require("behaviour_Repairer");
-var defenderTasks  = require("behaviour_Defender");
-var {military_tasks, tower_tasks} = require("behaviour_military");
+var miner_tasks     = require("behaviour_Miner");
+var gatherer_tasks  = require("behaviour_Gatherer");
+var upgrading_tasks = require("behaviour_Upgrader");
+var building_tasks  = require("behaviour_Builder");
+var repairing_tasks = require("behaviour_Repairer");
+var defender_tasks  = require("behaviour_Defender");
+var {military_tasks, tower_tasks} = require("behaviour_Military");
 var respawnManager   = require("manager_Respawn");
 var {init_energyRoom, assignCreeps_energyRooms} = require("cycle_energyAcquire");
 var {manageMemory_energyRooms, manageMemory_queues, manageMemory_towers} = require("manager_Memory");
@@ -39,13 +39,13 @@ function creep_taskManager(){
         if(creeps[name].memory.role == "Gatherer"){
             gatherer_tasks.task(creeps[name]);}
         if(creeps[name].memory.role == "Upgrader"){
-            upgradingTasks.task(creeps[name]);}
+            upgrading_tasks.task(creeps[name]);}
         if(creeps[name].memory.role == "Builder"){
-            buildingTasks.task(creeps[name]);}
+            building_tasks.task(creeps[name]);}
         if(creeps[name].memory.role == "Repairer"){
-            repairingTasks.task(creeps[name]);}
+            repairing_tasks.task(creeps[name]);}
         if(creeps[name].memory.role == "Defender"){
-            defenderTasks.task(creeps[name]);}
+            defender_tasks.task(creeps[name]);}
         //...
     }
 }
@@ -64,13 +64,13 @@ function manageMemory_dead_cleanup(){
             if(Memory.creeps[memoryName].role == "Gatherer"){
                 gatherer_tasks.death(Memory.creeps[memoryName].houseKey, Memory.creeps[memoryName].role, Memory.creeps[memoryName].ID);}
             if(Memory.creeps[memoryName].role == "Upgrader"){
-                upgradingTasks.death();}
+                upgrading_tasks.death();}
             if(Memory.creeps[memoryName].role == "Builder"){
-                buildingTasks.death();}
+                building_tasks.death();}
             if(Memory.creeps[memoryName].role == "Repairer"){
-                repairingTasks.death();}
+                repairing_tasks.death();}
             if(Memory.creeps[memoryName].role == "Defender"){
-                defenderTasks.death();}
+                defender_tasks.death();}
             //...
             delete Memory.creeps[memoryName];
         }

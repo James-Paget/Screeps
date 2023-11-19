@@ -1,6 +1,6 @@
 var {getSpawnQueueIndex} = require("manager_Memory");
 
-var defenderTasks = {
+var defender_tasks = {
     task : function(creep){
         var target = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
         if(creep.memory.isDefending){
@@ -46,4 +46,4 @@ var defenderTasks = {
     }
 }
 
-module.exports = defenderTasks;
+module.exports = defender_tasks;
