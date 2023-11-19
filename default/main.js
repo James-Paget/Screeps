@@ -7,7 +7,7 @@ var defenderTasks  = require("behaviour_Defender");
 var {military_tasks, tower_tasks} = require("behaviour_military");
 var respawnManager   = require("manager_Respawn");
 var {init_energyRoom, assignCreeps_energyRooms} = require("cycle_energyAcquire");
-var {manageMemory_energyRooms, manageMemory_queues, manageMemory_towers, manageMemory_dead_cleanup} = require("manager_Memory");
+var {manageMemory_energyRooms, manageMemory_queues, manageMemory_towers} = require("manager_Memory");
 
 module.exports.loop = function () {
     /*
@@ -72,5 +72,27 @@ function creep_taskManager(){
 function tower_taskManager(){
     for(var towerIndex in Memory.towers){
         tower_tasks.task( Game.findObjectById(Memory.towers[towerIndex]) );
+    }
+}
+function manageMemory_dead_cleanup(){
+    //Clean dead dudes
+    for(var memoryName in Memory.creeps){
+        if(!Game.creeps[memoryName]){
+            //console.log("CREEP JUST REGISTERED AS DEAD");
+            if(Memory.creeps[memoryName].role == "Miner"){
+                miner_tasks.death(Memory.creeps[memoryName].houseKey, Memory.creeps[memoryName].role, Memory.creeps[memoryName].ID);}
+            if(Memory.creeps[memoryName].role == "Gatherer"){
+                gatherer_tasks.death(Memory.creeps[memoryName].houseKey, Memory.creeps[memoryName].role, Memory.creeps[memoryName].ID);}
+            if(Memory.creeps[memoryName].role == "Upgrader"){
+                upgradingTasks.death();}
+            if(Memory.creeps[memoryName].role == "Builder"){
+                buildingTasks.death();}
+            if(Memory.creeps[memoryName].role == "Repairer"){
+                repairingTasks.death();}
+            if(Memory.creeps[memoryName].role == "Defender"){
+                defenderTasks.death();}
+            //...
+            delete Memory.creeps[memoryName];
+        }
     }
 }
