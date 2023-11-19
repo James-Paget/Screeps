@@ -57,6 +57,7 @@ function manageMemory_towers(){
 }
 
 module.exports = {
+    getSpawnQueueIndex,
     manageMemory_energyRooms,
     manageMemory_queues,
     manageMemory_towers
