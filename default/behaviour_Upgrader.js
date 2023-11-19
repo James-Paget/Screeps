@@ -33,7 +33,7 @@ var upgradingTasks = {
     },
     queue : function(roomID){
         //Note; Have null for houseKey information as this is irrelevent to them
-        var creepSpec = {roomID:null, sourceID:null, parts:[WORK, WORK, WORK, WORK, WORK, CARRY, MOVE], role:"Upgrader", time:Game.time};
+        var creepSpec = {roomID:roomID, sourceID:null, parts:[WORK, WORK, WORK, WORK, WORK, CARRY, MOVE], role:"Upgrader", time:Game.time};
         Memory.spawnQueue[getSpawnQueueIndex(roomID)].queue.push(creepSpec);
     },
     respawn : function(creepName, spawnerID, creepSpec){
