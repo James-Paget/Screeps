@@ -1,4 +1,4 @@
-var {getTarget_miner} = require("cycle_energyAcquire");
+var {getTarget_miner, removeCreep_energyRooms} = require("cycle_energyAcquire");
 
 var miner_tasks = {
     task : function(creep){

@@ -1,4 +1,4 @@
-var {getTarget_gatherer} = require("cycle_energyAcquire");
+var {getTarget_gatherer, removeCreep_energyRooms} = require("cycle_energyAcquire");
 
 var gatherer_tasks = {
     task : function(creep){
