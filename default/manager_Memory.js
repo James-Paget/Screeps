@@ -8,7 +8,7 @@ function manageMemory_queues(){
     //Make sure Queues{} exist
     if(!Memory.spawnQueue){
         Memory.spawnQueue = [];
-        init_spawnQueue("sim");      //#### WILL NEED TO CLEVERLY CHECK WHEN TO MAKE THIS DEPENDING ON WHAT IS BEING ASKED TO BE SPAWNED, NEED TO CHECK IF THIS QUEUE FOR THIS ROOM ALREADY EXISTS
+        init_spawnQueues("sim");      //#### WILL NEED TO CLEVERLY CHECK WHEN TO MAKE THIS DEPENDING ON WHAT IS BEING ASKED TO BE SPAWNED, NEED TO CHECK IF THIS QUEUE FOR THIS ROOM ALREADY EXISTS
     }
 
     //Remove old queued creeps --> prevents clogging
