@@ -33,7 +33,7 @@ var gatherer_tasks = {
         . Creates specified creep
         . Unique qualities for a given role => each role has its own respawn functionality ########### THIS CAN DEFINATELY BE GENERALISED ############
         */
-        var spawner  = Game.getObjectById(spawnID);
+        var spawner  = Game.getObjectById(spawnerID);
         var houseKey  = {roomID:creepSpec.roomID, sourceID:creepSpec.sourceID};
         var spawnKey = {roomID:creepSpec.roomID, spawnID:spawnerID};
         spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, spawnKey:spawnKey, houseKey:houseKey, ID:null, isGathering:true}});
