@@ -1,5 +1,3 @@
-var miner_tasks    = require("behaviour_Miner");
-var gatherer_tasks = require("behaviour_Gatherer");
 var {getSpawnQueueIndex} = require("manager_Memory");
 
 function getTarget_miner(creep){
@@ -262,17 +260,17 @@ function queueCreeps_energyRooms(){
             //Check mining is saturated
             var saturationCondition_miners = getSaturationCondition_miners(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex]);    //Check mining is saturated
             if(saturationCondition_miners != null){                                                                                 //Not saturated => put new miners into the queue
-                miner_tasks.queue(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex].ID, saturationCondition_miners.parts);
-                //var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_miners.parts, role:"Miner", time:Game.time};
-                //Memory.spawnQueue[getSpawnQueueIndex(Memory.energyRooms[roomIndex].ID)].queue.push(creepSpec);
+                //miner_tasks.queue(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex].ID, saturationCondition_miners.parts);         //#### RESULTS IN CIRCULARNESS
+                var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_miners.parts, role:"Miner", time:Game.time};
+                Memory.spawnQueue[getSpawnQueueIndex(Memory.energyRooms[roomIndex].ID)].queue.push(creepSpec);
                 workerQueued = true;
             }
             //Check gathering is saturated
             var saturationCondition_gatherers = getSaturationCondition_gatherers(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex]);   //Check gatherers are saturated
             if(saturationCondition_gatherers != null){                                                                              //Not saturated => put new gatherers into the queue
-                gatherer_tasks.queue(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex].ID, saturationCondition_gatherers.parts);
-                //var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_gatherers.parts, role:"Gatherer", time:Game.time};
-                //Memory.spawnQueue[getSpawnQueueIndex(Memory.energyRooms[roomIndex].ID)].queue.push(creepSpec);
+                //gatherer_tasks.queue(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex].ID, saturationCondition_gatherers.parts);   //#### RESULTS IN CIRCULARNESS
+                var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_gatherers.parts, role:"Gatherer", time:Game.time};
+                Memory.spawnQueue[getSpawnQueueIndex(Memory.energyRooms[roomIndex].ID)].queue.push(creepSpec);
                 workerQueued = true;
             }
             //...
