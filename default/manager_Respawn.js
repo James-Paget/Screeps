@@ -47,8 +47,6 @@ var respawnManager = {
                             upgradingTasks.respawn(creepName, spawnerID, creepSpec);}
                         if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Defender"){
                             defenderTasks.respawn(creepName, spawnerID, creepSpec);}
-                        if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "BasedIndiviudal"){
-                            funTasks.respawn(Memory.spawnQueue.queue[0]);}
                         //...
                         Memory.spawnQueue[spawnQueueIndex].queue.shift();
                     }
