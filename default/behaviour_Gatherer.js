@@ -51,5 +51,4 @@ var gatherer_tasks = {
     }
 };
 
-module.exports = {
-    gatherer_tasks};
+module.exports = gatherer_tasks;

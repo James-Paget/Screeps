@@ -52,5 +52,4 @@ var miner_tasks = {
     }
 };
 
-module.exports = {
-    miner_tasks};
+module.exports = miner_tasks;
