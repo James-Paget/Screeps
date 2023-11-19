@@ -1,9 +1,9 @@
-var {miner_tasks, gatherer_tasks} = require("cycle_energyAcquire");
+var miner_tasks    = require("behaviour_Miner");
+var gatherer_tasks = require("behaviour_Gatherer");
 var upgradingTasks = require("behaviour_Upgrader");
 var buildingTasks  = require("behaviour_Builder");
 var repairingTasks = require("behaviour_Repairer");
 var defenderTasks  = require("behaviour_Defender");
-var {military_tasks, tower_tasks} = require("behaviour_military");
 
 function manageMemory_energyRooms(){
     //Make sure energyRooms{} exists

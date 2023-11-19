@@ -1,10 +1,12 @@
-var {miner_tasks, gatherer_tasks, init_energyRoom, queueCreeps_energyRooms, assignCreeps_energyRooms} = require("cycle_energyAcquire");
+var miner_tasks    = require("behaviour_Miner");
+var gatherer_tasks = require("behaviour_Gatherer");
 var upgradingTasks = require("behaviour_Upgrader");
 var buildingTasks  = require("behaviour_Builder");
 var repairingTasks = require("behaviour_Repairer");
 var defenderTasks  = require("behaviour_Defender");
 var {military_tasks, tower_tasks} = require("behaviour_military");
 var respawnManager   = require("manager_Respawn");
+var {init_energyRoom, assignCreeps_energyRooms} = require("cycle_energyAcquire");
 var {manageMemory_energyRooms, manageMemory_queues, manageMemory_towers, manageMemory_dead_cleanup} = require("manager_Memory");
 
 module.exports.loop = function () {

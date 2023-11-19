@@ -1,9 +1,11 @@
-var {miner_tasks, queueCreeps_energyRooms, gatherer_tasks} = require("cycle_energyAcquire");
+var miner_tasks    = require("behaviour_Miner");
+var gatherer_tasks = require("behaviour_Gatherer");
 var upgradingTasks = require("behaviour_Upgrader");
 var buildingTasks  = require("behaviour_Builder");
 var repairingTasks = require("behaviour_Repairer");
 var defenderTasks  = require("behaviour_Defender");
 var {getSpawnQueueIndex} = require("manager_Memory");
+var {queueCreeps_energyRooms} = require("cycle_energyAcquire");
 
 /*
 The current solution for spawning;

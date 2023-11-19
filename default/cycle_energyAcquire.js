@@ -1,107 +1,5 @@
 var {getSpawnQueueIndex} = require("manager_Memory");
 
-var miner_tasks = {
-    task : function(creep){
-        if(creep.memory.ID == null){
-            creep.memory.ID = creep.id;}    //## NOT A GREAT METHOD BUT WORKS FOR NOW ##
-
-        var target = getTarget_miner(creep);
-        if(creep.memory.isMining){
-            //Mining source
-            if(creep.harvest(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
-                creep.moveTo(target);
-            }
-            //Reset mining condition
-            if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
-                creep.memory.isMining = false;
-            }
-        }
-        else{
-            //Move resources to storage
-            if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
-                creep.moveTo(target);
-            }
-            //Reset mining condition
-            if(creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0){
-                creep.memory.isMining = true;
-            }
-        }
-    },
-    respawn : function(creepName, spawnerID, creepSpec){
-        /*
-        . Occurs when creep reaches the front of the queue and spawner is not busy
-        . Creates specified creep
-        . Unique qualities for a given role => each role has its own respawn functionality ########### THIS CAN DEFINATELY BE GENERALISED ############
-        - Spawns at the specified spawner ID, and this is registered as their 'home' spawner in spawnKey
-        */
-        var spawner  = Game.getObjectById(spawnID);
-        var houseKey = {roomID:creepSpec.roomID, sourceID:creepSpec.sourceID};
-        var spawnKey = {roomID:creepSpec.roomID, spawnID:spawnerID};
-        spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, spawnKey:spawnKey, houseKey:houseKey, ID:null, isMining:true}});
-    },
-    death : function(houseKey, creepRole, creepID){
-        /*
-        . Death task to perform
-        . Removes itself from relevent lists
-
-        1. Remove itself from energyRooms->sources->miners
-        2. ...
-        */
-        //1
-        removeCreep_energyRooms(houseKey, creepRole, creepID);
-    }
-};
-var gatherer_tasks = {
-    task : function(creep){
-        if(creep.memory.ID == null){
-            creep.memory.ID = creep.id;}    //## NOT A GREAT METHOD BUT WORKS FOR NOW ##
-            
-        var target = getTarget_gatherer(creep);
-        if(creep.memory.isGathering){
-            //Collect resources
-            if(creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
-                creep.moveTo(target);
-            }
-            //Reset gather condition
-            if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
-                creep.memory.isGathering = false;
-            }
-        }
-        else{
-            //Drop off resources
-            if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
-                creep.moveTo(target);
-            }
-            //Reset gather condition
-            if(creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0){
-                creep.memory.isGathering = true;
-            }
-        }
-    },
-    respawn : function(creepName, spawnerID, creepSpec){
-        /*
-        . Occurs when creep reaches the front of the queue and spawner is not busy
-        . Creates specified creep
-        . Unique qualities for a given role => each role has its own respawn functionality ########### THIS CAN DEFINATELY BE GENERALISED ############
-        */
-        var spawner  = Game.getObjectById(spawnID);
-        var houseKey  = {roomID:creepSpec.roomID, sourceID:creepSpec.sourceID};
-        var spawnKey = {roomID:creepSpec.roomID, spawnID:spawnerID};
-        spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, spawnKey:spawnKey, houseKey:houseKey, ID:null, isGathering:true}});
-    },
-    death : function(houseKey, creepRole, creepID){
-        /*
-        . Death task to perform
-        . Removes itself from relevent lists
-
-        1. Remove from energyRooms
-        2. ...
-        */
-        //1
-        removeCreep_energyRooms(houseKey, creepRole, creepID);
-    }
-};
-
 function getTarget_miner(creep){
     /*
     . Considers the source this MINER is assigned to (all miners will be assigned)
@@ -517,8 +415,8 @@ function clearSpawnQueue_unassigned(roomID){
 // . MAKE FUNCTION TO REASSIGN ALL MINERS TO SOURCES AGAIN; WILL FIX SITUATIONS WHEN EVERYONE IS CONFUSED WHERE THEY ARE --> GlobalReassignment
 
 module.exports = {
-    miner_tasks, 
-    gatherer_tasks,
+    getTarget_miner,
+    getTarget_gatherer,
     init_energyRoom:init_energyRoom,
     queueCreeps_energyRooms:queueCreeps_energyRooms,
     assignCreeps_energyRooms:assignCreeps_energyRooms};
