@@ -418,5 +418,6 @@ module.exports = {
     getTarget_miner,
     getTarget_gatherer,
     init_energyRoom,
+    removeCreep_energyRooms,
     queueCreeps_energyRooms,
     assignCreeps_energyRooms};
