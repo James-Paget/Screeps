@@ -1,3 +1,5 @@
+var {getSpawnQueueIndex} = require("manager_Memory");
+
 var upgradingTasks = {
     task : function(creep){
         if(creep.memory.isUpgrading){

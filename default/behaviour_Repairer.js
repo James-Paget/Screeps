@@ -1,3 +1,5 @@
+var {getSpawnQueueIndex} = require("manager_Memory");
+
 var repairingTasks = {
     task : function(creep){
         /*

@@ -1,3 +1,5 @@
+var {getSpawnQueueIndex} = require("manager_Memory");
+
 var miner_tasks = {
     task : function(creep){
         if(creep.memory.ID == null){

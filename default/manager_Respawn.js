@@ -3,6 +3,7 @@ var upgradingTasks = require("behaviour_Upgrader");
 var buildingTasks  = require("behaviour_Builder");
 var repairingTasks = require("behaviour_Repairer");
 var defenderTasks  = require("behaviour_Defender");
+var {getSpawnQueueIndex} = require("manager_Memory");
 
 /*
 The current solution for spawning;
