@@ -21,4 +21,3 @@ X1.) Change all "spawnQueues" to work with multi-room spawnQueue now
  10.) Start harvesting minerals, commodities in highways, power banks in highways, ...
 
  --> MAKE QUEUE FUNCTION FOR MINERS ANF HARVESTERS TO HOMOGENISE SYSTEM
- --> CHANGE OTHER CREEP NAMES TO ..._tasks
