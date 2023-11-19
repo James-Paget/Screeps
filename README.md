@@ -19,3 +19,6 @@ TODO list;
  8.) Make larger military, more organised, make sit still more so they dont waste CPU
  9.) Figure out some trading stuff with allies
  10.) Start harvesting minerals, commodities in highways, power banks in highways, ...
+
+ --> MAKE QUEUE FUNCTION FOR MINERS ANF HARVESTERS TO HOMOGENISE SYSTEM
+ --> CHANGE OTHER CREEP NAMES TO ..._tasks

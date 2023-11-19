@@ -93,16 +93,16 @@ var respawnManager = {
         //#############################################################################################################
         //## REPLACE THIS WITH FUNCTIONAL CONDITION, MAKE IT FAR BETTER, THIS IS A TERRIBLE METRIC FOR WHEN TO SPAWN ##
         //######
-        var sourceOccupied_miners    = getSummed_potential_role("Miner")    >= Game.rooms[roomID].find(FIND_SOURCES).length;
-        var sourceOccupied_gatherers = getSummed_potential_role("Gatherer") >= Game.rooms[roomID].find(FIND_STRUCTURES, {filter:(structure)=>{return(structure.structureType == STRUCTURE_CONTAINER)}}).length;
+        var sourceOccupied_miners    = getSummed_potential_role(roomID, "Miner")    >= Game.rooms[roomID].find(FIND_SOURCES).length;
+        var sourceOccupied_gatherers = getSummed_potential_role(roomID, "Gatherer") >= Game.rooms[roomID].find(FIND_STRUCTURES, {filter:(structure)=>{return(structure.structureType == STRUCTURE_CONTAINER)}}).length;
         if(sourceOccupied_miners && sourceOccupied_gatherers){
-            var repairerFilter = getSummed_potential_role("Repairer");
+            var repairerFilter = getSummed_potential_role(roomID, "Repairer");
             if(repairerFilter > 1){
-                var builderFilter  = getSummed_potential_role("Builder");
+                var builderFilter  = getSummed_potential_role(roomID, "Builder");
                 if(builderFilter > 2){
-                    var upgraderFilter = getSummed_potential_role("Upgrader");
+                    var upgraderFilter = getSummed_potential_role(roomID, "Upgrader");
                     if(upgraderFilter >= 3){
-                        var armyFilter     = getSummed_potential_role("Defender");
+                        var armyFilter     = getSummed_potential_role(roomID, "Defender");
                         if(armyFilter < 6){
                             defenderTasks.queue(roomID);}
                     }
