@@ -1,11 +1,10 @@
-
 function manageMemory_energyRooms(){
     //Make sure energyRooms{} exists
     if(!Memory.energyRooms){
         Memory.energyRooms = [];}
     //...
 }
-function manageMemory_queue(){
+function manageMemory_queues(){
     //Make sure Queues{} exist
     if(!Memory.spawnQueue){
         Memory.spawnQueue = [];
