@@ -35,10 +35,10 @@ var respawnManager = {
                         var creepName = Memory.spawnQueue[spawnQueueIndex].queue[0].role+Game.time;
                         if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Miner"){
                             miner_tasks.respawn(creepName, spawnerID, creepSpec);
-                            Memory.spawnQueue[spawnQueueIndex].unassigned.push(creepName);}  //energyRoom unit, => requires assigning
+                            Memory.spawnQueue[spawnQueueIndex].unassigned.push(creepName);}     //energyRoom unit, => requires assigning
                         if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Gatherer"){
                             gatherer_tasks.respawn(creepName, spawnerID, creepSpec);
-                            Memory.spawnQueue[spawnQueueIndex].unassigned.push(creepName);}  //energyRoom unit, => requires assigning
+                            Memory.spawnQueue[spawnQueueIndex].unassigned.push(creepName);}     //energyRoom unit, => requires assigning
                         if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Repairer"){
                             repairingTasks.respawn(creepName, spawnerID, creepSpec);}
                         if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Builder"){
