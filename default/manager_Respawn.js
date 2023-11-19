@@ -21,30 +21,34 @@ var respawnManager = {
         . Only attempts to spawn when spawner is finished spawning last and has enough energy
         . Moves certain roles to unassigned list when processed in queue
         */
-        if(Memory.spawnQueue.queue.length > 0){                                             //If anything to spawn
-            var spawner = Game.spawns["Spawn1"];
-            if(!spawner.spawning){                                                          //And not busy
-                var energyRequired = _.sum(Memory.spawnQueue.queue[0].parts, part => BODYPART_COST[part]);
-                if(energyRequired <= spawner.room.energyAvailable){                         //And have enough energy
-                    var creepName = Memory.spawnQueue.queue[0].role+Game.time;
-                    if(Memory.spawnQueue.queue[0].role == "Miner"){
-                        miner_tasks.respawn(creepName, Memory.spawnQueue.queue[0]);
-                        Memory.spawnQueue.unassigned.push(creepName);}  //energyRoom unit, => requires assigning
-                    if(Memory.spawnQueue.queue[0].role == "Gatherer"){
-                        gatherer_tasks.respawn(creepName, Memory.spawnQueue.queue[0]);
-                        Memory.spawnQueue.unassigned.push(creepName);}  //energyRoom unit, => requires assigning
-                    if(Memory.spawnQueue.queue[0].role == "Repairer"){
-                        repairingTasks.respawn(Memory.spawnQueue.queue[0]);}
-                    if(Memory.spawnQueue.queue[0].role == "Builder"){
-                        buildingTasks.respawn(Memory.spawnQueue.queue[0]);}
-                    if(Memory.spawnQueue.queue[0].role == "Upgrader"){
-                        upgradingTasks.respawn(Memory.spawnQueue.queue[0]);}
-                    if(Memory.spawnQueue.queue[0].role == "Defender"){
-                        defenderTasks.respawn(Memory.spawnQueue.queue[0]);}
-                    if(Memory.spawnQueue.queue[0].role == "BasedIndiviudal"){
-                        funTasks.respawn(Memory.spawnQueue.queue[0]);}
-                    //...
-                    Memory.spawnQueue.queue.shift();
+        for(var spawnQueueIndex in Memory.spawnQueue){
+            if(Memory.spawnQueue[spawnQueueIndex].queue.length > 0){                            //If anything to spawn
+                var spawnerID = Game.rooms[Memory.spawnQueue[spawnQueueIndex].roomID].find(FIND_STRUCTURE, {filter:(structure) => {return(structure.structureType == STRUCTURE_SPAWN)}})[0].id;
+                var spawner   = Game.getObjectById(spawnerID);
+                var creepSpec = Memory.spawnQueue[spawnQueueIndex].queue[0];
+                if(!spawner.spawning){                                                          //And not busy
+                    var energyRequired = _.sum(Memory.spawnQueue[spawnQueueIndex].queue[0].parts, part => BODYPART_COST[part]);
+                    if(energyRequired <= spawner.room.energyAvailable){                         //And have enough energy
+                        var creepName = Memory.spawnQueue[spawnQueueIndex].queue[0].role+Game.time;
+                        if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Miner"){
+                            miner_tasks.respawn(creepName, spawnerID, creepSpec);
+                            Memory.spawnQueue[spawnQueueIndex].unassigned.push(creepName);}  //energyRoom unit, => requires assigning
+                        if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Gatherer"){
+                            gatherer_tasks.respawn(creepName, spawnerID, creepSpec);
+                            Memory.spawnQueue[spawnQueueIndex].unassigned.push(creepName);}  //energyRoom unit, => requires assigning
+                        if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Repairer"){
+                            repairingTasks.respawn(creepName, spawnerID, creepSpec);}
+                        if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Builder"){
+                            buildingTasks.respawn(creepName, spawnerID, creepSpec);}
+                        if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Upgrader"){
+                            upgradingTasks.respawn(creepName, spawnerID, creepSpec);}
+                        if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Defender"){
+                            defenderTasks.respawn(creepName, spawnerID, creepSpec);}
+                        if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "BasedIndiviudal"){
+                            funTasks.respawn(Memory.spawnQueue.queue[0]);}
+                        //...
+                        Memory.spawnQueue[spawnQueueIndex].queue.shift();
+                    }
                 }
             }
         }
@@ -59,12 +63,14 @@ var respawnManager = {
         -General creeps
         -...
         */
-        if( (Memory.spawnQueue.queue.length == 0) && (Memory.spawnQueue.unassigned.length == 0) ){
-            queueCreeps_energyRooms();  //Can contribute 2 at once, maximum (miner and/or gatherer)
-            this.populateQueue_general();    //Can contribute 1 at once, maximum
+        for(var spawnQueueIndex in Memory.spawnQueue){
+            if( (Memory.spawnQueue[spawnQueueIndex].queue.length == 0) && (Memory.spawnQueue[spawnQueueIndex].unassigned.length == 0) ){
+                queueCreeps_energyRooms();  //Can contribute 2 at once, maximum (miner and/or gatherer)
+                this.populateQueue_general(Memory.spawnQueue[spawnQueueIndex].roomID);    //Can contribute 1 at once, maximum
+            }
         }
     },
-    populateQueue_general : function(){
+    populateQueue_general : function(roomID){
         /*
         . Adds creeps NOT related to energy rooms (Miners and Gatherers) to the spawning queue
         . This is performed such that energyRooms are utilised well before excess energy is spent on these other workers
@@ -83,17 +89,18 @@ var respawnManager = {
 
         //#### -----> Assuming this functions how one spawner will be governed...
         //Sources covered
-        var sourceOccupied_miners    = getSummed_potential_role("Miner")    > Game.spawns["Spawn1"].room.find(FIND_SOURCES).length;
-        var sourceOccupied_gatherers = getSummed_potential_role("Gatherer") > Game.spawns["Spawn1"].room.find(FIND_STRUCTURES, {filter:(structure)=>{return(structure.structureType == STRUCTURE_CONTAINER)}}).length;
+        var spawnQueueIndex = getSpawnQueueIndex(roomID);   //Not necessary here, but clearer information wise and can be generalised easier
+        var sourceOccupied_miners    = getSummed_potential_role("Miner")    >= Game.spawns["Spawn1"].room.find(FIND_SOURCES).length;
+        var sourceOccupied_gatherers = getSummed_potential_role("Gatherer") >= Game.spawns["Spawn1"].room.find(FIND_STRUCTURES, {filter:(structure)=>{return(structure.structureType == STRUCTURE_CONTAINER)}}).length;
         if(sourceOccupied_miners && sourceOccupied_gatherers){
             var repairerFilter = getSummed_potential_role("Repairer");
-            if(repairerFilter > 0){
+            if(repairerFilter > 1){
                 var builderFilter  = getSummed_potential_role("Builder");
-                if(builderFilter > 1){
+                if(builderFilter > 2){
                     var upgraderFilter = getSummed_potential_role("Upgrader");
                     if(upgraderFilter >= 3){
                         var armyFilter     = getSummed_potential_role("Defender");
-                        if(armyFilter < 3){
+                        if(armyFilter < 6){
                             defenderTasks.queue();}
                     }
                     else{
@@ -107,7 +114,7 @@ var respawnManager = {
         }
     }
 }
-function getSummed_potential_role(role){
+function getSummed_potential_role(roomID, role){
     /*
     . Sums all the creeps with the given role
     . Sums creep that are currently alive AND that are queued up
@@ -121,8 +128,8 @@ function getSummed_potential_role(role){
         if(Game.creeps[creepName].memory.role == role){
             total++;}
     }
-    for(var element in Memory.spawnQueue.queue){
-        if(Memory.spawnQueue.queue[element].role == role){
+    for(var element in Memory.spawnQueue[getSpawnQueueIndex(roomID)].queue){
+        if(Memory.spawnQueue[getSpawnQueueIndex(roomID)].queue[element].role == role){
             total++;}
     }
     return total;

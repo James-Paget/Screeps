@@ -21,17 +21,18 @@ var defenderTasks = {
             creep.memory.isDefending = false;
         }
     },
-    queue : function(){
+    queue : function(roomID){
         //Note; Have null for houseKey information as this is irrelevent to them
-        var creepSpec = {roomID:null, sourceID:null, parts:[ATTACK, MOVE], role:"Defender", time:Game.time};
-        Memory.spawnQueue.queue.push(creepSpec);
+        var creepSpec = {roomID:null, sourceID:null, parts:[TOUGH, TOUGH, ATTACK, ATTACK, MOVE, MOVE], role:"Defender", time:Game.time};
+        Memory.spawnQueue[getSpawnQueueIndex(roomID)].queue.push(creepSpec);
     },
-    respawn : function(creepSpec){
+    respawn : function(creepName, spawnerID, creepSpec){
         //[MOVE, ATTACK]
-        var spawner   = Game.spawns["Spawn1"];
-        var creepName = creepSpec.role+Game.time;
-        var houseKey  = {roomID:creepSpec.roomID, sourceID:creepSpec.sourceID};
-        spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, houseKey:houseKey, isDefending:false}});
+        //var creepName = creepSpec.role+Game.time;
+        var spawner  = Game.getObjectById(spawnerID);
+        var houseKey = {roomID:creepSpec.roomID, sourceID:creepSpec.sourceID};
+        var spawnKey = {roomID:creepSpec.roomID, spawnID:spawnerID};
+        spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, spawnKey:spawnKey, houseKey:houseKey, isDefending:false}});
     },
     death : function(){
         /*

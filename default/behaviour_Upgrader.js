@@ -29,17 +29,18 @@ var upgradingTasks = {
             }
         }
     },
-    queue : function(){
+    queue : function(roomID){
         //Note; Have null for houseKey information as this is irrelevent to them
         var creepSpec = {roomID:null, sourceID:null, parts:[WORK, WORK, WORK, WORK, WORK, CARRY, MOVE], role:"Upgrader", time:Game.time};
-        Memory.spawnQueue.queue.push(creepSpec);
+        Memory.spawnQueue[getSpawnQueueIndex(roomID)].queue.push(creepSpec);
     },
-    respawn : function(creepSpec){
+    respawn : function(creepName, spawnerID, creepSpec){
         //[WORK, WORK, MOVE, CARRY]
-        var spawner   = Game.spawns["Spawn1"];
-        var creepName = creepSpec.role+Game.time;
+        //var creepName = creepSpec.role+Game.time;
+        var spawner   = Game.getObjectByID(spawnerID);
         var houseKey  = {roomID:creepSpec.roomID, sourceID:creepSpec.sourceID};
-        spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, houseKey:houseKey, isUpgrading:false}});
+        var houseKey  = {roomID:creepSpec.roomID, spawnID:spawnerID};
+        spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, spawnKey:spawnKey, houseKey:houseKey, isUpgrading:false}});
     },
     death : function(){
         /*
