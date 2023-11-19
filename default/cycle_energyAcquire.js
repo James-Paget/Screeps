@@ -308,7 +308,7 @@ function getSaturationCondition_miners(roomName, energyRooms_info){
             var workNeeded = workRequired -total_workParts;
             if(workNeeded > 0){                             //If actually need any more workers
                 //(3) Energy max
-                var energyMax = Game.rooms[roomName].room.energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
+                var energyMax = Game.rooms[roomName].energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
                 //Now make decision
                 var workNeeded_perWorker = Math.ceil(workNeeded / (energyRooms_info.free -energyRooms_info.miners.length)); //Spreads work over spaces possible to be mined ==> This is probably not a good way to do this for larger bases, but overall should improve flowrate of energy (e.g no sudden spikes of nothing when they die of old age)
                 var partSet = [CARRY,MOVE];
@@ -353,7 +353,7 @@ function getSaturationCondition_gatherers(energyRooms_info){
             var carryNeeded = carryRequired -total_carryParts;
             if(carryNeeded > 0){          //If actually need any more workers
                 //(3) Energy max
-                var energyMax = Game.rooms[roomName].room.energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
+                var energyMax = Game.rooms[roomName].energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
                 //Now make decision
                 var carryNeeded_perWorker = Math.ceil(carryNeeded / Math.abs(3.0 -energyRooms_info.gatherers.length));   //Spreads work over multiple gatherers, not all on just one (3 workers used here)
                 var partSet = [CARRY,MOVE];
