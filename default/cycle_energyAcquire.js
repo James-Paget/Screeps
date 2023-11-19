@@ -280,7 +280,7 @@ function queueCreeps_energyRooms(){
             break;}
     }
 }
-function getSaturationCondition_miners(roomName, energyRooms_info){
+function getSaturationCondition_miners(roomID, energyRooms_info){
     /*
     . Checks if the miners are saturated
     . If they are NOT, returns what the next miner parts should be in order to fulfil saturation
@@ -308,7 +308,7 @@ function getSaturationCondition_miners(roomName, energyRooms_info){
             var workNeeded = workRequired -total_workParts;
             if(workNeeded > 0){                             //If actually need any more workers
                 //(3) Energy max
-                var energyMax = Game.rooms[roomName].energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
+                var energyMax = Game.rooms[roomID].energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
                 //Now make decision
                 var workNeeded_perWorker = Math.ceil(workNeeded / (energyRooms_info.free -energyRooms_info.miners.length)); //Spreads work over spaces possible to be mined ==> This is probably not a good way to do this for larger bases, but overall should improve flowrate of energy (e.g no sudden spikes of nothing when they die of old age)
                 var partSet = [CARRY,MOVE];
@@ -325,7 +325,7 @@ function getSaturationCondition_miners(roomName, energyRooms_info){
     }
     return condition;
 }
-function getSaturationCondition_gatherers(energyRooms_info){
+function getSaturationCondition_gatherers(roomID, energyRooms_info){
     /*
     . Checks if the gatherers are saturated
     . If they are NOT, returns what the next gatherer parts should be in order to fulfil saturation
@@ -343,7 +343,7 @@ function getSaturationCondition_gatherers(energyRooms_info){
         }
         else{
             //(1) Sum CARRY parts assigned to source
-            var originObj = Game.rooms[roomName].find(FIND_STRUCTURES, {filter:(structure)=>{return ( structure.structureType == STRUCTURE_SPAWN )}})[0].pos;
+            var originObj = Game.rooms[roomID].find(FIND_STRUCTURES, {filter:(structure)=>{return ( structure.structureType == STRUCTURE_SPAWN )}})[0].pos;
             var goalObj   = {pos:Game.getObjectById(energyRooms_info.ID).pos, range:1};
             var travelDistance   = PathFinder.search(originObj, goalObj).path.length +8;   //From spawn to source, actual path +8 to account for getting stuck in motion, increasing time
             var carryRequired    = Math.max(Math.ceil(0.4*travelDistance), 3);             //CARRY required to fully empty whatever a source produces (10 energy tick^-1) --> assumed travelling always at 1 tile tick^-1 --> sets a min so incorrect linear dist is slightly corrected
@@ -353,7 +353,7 @@ function getSaturationCondition_gatherers(energyRooms_info){
             var carryNeeded = carryRequired -total_carryParts;
             if(carryNeeded > 0){          //If actually need any more workers
                 //(3) Energy max
-                var energyMax = Game.rooms[roomName].energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
+                var energyMax = Game.rooms[roomID].energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
                 //Now make decision
                 var carryNeeded_perWorker = Math.ceil(carryNeeded / Math.abs(3.0 -energyRooms_info.gatherers.length));   //Spreads work over multiple gatherers, not all on just one (3 workers used here)
                 var partSet = [CARRY,MOVE];
