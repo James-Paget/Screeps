@@ -259,14 +259,14 @@ function queueCreeps_energyRooms(){
         for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
             //Check mining is saturated
             var saturationCondition_miners = getSaturationCondition_miners(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex]);    //Check mining is saturated
-            if(saturationCondition_miners != null){                                                                                //Not saturated => put new miners into the queue
+            if(saturationCondition_miners != null){                                                                                 //Not saturated => put new miners into the queue
                 var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_miners.parts, role:"Miner", time:Game.time};
                 Memory.spawnQueue[getSpawnQueueIndex(Memory.energyRooms[roomIndex].ID)].queue.push(creepSpec);
                 workerQueued = true;
             }
             //Check gathering is saturated
             var saturationCondition_gatherers = getSaturationCondition_gatherers(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex]);   //Check gatherers are saturated
-            if(saturationCondition_gatherers != null){                                                                                  //not saturated => put new gatherers into the queue
+            if(saturationCondition_gatherers != null){                                                                              //Not saturated => put new gatherers into the queue
                 var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_gatherers.parts, role:"Gatherer", time:Game.time};
                 Memory.spawnQueue[getSpawnQueueIndex(Memory.energyRooms[roomIndex].ID)].queue.push(creepSpec);
                 workerQueued = true;

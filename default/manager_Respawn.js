@@ -92,9 +92,11 @@ var respawnManager = {
 
         //#### -----> Assuming this functions how one spawner will be governed...
         //Sources covered
-        var spawnQueueIndex = getSpawnQueueIndex(roomID);   //Not necessary here, but clearer information wise and can be generalised easier
-        var sourceOccupied_miners    = getSummed_potential_role("Miner")    >= Game.spawns["Spawn1"].room.find(FIND_SOURCES).length;
-        var sourceOccupied_gatherers = getSummed_potential_role("Gatherer") >= Game.spawns["Spawn1"].room.find(FIND_STRUCTURES, {filter:(structure)=>{return(structure.structureType == STRUCTURE_CONTAINER)}}).length;
+        //#############################################################################################################
+        //## REPLACE THIS WITH FUNCTIONAL CONDITION, MAKE IT FAR BETTER, THIS IS A TERRIBLE METRIC FOR WHEN TO SPAWN ##
+        //######
+        var sourceOccupied_miners    = getSummed_potential_role("Miner")    >= Game.rooms[roomID].find(FIND_SOURCES).length;
+        var sourceOccupied_gatherers = getSummed_potential_role("Gatherer") >= Game.rooms[roomID].find(FIND_STRUCTURES, {filter:(structure)=>{return(structure.structureType == STRUCTURE_CONTAINER)}}).length;
         if(sourceOccupied_miners && sourceOccupied_gatherers){
             var repairerFilter = getSummed_potential_role("Repairer");
             if(repairerFilter > 1){
@@ -104,16 +106,16 @@ var respawnManager = {
                     if(upgraderFilter >= 3){
                         var armyFilter     = getSummed_potential_role("Defender");
                         if(armyFilter < 6){
-                            defenderTasks.queue();}
+                            defenderTasks.queue(roomID);}
                     }
                     else{
-                        upgradingTasks.queue();}
+                        upgradingTasks.queue(roomID);}
                 }
                 else{
-                    buildingTasks.queue();}
+                    buildingTasks.queue(roomID);}
             }
             else{
-                repairingTasks.queue();}
+                repairingTasks.queue(roomID);}
         }
     }
 }
