@@ -4,7 +4,7 @@ var upgrading_tasks = require("behaviour_Upgrader");
 var building_tasks  = require("behaviour_Builder");
 var repairing_tasks = require("behaviour_Repairer");
 var defender_tasks  = require("behaviour_Defender");
-var {getSpawnQueueIndex} = require("manager_Memory");
+var {getSpawnerRoomIndex} = require("manager_Memory");
 var {queueCreeps_energyRooms} = require("cycle_energyAcquire");
 
 /*
@@ -24,31 +24,31 @@ var respawnManager = {
         . Only attempts to spawn when spawner is finished spawning last and has enough energy
         . Moves certain roles to unassigned list when processed in queue
         */
-        for(var spawnQueueIndex in Memory.spawnQueue){
-            if(Memory.spawnQueue[spawnQueueIndex].queue.length > 0){                            //If anything to spawn
-                var spawnerID = Game.rooms[Memory.spawnQueue[spawnQueueIndex].roomID].find(FIND_STRUCTURES, {filter:(structure) => {return(structure.structureType == STRUCTURE_SPAWN)}})[0].id;
+        for(var spawnerRoomIndex in Memory.spawnerRooms){
+            if(Memory.spawnerRooms[spawnerRoomIndex].queue.length > 0){                            //If anything to spawn
+                var spawnerID = Game.rooms[Memory.spawnerRooms[spawnerRoomIndex].roomID].find(FIND_STRUCTURES, {filter:(structure) => {return(structure.structureType == STRUCTURE_SPAWN)}})[0].id;
                 var spawner   = Game.getObjectById(spawnerID);
-                var creepSpec = Memory.spawnQueue[spawnQueueIndex].queue[0];
+                var creepSpec = Memory.spawnerRooms[spawnerRoomIndex].queue[0];
                 if(!spawner.spawning){                                                          //And not busy
-                    var energyRequired = _.sum(Memory.spawnQueue[spawnQueueIndex].queue[0].parts, part => BODYPART_COST[part]);
+                    var energyRequired = _.sum(Memory.spawnerRooms[spawnerRoomIndex].queue[0].parts, part => BODYPART_COST[part]);
                     if(energyRequired <= spawner.room.energyAvailable){                         //And have enough energy
-                        var creepName = Memory.spawnQueue[spawnQueueIndex].queue[0].role+Game.time;
-                        if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Miner"){
+                        var creepName = Memory.spawnerRooms[spawnerRoomIndex].queue[0].role+Game.time;
+                        if(Memory.spawnerRooms[spawnerRoomIndex].queue[0].role == "Miner"){
                             miner_tasks.respawn(creepName, spawnerID, creepSpec);
-                            Memory.spawnQueue[spawnQueueIndex].unassigned.push(creepName);}     //energyRoom unit, => requires assigning
-                        if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Gatherer"){
+                            Memory.spawnerRooms[spawnerRoomIndex].unassigned.push(creepName);}     //energyRoom unit, => requires assigning
+                        if(Memory.spawnerRooms[spawnerRoomIndex].queue[0].role == "Gatherer"){
                             gatherer_tasks.respawn(creepName, spawnerID, creepSpec);
-                            Memory.spawnQueue[spawnQueueIndex].unassigned.push(creepName);}     //energyRoom unit, => requires assigning
-                        if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Repairer"){
+                            Memory.spawnerRooms[spawnerRoomIndex].unassigned.push(creepName);}     //energyRoom unit, => requires assigning
+                        if(Memory.spawnerRooms[spawnerRoomIndex].queue[0].role == "Repairer"){
                             repairing_tasks.respawn(creepName, spawnerID, creepSpec);}
-                        if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Builder"){
+                        if(Memory.spawnerRooms[spawnerRoomIndex].queue[0].role == "Builder"){
                             building_tasks.respawn(creepName, spawnerID, creepSpec);}
-                        if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Upgrader"){
+                        if(Memory.spawnerRooms[spawnerRoomIndex].queue[0].role == "Upgrader"){
                             upgrading_tasks.respawn(creepName, spawnerID, creepSpec);}
-                        if(Memory.spawnQueue[spawnQueueIndex].queue[0].role == "Defender"){
+                        if(Memory.spawnerRooms[spawnerRoomIndex].queue[0].role == "Defender"){
                             defender_tasks.respawn(creepName, spawnerID, creepSpec);}
                         //...
-                        Memory.spawnQueue[spawnQueueIndex].queue.shift();
+                        Memory.spawnerRooms[spawnerRoomIndex].queue.shift();
                     }
                 }
             }
@@ -64,10 +64,10 @@ var respawnManager = {
         -General creeps
         -...
         */
-        for(var spawnQueueIndex in Memory.spawnQueue){
-            if( (Memory.spawnQueue[spawnQueueIndex].queue.length == 0) && (Memory.spawnQueue[spawnQueueIndex].unassigned.length == 0) ){
+        for(var spawnerRoomIndex in Memory.spawnerRooms){
+            if( (Memory.spawnerRooms[spawnerRoomIndex].queue.length == 0) && (Memory.spawnerRooms[spawnerRoomIndex].unassigned.length == 0) ){
                 queueCreeps_energyRooms();  //Can contribute 2 at once, maximum (miner and/or gatherer)
-                this.populateQueue_general(Memory.spawnQueue[spawnQueueIndex].roomID);    //Can contribute 1 at once, maximum
+                this.populateQueue_general(Memory.spawnerRooms[spawnerRoomIndex].roomID);    //Can contribute 1 at once, maximum
             }
         }
     },
@@ -129,8 +129,8 @@ function getSummed_potential_role(roomID, role){
         if(Game.creeps[creepName].memory.role == role){
             total++;}
     }
-    for(var element in Memory.spawnQueue[getSpawnQueueIndex(roomID)].queue){
-        if(Memory.spawnQueue[getSpawnQueueIndex(roomID)].queue[element].role == role){
+    for(var element in Memory.spawnerRooms[getspawnerRoomIndex(roomID)].queue){
+        if(Memory.spawnerRooms[getspawnerRoomIndex(roomID)].queue[element].role == role){
             total++;}
     }
     return total;

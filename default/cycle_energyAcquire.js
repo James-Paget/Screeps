@@ -1,4 +1,4 @@
-var {getSpawnQueueIndex} = require("manager_Memory");
+var {getSpawnerRoomIndex} = require("manager_Memory");
 
 function getTarget_miner(creep){
     /*
@@ -113,7 +113,7 @@ function init_energyRoom(room){
     . A given structure can be removed from here using the "removeEnergyRoom()" function
 
     Structure is as follows;
-    {[], []} == spawnQueue
+    {[], []} == spawnerRoom
     (0)Queue of creeps to be spawned
     (1)To Be Assigned Creeps; list of creep NAMES that are required to assigned to their positions, added here when created for a specific role in here
     Creeps will only be spawned when everyone here has been assigned
@@ -247,13 +247,13 @@ function queueCreeps_energyRooms(){
     -- This function will only assign the first unit it finds that is required
     -- It is then called often by the respawn manager to populate all required units
 
-    The spawnQueue.queue      HOLDS [{roomID, sourceID, Parts, Role}, {...}, ...] <-- Specify what creeps to make                 <-*Only THIS list is touched here*
-    The spawnQueue.unassigned HOLDS [creepNames, ...]                             <-- Specify the creeps who have just been made
+    The spawnerRoom.queue      HOLDS [{roomID, sourceID, Parts, Role}, {...}, ...] <-- Specify what creeps to make                 <-*Only THIS list is touched here*
+    The spawnerRoom.unassigned HOLDS [creepNames, ...]                             <-- Specify the creeps who have just been made
     */
     //##############################################################
     //## QUEUE PROBLEM COULD BE HANDLED BETTER, BUT WORKS FOR NOW ##
     //##############################################################
-    //Only do this when all unassigned positions have been resolved -> so when choosing new spawns, only have to consider energyRooms, not spawnQueue.unassigned
+    //Only do this when all unassigned positions have been resolved -> so when choosing new spawns, only have to consider energyRooms, not spawnerRoom.unassigned
     var workerQueued = false;
     for(var roomIndex in Memory.energyRooms){
         for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
@@ -262,7 +262,7 @@ function queueCreeps_energyRooms(){
             if(saturationCondition_miners != null){                                                                                 //Not saturated => put new miners into the queue
                 //miner_tasks.queue(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex].ID, saturationCondition_miners.parts);         //#### RESULTS IN CIRCULARNESS
                 var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_miners.parts, role:"Miner", time:Game.time};
-                Memory.spawnQueue[getSpawnQueueIndex(Memory.energyRooms[roomIndex].ID)].queue.push(creepSpec);
+                Memory.spawnerRooms[getSpawnerRoomIndex(Memory.energyRooms[roomIndex].ID)].queue.push(creepSpec);
                 workerQueued = true;
             }
             //Check gathering is saturated
@@ -270,7 +270,7 @@ function queueCreeps_energyRooms(){
             if(saturationCondition_gatherers != null){                                                                              //Not saturated => put new gatherers into the queue
                 //gatherer_tasks.queue(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex].ID, saturationCondition_gatherers.parts);   //#### RESULTS IN CIRCULARNESS
                 var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_gatherers.parts, role:"Gatherer", time:Game.time};
-                Memory.spawnQueue[getSpawnQueueIndex(Memory.energyRooms[roomIndex].ID)].queue.push(creepSpec);
+                Memory.spawnerRooms[getSpawnerRoomIndex(Memory.energyRooms[roomIndex].ID)].queue.push(creepSpec);
                 workerQueued = true;
             }
             //...
@@ -385,33 +385,33 @@ function assignCreeps_energyRooms(spawnerRoomID){
     . Waits until they are alive (so their ID is available)
     . Then goes to their houseKey and leaves their ID in the energyRooms global memory (so they are assigned/registered)
     */
-    var unassignedLength = Memory.spawnQueue[getSpawnQueueIndex(spawnerRoomID)].unassigned.length;
+    var unassignedLength = Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned.length;
     for(var i=0; i<unassignedLength; i++){
-        var creepName = Memory.spawnQueue[getSpawnQueueIndex(spawnerRoomID)].unassigned[0];
+        var creepName = Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned[0];
         if(Memory.creeps[creepName]){   //Prevents a bug where the 1 time a creep, in sim, spawned with undefined memory => ignore his assignment and execute him
             var roomIndex    = searchEnergyRooms_roomIndex(Memory.creeps[creepName].houseKey.roomID);
             var sourceIndex  = searchEnergyRooms_sourceIndex(roomIndex, Memory.creeps[creepName].houseKey.sourceID);
             if(Memory.creeps[creepName].role == "Miner"){
                 Memory.energyRooms[roomIndex].sources[sourceIndex].miners.push(Game.creeps[creepName].id);  //Assigned it correctly
-                Memory.spawnQueue[getSpawnQueueIndex(spawnerRoomID)].unassigned.shift();                    //Now it must be removed from this "waiting list"
+                Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned.shift();                    //Now it must be removed from this "waiting list"
             }
             if(Memory.creeps[creepName].role == "Gatherer"){
                 Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.push(Game.creeps[creepName].id);
-                Memory.spawnQueue[getSpawnQueueIndex(spawnerRoomID)].unassigned.shift();
+                Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned.shift();
             }
             //...
         }
         else{
             //Game.creeps[creepName].suicide();       //May bug out if he is still spawning
-            Memory.spawnQueue[getSpawnQueueIndex(spawnerRoomID)].unassigned.shift();
+            Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned.shift();
         }
     }
 }
-function clearSpawnQueue_queue(roomID){
-    Memory.spawnQueue[getSpawnQueueIndex(roomID)].queue = [];
+function clearSpawnerRoom_queue(roomID){
+    Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].queue = [];
 }
-function clearSpawnQueue_unassigned(roomID){
-    Memory.spawnQueue[getSpawnQueueIndex(roomID)].unassigned = [];
+function clearSpawnerRoom_unassigned(roomID){
+    Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].unassigned = [];
 }
 // . MAKE FUNCTION TO REMAKE THE CONTAINER SET FOR EACH SOURCE
 // . MAKE FUNCTION TO REASSIGN ALL MINERS TO SOURCES AGAIN; WILL FIX SITUATIONS WHEN EVERYONE IS CONFUSED WHERE THEY ARE --> GlobalReassignment

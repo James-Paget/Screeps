@@ -1,4 +1,5 @@
 var {getTarget_miner, removeCreep_energyRooms} = require("cycle_energyAcquire");
+var {getSpawnerRoomIndex} = require("manager_Memory");
 
 var miner_tasks = {
     task : function(creep){
@@ -29,7 +30,7 @@ var miner_tasks = {
     },
     queue : function(roomID, sourceID, parts){
         var creepSpec = {roomID:roomID, sourceID:sourceID, parts:parts, role:"Miner", time:Game.time};
-        Memory.spawnQueue[getSpawnQueueIndex(roomID)].queue.push(creepSpec);
+        Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].queue.push(creepSpec);
     },
     respawn : function(creepName, spawnerID, creepSpec){
         /*

@@ -1,4 +1,4 @@
-var {getSpawnQueueIndex} = require("manager_Memory");
+var {getSpawnerRoomIndex} = require("manager_Memory");
 
 var defender_tasks = {
     task : function(creep){
@@ -26,7 +26,7 @@ var defender_tasks = {
     queue : function(roomID){
         //Note; Have null for houseKey information as this is irrelevent to them
         var creepSpec = {roomID:roomID, sourceID:null, parts:[TOUGH, TOUGH, ATTACK, ATTACK, MOVE, MOVE], role:"Defender", time:Game.time};
-        Memory.spawnQueue[getSpawnQueueIndex(roomID)].queue.push(creepSpec);
+        Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].queue.push(creepSpec);
     },
     respawn : function(creepName, spawnerID, creepSpec){
         //[MOVE, ATTACK]

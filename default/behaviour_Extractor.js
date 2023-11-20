@@ -1,3 +1,5 @@
+var {getSpawnerRoomIndex} = require("manager_Memory");
+
 var extractor_tasks = {
     task : function(creep){
         var resourceType = RESOURCE_ENERGY; //#### WHATEVER MINERAL IS BEING MINED ####
@@ -22,7 +24,7 @@ var extractor_tasks = {
         //Note; Have null for houseKey information as this is irrelevent to them
         //#### THIS WILL WANT TO HAVE A SOURCE ID --> IN REALITY IS AN EXTRACTOR ID ####
         var creepSpec = {roomID:roomID, sourceID:null, parts:[WORK, WORK, CARRY, MOVE, MOVE, MOVE], role:"Extractor", time:Game.time};
-        Memory.spawnQueue[getSpawnQueueIndex(roomID)].queue.push(creepSpec);
+        Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].queue.push(creepSpec);
     },
     respawn : function(creepName, spawnerID, creepSpec){
         var spawner   = Game.getObjectById(spawnerID);

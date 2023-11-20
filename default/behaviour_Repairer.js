@@ -1,4 +1,4 @@
-var {getSpawnQueueIndex} = require("manager_Memory");
+var {getSpawnerRoomIndex} = require("manager_Memory");
 
 var repairing_tasks = {
     task : function(creep){
@@ -56,7 +56,7 @@ var repairing_tasks = {
     queue : function(roomID){
         //Note; Have null for houseKey information as this is irrelevent to them
         var creepSpec = {roomID:roomID, sourceID:null, parts:[WORK, CARRY, MOVE], role:"Repairer", time:Game.time};
-        Memory.spawnQueue[getSpawnQueueIndex(roomID)].queue.push(creepSpec);
+        Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].queue.push(creepSpec);
     },
     respawn : function(creepName, spawnerID, creepSpec){
         //[WORK, MOVE, CARRY]

@@ -1,9 +1,9 @@
-var {getSpawnQueueIndex} = require("manager_Memory");
+var {getSpawnerRoomIndex} = require("manager_Memory");
 
 var upgrading_tasks = {
     task : function(creep){
         if(creep.memory.isUpgrading){
-            if(Memory.spawnQueue[getSpawnQueueIndex(creep.memory.spawnKey.roomID)].queue.length == 0){    //Only upgrade when no one is being spawned at YOUR spawner, e.g excess energy
+            if(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].queue.length == 0){    //Only upgrade when no one is being spawned at YOUR spawner, e.g excess energy
                 if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE){
                     creep.moveTo(creep.room.controller);
                 }
@@ -34,7 +34,7 @@ var upgrading_tasks = {
     queue : function(roomID){
         //Note; Have null for houseKey information as this is irrelevent to them
         var creepSpec = {roomID:roomID, sourceID:null, parts:[WORK, WORK, WORK, WORK, WORK, CARRY, MOVE], role:"Upgrader", time:Game.time};
-        Memory.spawnQueue[getSpawnQueueIndex(roomID)].queue.push(creepSpec);
+        Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].queue.push(creepSpec);
     },
     respawn : function(creepName, spawnerID, creepSpec){
         //[WORK, WORK, MOVE, CARRY]
