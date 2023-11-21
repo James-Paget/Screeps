@@ -129,8 +129,8 @@ function getSummed_potential_role(roomID, role){
         if(Game.creeps[creepName].memory.role == role){
             total++;}
     }
-    for(var element in Memory.spawnerRooms[getspawnerRoomIndex(roomID)].queue){
-        if(Memory.spawnerRooms[getspawnerRoomIndex(roomID)].queue[element].role == role){
+    for(var element in Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].queue){
+        if(Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].queue[element].role == role){
             total++;}
     }
     return total;
