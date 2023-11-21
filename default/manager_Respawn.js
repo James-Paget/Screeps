@@ -48,6 +48,8 @@ var respawnManager = {
                             upgrading_tasks.respawn(creepName, spawnerID, creepSpec);}
                         if(Memory.spawnerRooms[spawnerRoomIndex].queue[0].role == "Defender"){
                             defender_tasks.respawn(creepName, spawnerID, creepSpec);}
+                        if(Memory.spawnerRooms[spawnerRoomIndex].queue[0].role == "Extractor"){
+                            extractor_tasks.respawn(creepName, spawnerID, creepSpec);}
                         //...
                         Memory.spawnerRooms[spawnerRoomIndex].queue.shift();
                     }

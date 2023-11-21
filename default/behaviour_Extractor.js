@@ -34,8 +34,10 @@ var extractor_tasks = {
     },
     queue : function(roomID){
         //Note; Have null for houseKey information as this is irrelevent to them
-        //#### THIS WILL WANT TO HAVE A SOURCE ID --> IN REALITY IS AN EXTRACTOR ID ####
-        var creepSpec = {roomID:roomID, sourceID:getExtractionID(roomID), parts:[WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], role:"Extractor", time:Game.time};
+        //##################################
+        //## NEEDS A SCALABLE PARTS LIMIT ##
+        //##################################
+        var creepSpec = {roomID:roomID, sourceID:getExtractionID(roomID), parts:[WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], role:"Extractor", time:Game.time};
         Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].queue.push(creepSpec);
     },
     respawn : function(creepName, spawnerID, creepSpec){
