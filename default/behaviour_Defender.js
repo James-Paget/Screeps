@@ -19,7 +19,7 @@ var defender_tasks = {
                 creep.memory.isDefending = true;
             }
         }
-        if( creep.pos.getRangeTo(target) > 100 ){
+        if( (target == null) || (creep.pos.getRangeTo(target) > 100) ){
             creep.memory.isDefending = false;
         }
     },
