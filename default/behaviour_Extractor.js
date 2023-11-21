@@ -2,15 +2,15 @@ var {getSpawnerRoomIndex} = require("manager_Memory");
 
 var extractor_tasks = {
     task : function(creep){
-        //var resourceType = RESOURCE_ENERGY; //#### WHATEVER MINERAL IS BEING MINED ####
         if(creep.memory.sourceID != "null"){      //If an extractor exists --> source here referes to mineral instead
+            var resourceType = Game.getObjectById(creep.memory.houseKey.sourceID).mineralType;
             if(creep.memory.isExtracting){
                 //Go mine from somewhere
                 var target = Game.getObjectById(creep.memory.houseKey.sourceID);
                 //####################################################
                 //## MAKE IT WIAT FOR THE COOLDOWN BETWEEN HARVESTS ##
                 //####################################################
-                if(creep.harvest(target) == ERR_NOT_IN_RANGE){                  //Leave resource arg blank so it harvests whatever mineral it is
+                if(creep.harvest(target, resourceType) == ERR_NOT_IN_RANGE){
                     creep.moveTo(target);
                 }
 
@@ -22,11 +22,11 @@ var extractor_tasks = {
                 //go deliver somewhere
                 if(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage.length > 0){
                     var target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
-                    if(creep.transfer(target) == ERR_NOT_IN_RANGE){         //Leave resource arg blank so it harvests whatever mineral it is
+                    if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
                         creep.moveTo(target);
                     }
 
-                    if(creep.store.getUsedCapacity() == 0){             //Leave resource arg blank so it harvests whatever mineral it is
+                    if(creep.store.getUsedCapacity(resourceType) == 0){
                         creep.memory.isExtracting = true;
                     }
                 }
