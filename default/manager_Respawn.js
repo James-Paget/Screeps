@@ -4,6 +4,7 @@ var upgrading_tasks = require("behaviour_Upgrader");
 var building_tasks  = require("behaviour_Builder");
 var repairing_tasks = require("behaviour_Repairer");
 var defender_tasks  = require("behaviour_Defender");
+var extractor_tasks = require("behaviour_Extractor");
 var {getSpawnerRoomIndex} = require("manager_Memory");
 var {queueCreeps_energyRooms} = require("cycle_energyAcquire");
 
@@ -96,19 +97,19 @@ var respawnManager = {
             if(repairerFilter > 1){
                 var builderFilter  = getSummed_potential_role(roomID, "Builder");
                 if(builderFilter > 2){
-                    var extractorFilter = getSummed_potential_role(roomID, "Extractor");
-                    if(extractorFilter > 2){
-                        var upgraderFilter = getSummed_potential_role(roomID, "Upgrader");
-                        if(upgraderFilter >= 3){
+                    var upgraderFilter = getSummed_potential_role(roomID, "Upgrader");
+                    if(upgraderFilter >= 3){
+                        var extractorFilter = getSummed_potential_role(roomID, "Extractor");
+                        if(extractorFilter > 2){
                             var armyFilter     = getSummed_potential_role(roomID, "Defender");
                             if(armyFilter < 6){
                                 defender_tasks.queue(roomID);}
                         }
                         else{
-                            upgrading_tasks.queue(roomID);}
+                            extractor_tasks.queue(roomID);}
                     }
                     else{
-                        extractor_tasks.queue(roomID);}
+                        upgrading_tasks.queue(roomID);}
                 }
                 else{
                     building_tasks.queue(roomID);}
