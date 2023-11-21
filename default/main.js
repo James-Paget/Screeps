@@ -54,7 +54,7 @@ function creep_taskManager(){
 }
 function tower_taskManager(){
     for(var towerIndex in Memory.towers){
-        tower_tasks.task( Game.findObjectById(Memory.towers[towerIndex]) );
+        tower_tasks.task( Game.getObjectById(Memory.towers[towerIndex]) );
     }
 }
 function manageMemory_dead_cleanup(){
