@@ -3,15 +3,15 @@ var {getSpawnerRoomIndex} = require("manager_Memory");
 var extractor_tasks = {
     task : function(creep){
         //var resourceType = RESOURCE_ENERGY; //#### WHATEVER MINERAL IS BEING MINED ####
-        if(creep.memory.sourceID){      //If an extractor exists --> source here referes to mineral instead
-            if(isExtracting){
+        if(creep.memory.sourceID != "null"){      //If an extractor exists --> source here referes to mineral instead
+            if(creep.memory.isExtracting){
                 //Go mine from somewhere
                 var target = Game.getObjectById(creep.memory.houseKey.sourceID);
-                if(creep.harvest(target) == ERR_IN_RANGE){                  //Leave resource arg blank so it harvests whatever mineral it is
+                if(creep.harvest(target) == ERR_NOT_IN_RANGE){                  //Leave resource arg blank so it harvests whatever mineral it is
                     creep.moveTo(target);
                 }
 
-                if(creep.store.getFreeCapacity(resourceType) == 0){
+                if(creep.store.getFreeCapacity() == 0){
                     creep.memory.isExtracting = false;
                 }
             }
