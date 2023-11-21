@@ -4,6 +4,7 @@ var upgrading_tasks = require("behaviour_Upgrader");
 var building_tasks  = require("behaviour_Builder");
 var repairing_tasks = require("behaviour_Repairer");
 var defender_tasks  = require("behaviour_Defender");
+var extractor_tasks  = require("behaviour_Extractor");
 var {military_tasks, tower_tasks} = require("behaviour_Military");
 var respawnManager   = require("manager_Respawn");
 var {init_energyRoom, assignCreeps_energyRooms} = require("cycle_energyAcquire");
@@ -46,6 +47,8 @@ function creep_taskManager(){
             repairing_tasks.task(creeps[name]);}
         if(creeps[name].memory.role == "Defender"){
             defender_tasks.task(creeps[name]);}
+        if(creeps[name].memory.role == "Extractor"){
+            extractor_tasks.task(creeps[name]);}
         //...
     }
 }
@@ -71,6 +74,8 @@ function manageMemory_dead_cleanup(){
                 repairing_tasks.death();}
             if(Memory.creeps[memoryName].role == "Defender"){
                 defender_tasks.death();}
+            if(Memory.creeps[memoryName].role == "Extractor"){
+                extractor_tasks.death();}
             //...
             delete Memory.creeps[memoryName];
         }

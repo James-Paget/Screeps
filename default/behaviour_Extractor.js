@@ -2,28 +2,40 @@ var {getSpawnerRoomIndex} = require("manager_Memory");
 
 var extractor_tasks = {
     task : function(creep){
-        var resourceType = RESOURCE_ENERGY; //#### WHATEVER MINERAL IS BEING MINED ####
-        if(isExtracting){
-            //Go mine from somewhere
-            //pass
+        //var resourceType = RESOURCE_ENERGY; //#### WHATEVER MINERAL IS BEING MINED ####
+        if(creep.memory.sourceID){      //If an extractor exists --> source here referes to mineral instead
+            if(isExtracting){
+                //Go mine from somewhere
+                var target = Game.getObjectById(creep.memory.houseKey.sourceID);
+                if(creep.harvest(target) == ERR_IN_RANGE){                  //Leave resource arg blank so it harvests whatever mineral it is
+                    creep.moveTo(target);
+                }
 
-            if(creep.store.getFreeCapacity(resourceType) == 0){
-                creep.memory.isExtracting = false;
+                if(creep.store.getFreeCapacity(resourceType) == 0){
+                    creep.memory.isExtracting = false;
+                }
             }
-        }
-        else{
-            //go deliver somewhere
-            //pass
+            else{
+                //go deliver somewhere
+                if(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage.length > 0){
+                    var target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
+                    if(target.store.getFreeCapacity() > 0){                 //Leave resource arg blank so it harvests whatever mineral it is
+                        if(creep.transfer(target) == ERR_IN_RANGE){         //Leave resource arg blank so it harvests whatever mineral it is
+                            creep.moveTo(target);
+                        }
 
-            if(creep.store.getUsedCapacity(resourceType) == 0){
-                creep.memory.isExtracting = true;
+                        if(creep.store.getUsedCapacity() == 0){             //Leave resource arg blank so it harvests whatever mineral it is
+                            creep.memory.isExtracting = true;
+                        }
+                    }
+                }
             }
         }
     },
     queue : function(roomID){
         //Note; Have null for houseKey information as this is irrelevent to them
         //#### THIS WILL WANT TO HAVE A SOURCE ID --> IN REALITY IS AN EXTRACTOR ID ####
-        var creepSpec = {roomID:roomID, sourceID:null, parts:[WORK, WORK, CARRY, MOVE, MOVE, MOVE], role:"Extractor", time:Game.time};
+        var creepSpec = {roomID:roomID, sourceID:getExtractionID(roomID), parts:[WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], role:"Extractor", time:Game.time};
         Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].queue.push(creepSpec);
     },
     respawn : function(creepName, spawnerID, creepSpec){
@@ -40,6 +52,18 @@ var extractor_tasks = {
         1. ...
         */
     }
+}
+
+function getExtractionID(roomID){
+    /*
+    . Looks in the room they are spawned for the 1 extractor present
+    . Records its ID
+    */
+    var sourceID = null;
+    var extractorsInRoom = Game.rooms[roomID].find(FIND_STRUCTURES, {filter:(structure) => {return(structure.structureType == STRUCTURE_EXTRACTOR)}});
+    if(extractorsInRoom.length > 0){
+        sourceID = extractorsInRoom[0].id;}
+    return sourceID;
 }
 
 module.exports = extractor_tasks;

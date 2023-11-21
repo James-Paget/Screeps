@@ -82,15 +82,13 @@ var respawnManager = {
         (3) Upgraders
         (4) Army
         */
-        //#######################################################################################################
-        //#### THIS WILL REQUIRE SOME INTERESTING THOUGHT FOR MULTI-ROOM STUFF, PARTICULARLY MULTI-SPAWNERS #####
-        //#######################################################################################################
+        //#################################################################################################
+        //#### NOTE LOTS OF THESE DEPEND ON CREEPS IN A ROOM, => CANNOT LEAVE OR WILL INFINTE RESPAWN #####
+        //#################################################################################################
 
-        //#### -----> Assuming this functions how one spawner will be governed...
-        //Sources covered
         //#############################################################################################################
         //## REPLACE THIS WITH FUNCTIONAL CONDITION, MAKE IT FAR BETTER, THIS IS A TERRIBLE METRIC FOR WHEN TO SPAWN ##
-        //######
+        //#############################################################################################################
         var sourceOccupied_miners    = getSummed_potential_role(roomID, "Miner")    >= Game.rooms[roomID].find(FIND_SOURCES).length;
         var sourceOccupied_gatherers = getSummed_potential_role(roomID, "Gatherer") >= Game.rooms[roomID].find(FIND_STRUCTURES, {filter:(structure)=>{return(structure.structureType == STRUCTURE_CONTAINER)}}).length;
         if(sourceOccupied_miners && sourceOccupied_gatherers){
@@ -98,14 +96,19 @@ var respawnManager = {
             if(repairerFilter > 1){
                 var builderFilter  = getSummed_potential_role(roomID, "Builder");
                 if(builderFilter > 2){
-                    var upgraderFilter = getSummed_potential_role(roomID, "Upgrader");
-                    if(upgraderFilter >= 3){
-                        var armyFilter     = getSummed_potential_role(roomID, "Defender");
-                        if(armyFilter < 6){
-                            defender_tasks.queue(roomID);}
+                    var extractorFilter = getSummed_potential_role(roomID, "Extractor");
+                    if(extractorFilter > 2){
+                        var upgraderFilter = getSummed_potential_role(roomID, "Upgrader");
+                        if(upgraderFilter >= 3){
+                            var armyFilter     = getSummed_potential_role(roomID, "Defender");
+                            if(armyFilter < 6){
+                                defender_tasks.queue(roomID);}
+                        }
+                        else{
+                            upgrading_tasks.queue(roomID);}
                     }
                     else{
-                        upgrading_tasks.queue(roomID);}
+                        extractor_tasks.queue(roomID);}
                 }
                 else{
                     building_tasks.queue(roomID);}
