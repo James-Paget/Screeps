@@ -16,3 +16,4 @@ TODO list;
  9.   ) Make larger military, more organised, make sit still more so they dont waste CPU
  10.  ) Figure out some trading stuff with allies
 ~11.  ) Start harvesting minerals, commodities in highways, power banks in highways, ...
+ 12.  ) Make extractors wait for cooldown when mining 

@@ -7,6 +7,9 @@ var extractor_tasks = {
             if(creep.memory.isExtracting){
                 //Go mine from somewhere
                 var target = Game.getObjectById(creep.memory.houseKey.sourceID);
+                //####################################################
+                //## MAKE IT WIAT FOR THE COOLDOWN BETWEEN HARVESTS ##
+                //####################################################
                 if(creep.harvest(target) == ERR_NOT_IN_RANGE){                  //Leave resource arg blank so it harvests whatever mineral it is
                     creep.moveTo(target);
                 }
@@ -62,7 +65,7 @@ function getExtractionID(roomID){
     . Records its ID
     */
     var sourceID = null;
-    var extractorsInRoom = Game.rooms[roomID].find(FIND_STRUCTURES, {filter:(structure) => {return(structure.structureType == STRUCTURE_EXTRACTOR)}});
+    var extractorsInRoom = Game.rooms[roomID].find(FIND_MINERALS);
     if(extractorsInRoom.length > 0){
         sourceID = extractorsInRoom[0].id;}
     return sourceID;
