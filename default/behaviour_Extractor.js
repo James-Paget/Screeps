@@ -22,14 +22,12 @@ var extractor_tasks = {
                 //go deliver somewhere
                 if(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage.length > 0){
                     var target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
-                    if(target.store.getFreeCapacity() > 0){                 //Leave resource arg blank so it harvests whatever mineral it is
-                        if(creep.transfer(target) == ERR_NOT_IN_RANGE){         //Leave resource arg blank so it harvests whatever mineral it is
-                            creep.moveTo(target);
-                        }
+                    if(creep.transfer(target) == ERR_NOT_IN_RANGE){         //Leave resource arg blank so it harvests whatever mineral it is
+                        creep.moveTo(target);
+                    }
 
-                        if(creep.store.getUsedCapacity() == 0){             //Leave resource arg blank so it harvests whatever mineral it is
-                            creep.memory.isExtracting = true;
-                        }
+                    if(creep.store.getUsedCapacity() == 0){             //Leave resource arg blank so it harvests whatever mineral it is
+                        creep.memory.isExtracting = true;
                     }
                 }
             }
