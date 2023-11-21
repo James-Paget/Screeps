@@ -38,7 +38,7 @@ var extractor_tasks = {
         //##################################
         //## NEEDS A SCALABLE PARTS LIMIT ##
         //##################################
-        var creepSpec = {roomID:roomID, sourceID:getExtractionID(roomID), parts:[WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], role:"Extractor", time:Game.time};
+        var creepSpec = {roomID:roomID, sourceID:getExtractionID(roomID), parts:[WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], role:"Extractor", time:Game.time};
         Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].queue.push(creepSpec);
     },
     respawn : function(creepName, spawnerID, creepSpec){
