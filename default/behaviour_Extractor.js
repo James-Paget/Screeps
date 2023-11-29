@@ -26,10 +26,11 @@ var extractor_tasks = {
                 }
             }
             else{
+                var target = Game.getObjectById(creep.memory.houseKey.sourceID);
                 if(target.mineralAmount > 0){  //----->Start mining minerals
                     //go deliver somewhere
                     if(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage.length > 0){
-                        var target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
+                        target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
                         if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
                             creep.moveTo(target);
                         }
