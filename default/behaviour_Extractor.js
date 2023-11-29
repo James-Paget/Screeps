@@ -39,7 +39,7 @@ var extractor_tasks = {
                 else{
                     target = Game.getObjectById("6564e91d3eb96984a8e212a3");
                     if(target){
-                        if(creep.transfer(target, RESOURCE_ZYNTHIUM) == ERR_NOT_IN_RANGE){
+                        if(creep.transfer(target, RESOURCE_KEANIUM) == ERR_NOT_IN_RANGE){
                             creep.moveTo(target);
                         }
                     }
