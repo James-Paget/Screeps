@@ -5,29 +5,47 @@ var extractor_tasks = {
         if(creep.memory.sourceID != "null"){      //If an extractor exists --> source here referes to mineral instead
             var resourceType = Game.getObjectById(creep.memory.houseKey.sourceID).mineralType;
             if(creep.memory.isExtracting){
-                //Go mine from somewhere
                 var target = Game.getObjectById(creep.memory.houseKey.sourceID);
-                //####################################################
-                //## MAKE IT WIAT FOR THE COOLDOWN BETWEEN HARVESTS ##
-                //####################################################
-                if(creep.harvest(target, resourceType) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(target);
-                }
-
-                if(creep.store.getFreeCapacity() == 0){
-                    creep.memory.isExtracting = false;
-                }
-            }
-            else{
-                //go deliver somewhere
-                if(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage.length > 0){
-                    var target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
-                    if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
+                if(target.mineralAmount > 0){  //----->Start mining minerals
+                    //Go mine from somewhere
+                    //####################################################
+                    //## MAKE IT WIAT FOR THE COOLDOWN BETWEEN HARVESTS ##
+                    //####################################################
+                    if(creep.harvest(target, resourceType) == ERR_NOT_IN_RANGE){
                         creep.moveTo(target);
                     }
 
-                    if(creep.store.getUsedCapacity(resourceType) == 0){
-                        creep.memory.isExtracting = true;
+                    if(creep.store.getFreeCapacity(resourceType) == 0){
+                        creep.memory.isExtracting = false;
+                    }
+                }
+                else{   //----->Start selling minerals
+                    target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
+                    if(creep.withdraw(target, resourceType) == ERR_NOT_IN_RANGE){
+                        creep.moveTo(target);
+                    }
+                }
+            }
+            else{
+                if(target.mineralAmount > 0){  //----->Start mining minerals
+                    //go deliver somewhere
+                    if(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage.length > 0){
+                        var target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
+                        if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
+                            creep.moveTo(target);
+                        }
+
+                        if(creep.store.getUsedCapacity(resourceType) == 0){
+                            creep.memory.isExtracting = true;
+                        }
+                    }
+                }
+                else{
+                    var target = Game.getObjectById("6564e91d3eb96984a8e212a3");
+                    if(target){
+                        if(target.transfer(target, RESOURCE_ZYNTHIUM) == ERR_NOT_IN_RANGE){
+                            target.moveTo(target);
+                        }
                     }
                 }
             }
