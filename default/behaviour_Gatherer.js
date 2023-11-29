@@ -39,7 +39,7 @@ var gatherer_tasks = {
             }
         }
         else{
-            var inCorrectRoom = creep.room.name == creep.memory.houseKey.roomID;
+            var inCorrectRoom = creep.room.name == creep.memory.spawnKey.roomID;
             if(inCorrectRoom){
                 if(creep.memory.travelRoute){
                     delete creep.memory.travelRoute;}
@@ -53,7 +53,7 @@ var gatherer_tasks = {
                 //Not in correct room, therefore path to this room
                 if(!creep.memory.travelRoute){   //Deleted once it is no longer in use
                     //Generate route to the final room
-                    creep.memory.travelRoute = Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID);}
+                    creep.memory.travelRoute = Game.map.findRoute(creep.room.name, creep.memory.spawnKey.roomID);}
                 else{
                     //Follow the route to the final room
                     if(creep.room.name == creep.memory.travelRoute[0].room){    //If in next room, remove it to mark it as travelled
