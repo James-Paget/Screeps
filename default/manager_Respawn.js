@@ -98,7 +98,7 @@ var respawnManager = {
             var repairerFilter = getSummed_potential_role(roomID, "Repairer");
             if(repairerFilter > 1){
                 var builderFilter  = getSummed_potential_role(roomID, "Builder");
-                if(builderFilter > 2){
+                if(builderFilter > 1){
                     var upgraderFilter = getSummed_potential_role(roomID, "Upgrader");
                     if(upgraderFilter >= 3){
                         var extractorFilter = getSummed_potential_role(roomID, "Extractor");
