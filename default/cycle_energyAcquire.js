@@ -254,7 +254,7 @@ function queueCreeps_energyRooms(){
     for(var roomIndex in Memory.energyRooms){
         for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
             //Check mining is saturated
-            var saturationCondition_miners = getSaturationCondition_miners(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex]);    //Check mining is saturated
+            var saturationCondition_miners = getSaturationCondition_miners(Memory.energyRooms[roomIndex].spawnerID, Memory.energyRooms[roomIndex].sources[sourceIndex]);    //Check mining is saturated
             if(saturationCondition_miners != null){                                                                                 //Not saturated => put new miners into the queue
                 //miner_tasks.queue(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex].ID, saturationCondition_miners.parts);         //#### RESULTS IN CIRCULARNESS
                 var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_miners.parts, role:"Miner", time:Game.time};
@@ -262,7 +262,7 @@ function queueCreeps_energyRooms(){
                 workerQueued = true;
             }
             //Check gathering is saturated
-            var saturationCondition_gatherers = getSaturationCondition_gatherers(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex]);   //Check gatherers are saturated
+            var saturationCondition_gatherers = getSaturationCondition_gatherers(Memory.energyRooms[roomIndex].spawnerID, Memory.energyRooms[roomIndex].sources[sourceIndex]);   //Check gatherers are saturated
             if(saturationCondition_gatherers != null){                                                                              //Not saturated => put new gatherers into the queue
                 //gatherer_tasks.queue(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex].ID, saturationCondition_gatherers.parts);   //#### RESULTS IN CIRCULARNESS
                 var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_gatherers.parts, role:"Gatherer", time:Game.time};
@@ -283,6 +283,8 @@ function getSaturationCondition_miners(roomID, energyRooms_info){
     . Checks if the miners are saturated
     . If they are NOT, returns what the next miner parts should be in order to fulfil saturation
     . If they are, returns null
+
+    ---> roomID refers to the ID of the SPAWNER room
 
     The number of parts assigned to the next worker is based on (1)the number of spaces around the source to mine from, 
     (2)the amount of WORK already at source, and (3)the largest amount of energy that could be spent on a creep
