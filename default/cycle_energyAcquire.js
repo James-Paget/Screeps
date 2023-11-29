@@ -94,7 +94,7 @@ function getTarget_gatherer(creep){
     }
     return target;
 }
-function init_energyRoom(room){
+function init_energyRoom(room, spawnerRoomID){
     /*
     . Initialises an empty array structure for a new room (if the room is not currently registered)
     . This will allow miners & gatherers to enter this room and be assigned sources, containers, etc
@@ -143,7 +143,7 @@ function init_energyRoom(room){
                 }
                 sources.push({ID:cSource_ID, free:cSource_FreeSpace, containers:containerIDs, miners:minerIDs, gatherers:gathererIDs});
             }
-            Memory.energyRooms.push({ID:room.name, sources:sources});
+            Memory.energyRooms.push({ID:room.name, spawnerRoomID:spawnerRoomID, sources:sources});
         }
     }
 }
@@ -242,6 +242,13 @@ function queueCreeps_energyRooms(){
     //##############################################################
     //## QUEUE PROBLEM COULD BE HANDLED BETTER, BUT WORKS FOR NOW ##
     //##############################################################
+
+
+
+
+    //###################################################
+    //## i have assumed energy rooms are spawner rooms ## --> HOW ARE ENERGY ROOMS ASSIGNED A SPAWNER ROOM --> PROBABLY MANUALLY TELL IT
+    //###################################################
     //Only do this when all unassigned positions have been resolved -> so when choosing new spawns, only have to consider energyRooms, not spawnerRoom.unassigned
     var workerQueued = false;
     for(var roomIndex in Memory.energyRooms){
@@ -251,7 +258,7 @@ function queueCreeps_energyRooms(){
             if(saturationCondition_miners != null){                                                                                 //Not saturated => put new miners into the queue
                 //miner_tasks.queue(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex].ID, saturationCondition_miners.parts);         //#### RESULTS IN CIRCULARNESS
                 var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_miners.parts, role:"Miner", time:Game.time};
-                Memory.spawnerRooms[getSpawnerRoomIndex(Memory.energyRooms[roomIndex].ID)].queue.push(creepSpec);
+                Memory.spawnerRooms[getSpawnerRoomIndex(Memory.energyRooms[roomIndex].spawnerRoomID)].queue.push(creepSpec);
                 workerQueued = true;
             }
             //Check gathering is saturated
@@ -259,7 +266,7 @@ function queueCreeps_energyRooms(){
             if(saturationCondition_gatherers != null){                                                                              //Not saturated => put new gatherers into the queue
                 //gatherer_tasks.queue(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex].ID, saturationCondition_gatherers.parts);   //#### RESULTS IN CIRCULARNESS
                 var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_gatherers.parts, role:"Gatherer", time:Game.time};
-                Memory.spawnerRooms[getSpawnerRoomIndex(Memory.energyRooms[roomIndex].ID)].queue.push(creepSpec);
+                Memory.spawnerRooms[getSpawnerRoomIndex(Memory.energyRooms[roomIndex].spawnerRoomID)].queue.push(creepSpec);
                 workerQueued = true;
             }
             //...
