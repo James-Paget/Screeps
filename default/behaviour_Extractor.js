@@ -43,8 +43,8 @@ var extractor_tasks = {
     },
     respawn : function(creepName, spawnerID, creepSpec){
         var spawner   = Game.getObjectById(spawnerID);
-        var houseKey  = {roomID:creepSpec.roomID, sourceID:creepSpec.sourceID};
-        var spawnKey  = {roomID:creepSpec.roomID, spawnID:spawnerID};
+        var houseKey  = {roomID:creepSpec.roomID , sourceID:creepSpec.sourceID};
+        var spawnKey  = {roomID:spawner.room.name, spawnID:spawnerID};
         spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, spawnKey:spawnKey, houseKey:houseKey, isExtracting:true}});
     },
     death : function(){
