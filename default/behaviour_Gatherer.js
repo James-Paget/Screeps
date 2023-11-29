@@ -27,7 +27,7 @@ var gatherer_tasks = {
                     if(creep.room.name == creep.memory.travelRoute[0].room){    //If in next room, remove it to mark it as travelled
                         creep.memory.travelRoute.shift();}
                     if(creep.memory.travelRoute.length > 0){
-                        creep.moveTo(creep.memory.travelRoute[0].exit);}
+                        creep.moveTo(creep.pos.findClosestByPath(creep.room.find(creep.memory.travelRoute[0].exit)));}
                     //#############################################################################################
                     //## MAY BREAK AS I ENTER THE FINAL ROOM HERE, HE MAY PAUSE FOR 2 FRAMES BEFORE PROPER GOING ##
                     //#############################################################################################
@@ -59,7 +59,7 @@ var gatherer_tasks = {
                     if(creep.room.name == creep.memory.travelRoute[0].room){    //If in next room, remove it to mark it as travelled
                         creep.memory.travelRoute.shift();}
                     if(creep.memory.travelRoute.length > 0){
-                        creep.moveTo(creep.memory.travelRoute[0].exit);}
+                        creep.moveTo(creep.pos.findClosestByPath(creep.room.find(creep.memory.travelRoute[0].exit)));}
                     //#############################################################################################
                     //## MAY BREAK AS I ENTER THE FINAL ROOM HERE, HE MAY PAUSE FOR 2 FRAMES BEFORE PROPER GOING ##
                     //#############################################################################################
