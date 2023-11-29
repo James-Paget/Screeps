@@ -14,16 +14,15 @@ var extractor_tasks = {
                     if(creep.harvest(target, resourceType) == ERR_NOT_IN_RANGE){
                         creep.moveTo(target);
                     }
-
-                    if(creep.store.getFreeCapacity(resourceType) == 0){
-                        creep.memory.isExtracting = false;
-                    }
                 }
                 else{   //----->Start selling minerals
                     target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
                     if(creep.withdraw(target, resourceType) == ERR_NOT_IN_RANGE){
                         creep.moveTo(target);
                     }
+                }
+                if(creep.store.getFreeCapacity(resourceType) == 0){
+                    creep.memory.isExtracting = false;
                 }
             }
             else{
@@ -34,10 +33,6 @@ var extractor_tasks = {
                         if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
                             creep.moveTo(target);
                         }
-
-                        if(creep.store.getUsedCapacity(resourceType) == 0){
-                            creep.memory.isExtracting = true;
-                        }
                     }
                 }
                 else{
@@ -47,6 +42,9 @@ var extractor_tasks = {
                             target.moveTo(target);
                         }
                     }
+                }
+                if(creep.store.getUsedCapacity(resourceType) == 0){
+                    creep.memory.isExtracting = true;
                 }
             }
         }
