@@ -19,3 +19,6 @@ TODO list;
 ~11.  ) Start harvesting minerals, commodities in highways, power banks in highways, ...
  12.  ) Make extractors wait for cooldown when mining 
  13.  ) Extend miner & mineral collectors to be the same thing, just doing work on a thing and delivering to a given place
+
+ 14.  ) Lay roads as you go, to mines
+ 15.  ) Make workers repair their stuff too --> containers, roads
