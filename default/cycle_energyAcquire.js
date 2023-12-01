@@ -375,33 +375,37 @@ function getSaturationCondition_gatherers(roomID, energyRooms_info){
     }
     return condition;
 }
-function assignCreeps_energyRooms(spawnerRoomID){
+function assignCreeps_energyRooms(){
     /*
+    --- Applies to all spawner rooms
     -- Call this function continually
     . spawnerRoom = roomName of home for this creep
     . Looks through 0th unassigned creeps
     . Waits until they are alive (so their ID is available)
     . Then goes to their houseKey and leaves their ID in the energyRooms global memory (so they are assigned/registered)
     */
-    var unassignedLength = Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned.length;
-    for(var i=0; i<unassignedLength; i++){
-        var creepName = Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned[0];
-        if(Memory.creeps[creepName]){   //Prevents a bug where the 1 time a creep, in sim, spawned with undefined memory => ignore his assignment and execute him
-            var roomIndex    = searchEnergyRooms_roomIndex(Memory.creeps[creepName].houseKey.roomID);
-            var sourceIndex  = searchEnergyRooms_sourceIndex(roomIndex, Memory.creeps[creepName].houseKey.sourceID);
-            if(Memory.creeps[creepName].role == "Miner"){
-                Memory.energyRooms[roomIndex].sources[sourceIndex].miners.push(Game.creeps[creepName].id);  //Assigned it correctly
-                Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned.shift();                    //Now it must be removed from this "waiting list"
+    for(var spawnerIndex in Memory.spawnerRooms){
+        var spawnerRoomID = Memory.spawnerRooms[spawnerIndex].roomID;
+        var unassignedLength = Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned.length;
+        for(var i=0; i<unassignedLength; i++){
+            var creepName = Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned[0];
+            if(Memory.creeps[creepName]){   //Prevents a bug where the 1 time a creep, in sim, spawned with undefined memory => ignore his assignment and execute him
+                var roomIndex    = searchEnergyRooms_roomIndex(Memory.creeps[creepName].houseKey.roomID);
+                var sourceIndex  = searchEnergyRooms_sourceIndex(roomIndex, Memory.creeps[creepName].houseKey.sourceID);
+                if(Memory.creeps[creepName].role == "Miner"){
+                    Memory.energyRooms[roomIndex].sources[sourceIndex].miners.push(Game.creeps[creepName].id);  //Assigned it correctly
+                    Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned.shift();                    //Now it must be removed from this "waiting list"
+                }
+                if(Memory.creeps[creepName].role == "Gatherer"){
+                    Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.push(Game.creeps[creepName].id);
+                    Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned.shift();
+                }
+                //...
             }
-            if(Memory.creeps[creepName].role == "Gatherer"){
-                Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.push(Game.creeps[creepName].id);
+            else{
+                //Game.creeps[creepName].suicide();       //May bug out if he is still spawning
                 Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned.shift();
             }
-            //...
-        }
-        else{
-            //Game.creeps[creepName].suicide();       //May bug out if he is still spawning
-            Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned.shift();
         }
     }
 }
