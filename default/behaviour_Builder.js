@@ -116,9 +116,9 @@ function getTarget_builder(creep){
         }
         else{                           //(2)
             for(var roomIndex in Memory.energyRooms){
-                if(Memory.energyRooms[roomIndex].spawnerRoomID == creep.memory.spawnKey.roomID){    //If this energy room is associated with this builder's spawn, check if he has any jobs he can do there
+                if(Memory.energyRooms[roomIndex].ID == creep.memory.spawnKey.roomID){    //If this energy room is associated with this builder's spawn, check if he has any jobs he can do there
                     if(Game.rooms[Memory.energyRooms[roomIndex].spawnerRoomID]){   //If you currently have vision of that room (this will change as creeps enter, leave and die in a room)
-                        var constructSites = Game.rooms[Memory.energyRooms[roomIndex].spawnerRoomID].find(FIND_CONSTRUCTION_SITES);
+                        var constructSites = Game.rooms[Memory.energyRooms[roomIndex].ID].find(FIND_CONSTRUCTION_SITES);
                         if(constructSites.length > 0){
                             target = constructSites[0]; //May be in other rooms, so cant simply check path diff => just complete them in order (fine assumption because 90% of time nothing will require building)
                             break;
