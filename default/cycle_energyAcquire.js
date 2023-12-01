@@ -218,16 +218,6 @@ function queueCreeps_energyRooms(){
     The spawnerRoom.queue      HOLDS [{roomID, sourceID, Parts, Role}, {...}, ...] <-- Specify what creeps to make                 <-*Only THIS list is touched here*
     The spawnerRoom.unassigned HOLDS [creepNames, ...]                             <-- Specify the creeps who have just been made
     */
-    //##############################################################
-    //## QUEUE PROBLEM COULD BE HANDLED BETTER, BUT WORKS FOR NOW ##
-    //##############################################################
-
-
-
-
-    //###################################################
-    //## i have assumed energy rooms are spawner rooms ## --> HOW ARE ENERGY ROOMS ASSIGNED A SPAWNER ROOM --> PROBABLY MANUALLY TELL IT
-    //###################################################
     //Only do this when all unassigned positions have been resolved -> so when choosing new spawns, only have to consider energyRooms, not spawnerRoom.unassigned
     var workerQueued = false;
     for(var roomIndex in Memory.energyRooms){

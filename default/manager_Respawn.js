@@ -100,7 +100,7 @@ var respawnManager = {
                 var builderFilter  = getSummed_potential_role(roomID, "Builder");
                 if(builderFilter > 1){
                     var upgraderFilter = getSummed_potential_role(roomID, "Upgrader");
-                    if(upgraderFilter >= 3){
+                    if(upgraderFilter >= 5){
                         var extractorFilter = getSummed_potential_role(roomID, "Extractor");
                         if(extractorFilter > 0){
                             var armyFilter     = getSummed_potential_role(roomID, "Defender");
