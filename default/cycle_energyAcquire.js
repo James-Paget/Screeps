@@ -12,9 +12,6 @@ function getTarget_miner(creep){
         target = Game.getObjectById(creep.memory.houseKey.sourceID);   //Will be null if you have no vision of the room
     }
     else{               //Go to closest of spawn, ext or container
-        //########################################################################
-        //## THIS MUST CHAANGE TOO, ASSUMES YOU ARE ALREADY IN THE CORRECT ROOM ##
-        //########################################################################
         var roomIndex    = searchEnergyRooms_roomIndex(creep.memory.houseKey.roomID);
         var sourceIndex  = searchEnergyRooms_sourceIndex(roomIndex, creep.memory.houseKey.sourceID);
         var hasGatherers = Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.length > 0;
@@ -38,18 +35,12 @@ function getTarget_miner(creep){
             }
             else{
                 //(2)
-                //#############################################################
-                //## THESE SEEM AS THOUGH THEY WILL BREAK IN MULTI ROOM CASE ##
-                //#############################################################
-                var possibleTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
+                var possibleTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
                 target = creep.pos.findClosestByPath(possibleTargets);
             }
         }
         else{
-            //#############################################################
-            //## THESE SEEM AS THOUGH THEY WILL BREAK IN MULTI ROOM CASE ##
-            //#############################################################
-            var possibleTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
+            var possibleTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
             target = creep.pos.findClosestByPath(possibleTargets);
         }
     }
@@ -64,39 +55,21 @@ function getTarget_gatherer(creep){
     */
     var target = null;
     if(creep.memory.isGathering){ //Go to source
-        if(creep.memory.houseKey.roomID == creep.room.name){    //If already in correct room
-            /*
-            (1) Look through containers linked to this creep's assigned source
-            (2) Cleverly choose which to extract from (closest with energy, until completely full)
-            */
-            //(1)
-            var containerIDs = [];
-            var roomIndex    = searchEnergyRooms_roomIndex(creep.memory.houseKey.roomID);
-            var sourceIndex  = searchEnergyRooms_sourceIndex(roomIndex, creep.memory.houseKey.sourceID);
-            containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;
-            //(2)
-            var containerObjects = [];
-            for(var index in containerIDs){
-                containerObjects.push(Game.getObjectById(containerIDs[index]));}
-            containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getUsedCapacity(RESOURCE_ENERGY) > 0) });    //Picks out containers with energy available
-            target = creep.pos.findClosestByPath(containerObjects);
-        }
-        else{                                                   //If need to path to correct room
-            //...
-            //Complex
-            //...
-        }
+        //(1)
+        var containerIDs = [];
+        var roomIndex    = searchEnergyRooms_roomIndex(creep.memory.houseKey.roomID);
+        var sourceIndex  = searchEnergyRooms_sourceIndex(roomIndex, creep.memory.houseKey.sourceID);
+        containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;
+        //(2)
+        var containerObjects = [];
+        for(var index in containerIDs){
+            containerObjects.push(Game.getObjectById(containerIDs[index]));}
+        containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getUsedCapacity(RESOURCE_ENERGY) > 0) });    //Picks out containers with energy available
+        target = creep.pos.findClosestByPath(containerObjects);
     }
     else{               //Go to closest of spawn, ext or container
-        if(creep.memory.houseKey.roomID == creep.room.name){   //If already in correct room
-            var possibleTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
-            target = creep.pos.findClosestByPath(possibleTargets);
-        }
-        else{                                           //If need to path to correct room
-            //...
-            //Complex
-            //...
-        }
+        var possibleTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
+        target = creep.pos.findClosestByPath(possibleTargets);
     }
     return target;
 }
