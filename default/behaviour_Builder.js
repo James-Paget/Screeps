@@ -139,7 +139,11 @@ function getTarget_builder(creep){
         //For look place to gather resources from in spawner room
         if(creep.room.name == creep.memory.spawnKey.roomID){
             //If in spawner room, look for closest storage (extension or spawner)
-            possibleTargets = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return( ((structure.structureType = STRUCTURE_SPAWN)&&(structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0)) || ((structure.structureType = STRUCTURE_EXTENSION)&&(structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0)) )}});
+            //structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0 --> WAS CAUSING ERRORS
+            var possibleTargets = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType = STRUCTURE_EXTENSION)&&(true) )}});
+            if(possibleTargets.length == 0){
+                possibleTargets = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType = STRUCTURE_SPAWN)&&(true) )}});
+            }
             target = creep.pos.findClosestByPath(possibleTargets);
         }
         else{
