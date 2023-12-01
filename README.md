@@ -7,7 +7,6 @@ TODO list;
 0.) REASSEMBLY OST
  0.1. ) Make scientist creep, do labs
  0.2. ) Make energyRoom miners repair their own roads and containers (both periodically)
-~1.   ) Make sure multi-rooms work correctly, manage themselves without extra work --> work out how energy rooms is gonna work (should be basically the same)
  2.   ) [[Make other creep types SCALE with energy capacity properly]]
  3.   ) Have a periodic function, that checks for containers (& others) that have been destroyed, and removes them from lists
  4.   ) Periodic function that assigns containers to sources automatically (TO WORK WITH NEXT STEP)
