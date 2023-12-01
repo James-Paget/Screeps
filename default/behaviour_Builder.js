@@ -107,13 +107,6 @@ function getTarget_builder(creep){
 
     resupplyTowers = towers that NEED a resupply
     */
-    var towersNeedingSupply = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_TOWER) && (structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) )}});
-    var towersSupplied      = (towersNeedingSupply.length == 0);
-    var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-    var target = creep.pos.findClosestByPath(towersNeedingSupply);
-    var spawn = Game.getObjectById(creep.memory.spawnKey.spawnID);
-
-
     var target = null;
     if(creep.memory.isBuilding){
         //Look for (1) Towers to refill, (2) Construction sites within influence of spawner
