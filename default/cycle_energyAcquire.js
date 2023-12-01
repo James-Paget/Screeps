@@ -38,11 +38,17 @@ function getTarget_miner(creep){
             }
             else{
                 //(2)
+                //#############################################################
+                //## THESE SEEM AS THOUGH THEY WILL BREAK IN MULTI ROOM CASE ##
+                //#############################################################
                 var possibleTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
                 target = creep.pos.findClosestByPath(possibleTargets);
             }
         }
         else{
+            //#############################################################
+            //## THESE SEEM AS THOUGH THEY WILL BREAK IN MULTI ROOM CASE ##
+            //#############################################################
             var possibleTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
             target = creep.pos.findClosestByPath(possibleTargets);
         }
@@ -82,7 +88,7 @@ function getTarget_gatherer(creep){
         }
     }
     else{               //Go to closest of spawn, ext or container
-        if(creep.memory.houseKey.roomID = creep.room.name){   //If already in correct room
+        if(creep.memory.houseKey.roomID == creep.room.name){   //If already in correct room
             var possibleTargets = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
             target = creep.pos.findClosestByPath(possibleTargets);
         }
