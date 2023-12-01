@@ -132,16 +132,16 @@ function getTarget_builder(creep){
         //For look place to gather resources from in spawner room
         if(creep.room.name == creep.memory.spawnKey.roomID){
             //If in spawner room, look for closest storage (extension or spawner)
-            //structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0 --> WAS CAUSING ERRORS
-            var possibleTargets = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType = STRUCTURE_EXTENSION)&&(true) )}});
+            // --> WAS CAUSING ERRORS
+            var possibleTargets = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType == STRUCTURE_EXTENSION)&&(structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) )}});
             if(possibleTargets.length == 0){
-                possibleTargets = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType = STRUCTURE_SPAWN)&&(true) )}});
+                possibleTargets = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType == STRUCTURE_SPAWN)&&(structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) )}});
             }
             target = creep.pos.findClosestByPath(possibleTargets);
         }
         else{
             //If NOT in home spawner room, just travel to the spawner generally, re-adjust later
-            target = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter:(structure) => {return(structure.structureType = STRUCTURE_SPAWN)}})[0];
+            target = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter:(structure) => {return(structure.structureType == STRUCTURE_SPAWN)}})[0];
         }
     }
     return target;
