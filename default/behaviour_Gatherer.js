@@ -31,6 +31,8 @@ var gatherer_tasks = {
                         creep.memory.travelRoute.shift();}                                                              //
                     if(creep.memory.travelRoute.length > 0){                                                            //
                         creep.moveTo(creep.pos.findClosestByPath(creep.room.find(creep.memory.travelRoute[0].exit)));}  //
+                    if(travelRoute.length == 0){            //Backup precaution
+                        delete creep.memory.travelRoute;}   //
                 }
             }
         }
