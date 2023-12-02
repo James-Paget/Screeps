@@ -27,12 +27,14 @@ var gatherer_tasks = {
                 if(!creep.memory.travelRoute){                                                                      //Create multi-room travel route
                     creep.memory.travelRoute = Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID);}  //
                 else{
-                    if(creep.room.name == creep.memory.travelRoute[0].room){                                            //Move along travel route to required room
-                        creep.memory.travelRoute.shift();}                                                              //
-                    if(creep.memory.travelRoute.length > 0){                                                            //
-                        creep.moveTo(creep.pos.findClosestByPath(creep.room.find(creep.memory.travelRoute[0].exit)));}  //
                     if(travelRoute.length == 0){            //Backup precaution
                         delete creep.memory.travelRoute;}   //
+                    else{
+                        if(creep.room.name == creep.memory.travelRoute[0].room){                                            //Move along travel route to required room
+                            creep.memory.travelRoute.shift();}                                                              //
+                        if(creep.memory.travelRoute.length > 0){                                                            //
+                            creep.moveTo(creep.pos.findClosestByPath(creep.room.find(creep.memory.travelRoute[0].exit)));}  //
+                    }
                 }
             }
         }
