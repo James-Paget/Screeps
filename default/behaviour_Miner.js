@@ -6,7 +6,45 @@ var miner_tasks = {
         if(creep.memory.ID == null){        //################# COULD CHANGE TO !....
             creep.memory.ID = creep.id;}    //## NOT A GREAT METHOD BUT WORKS FOR NOW ##
 
-        var target = getTarget_miner(creep);    //This function already considers the state of the miner to determine what must be done
+        var target = getTarget_miner(creep);    //&& Considers all factors, returns choice --> nulls are allowed if nothing is required
+        if(target){                             //If there is any target required
+            var inRequiredRoom = (creep.room.name == target.room.name);
+            if(inRequiredRoom){
+                //(1) Reset routing
+                if(creep.memory.travelRoute){           //If you still have a travel route, clear that space
+                    delete creep.memory.travelRoute;}
+                //(2) Do task
+                if(creep.memory.isMining){              //Going to mine    -->Will be the "houseKey" room
+                    if(creep.harvest(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
+                        creep.moveTo(target);}
+                }
+                else{                                   //Going to deposit -->Could be anywhere (anywhere to deposit at)
+                    if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
+                        creep.moveTo(target);}
+                }
+            }
+            else{   //Move to required room
+                if(!creep.memory.travelRoute){                                                                      //Create multi-room travel route
+                    creep.memory.travelRoute = Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID);}  //
+                else{
+                    if(creep.room.name == creep.memory.travelRoute[0].room){                                            //Move along travel route to required room
+                        creep.memory.travelRoute.shift();}                                                              //
+                    if(creep.memory.travelRoute.length > 0){                                                            //
+                        creep.moveTo(creep.pos.findClosestByPath(creep.room.find(creep.memory.travelRoute[0].exit)));}  //
+                }
+            }
+        }
+        //Reset mining condition
+        if(creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0){
+            creep.memory.isMining = true;}
+        if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
+            creep.memory.isMining = false;}
+
+
+
+
+
+        /*
         if(creep.memory.isMining){
             var inCorrectRoom = creep.room.name == creep.memory.houseKey.roomID;
             if(inCorrectRoom){
@@ -70,6 +108,7 @@ var miner_tasks = {
         if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
             creep.memory.isMining = false;
         }
+        */
     },
     queue : function(roomID, sourceID, parts){
         var creepSpec = {roomID:roomID, sourceID:sourceID, parts:parts, role:"Miner", time:Game.time};

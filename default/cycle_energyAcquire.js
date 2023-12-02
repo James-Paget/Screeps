@@ -8,6 +8,59 @@ function getTarget_miner(creep){
     . If SOURCE is in a different room to this, the target should be a route to the next room, that is closer to the target room (multi-room pathing)
     */
     var target = null;
+    if(creep.memory.isMining){  //Mining => want to go to associated source
+        var hasVision = Game.rooms[creep.memory.houseKey.roomID];
+        if(hasVision){  //=> Can directly set source as target
+            target = Game.getObjectById(creep.memory.houseKey.sourceID);
+        }
+        else{           //=> Will have to path to the room generally to gain vision
+            target = creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit));
+        }
+    }
+    else{                       //Depositing => want to deliver to associated container OR spawn (both could be in other rooms => need to vision check)
+        var roomIndex   = searchEnergyRooms_roomIndex(creep.memory.houseKey.roomID);
+        var sourceIndex = searchEnergyRooms_sourceIndex(roomIndex, creep.memory.houseKey.sourceID);
+        var hasGatherers = Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.length  > 0;
+        var hasContainers= Memory.energyRooms[roomIndex].sources[sourceIndex].containers.length > 0;
+        var manualDelivery = true;  //Deliver to spawn MANUALLY
+        if(hasContainers){
+            if(hasGatherers){   //Deliver to containers (may have no vision)
+                manualDelivery = false;
+                var hasVision  = Game.rooms[creep.memory.houseKey.roomID];                              //## CURRENTLY HAVE TO ASSUME ALL CONTAINERS ARE IN THE ROOM WHERE THE MINING OCCURS ##
+                if(hasVision){  //=> Can directly search for and retrieve container
+                    var containerObjects = [];
+                    //var containerIDs = [];                                                            //To stop reference parsing --> #####LIKELY NOT NEEDED#####
+                    //containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;     //To stop reference parsing --> #####LIKELY NOT NEEDED#####
+                    for(var index in Memory.energyRooms[roomIndex].sources[sourceIndex].containers){
+                        containerObjects.push(Game.getObjectById(containerIDs[index]));}                //No vision problem as have ASSUMED VISION
+                    containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0) });
+                    if(creep.room.name == creep.memory.houseKey.roomID){    //Same room      => direct pathing
+                        target = creep.findClosestByPath(containerObjects);}
+                    else{                                                   //Different room => indirect pathing (will become direct after)
+                        target = containerObjects[0];}
+                }
+                else{           //=> Will need to path to the room generally to gain vision
+                    target = creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit));   //## PATHING TO CONTAINERS, ASSUMED ALL INSIDE ROOM IN QUESTION, => JUST SAME AS PATHING TO SOURCE IN THAT ROOM ##
+                }
+            }
+        }
+        if(manualDelivery){     //Deliver to spawn MANUALLY (always vision)
+            var deliveryTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
+            if(creep.room.name == creep.memory.spawnKey.roomID){        //Same room      => direct pathing
+                target = creep.pos.findClosestByPath(deliveryTargets);}
+            else{                                                       //Different room => indirect pathing (will become direct after)
+                target = deliveryTargets[0];}
+        }
+    }
+    return target;
+
+
+
+
+
+
+    /*
+    var target = null;
     if(creep.memory.isMining){ //Go to source
         var hasVision = Game.getObjectById(creep.memory.houseKey.sourceID);
         if(hasVision){    //If has VISION
@@ -21,10 +74,9 @@ function getTarget_miner(creep){
         var sourceIndex = searchEnergyRooms_sourceIndex(roomIndex, creep.memory.houseKey.sourceID);
         var hasGatherers = Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.length > 0;
         if(hasGatherers){
-            /*
-            (1) Try to give to a linked container
-            (2) If no linked containers, then hand deliver
-            */
+            //(1) Try to give to a linked container
+            //(2) If no linked containers, then hand deliver
+            
             //(1)
             var containerIDs = [];
             containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;
@@ -59,6 +111,7 @@ function getTarget_miner(creep){
         }
     }
     return target;
+    */
 }
 function getTarget_gatherer(creep){
     /*
@@ -67,6 +120,45 @@ function getTarget_gatherer(creep){
     . If SOURCE in the same room as this, move to containers associated with this source
     . If SOURCE is in a different room to this, the target should be a route to the next room, that is closer to the target room (multi-room pathing)
     */
+    var target = null;
+    if(creep.memory.isGathering){  //Gathering => want to go to associated source
+        var roomIndex   = searchEnergyRooms_roomIndex(creep.memory.houseKey.roomID);
+        var sourceIndex = searchEnergyRooms_sourceIndex(roomIndex, creep.memory.houseKey.sourceID);
+        var hasContainers= Memory.energyRooms[roomIndex].sources[sourceIndex].containers.length > 0;
+        if(hasContainers){
+            var hasVision = Game.rooms[creep.memory.houseKey.roomID];
+            if(hasVision){  //=> Can directly search room for containers
+                var containerObjects = [];
+                //var containerIDs = [];                                                            //To stop reference parsing --> #####LIKELY NOT NEEDED#####
+                //containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;     //To stop reference parsing --> #####LIKELY NOT NEEDED#####
+                for(var index in Memory.energyRooms[roomIndex].sources[sourceIndex].containers){
+                    containerObjects.push(Game.getObjectById(containerIDs[index]));}                //No vision problem as have ASSUMED VISION
+                containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0) });
+                if(creep.room.name == creep.memory.houseKey.roomID){    //Same room      => direct pathing
+                    target = creep.findClosestByPath(containerObjects);}
+                else{                                                   //Different room => indirect pathing (will become direct after)
+                    target = containerObjects[0];}
+            }
+            else{           //=> Will have to path to the room generally to gain vision
+                target = creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit));
+            }
+        }
+        //No containers => do nothing (null target)
+    }
+    else{                       //Depositing => returning to spawnerRoom => always vision
+        var deliveryTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
+        if(deliveryTargets.length == 0){    //If spawner full of energy, give to any terminals in the room
+            deliveryTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return (structure.structureType == STRUCTURE_TERMINAL && structure.store.getUsedCapacity(RESOURCE_ENERGY) <= 150000)}});}
+        if(creep.room.name == creep.memory.spawnKey.roomID){        //Same room      => direct pathing
+            target = creep.pos.findClosestByPath(deliveryTargets);}
+        else{                                                       //Different room => indirect pathing (will become direct after)
+            target = deliveryTargets[0];}
+    }
+    return target;
+
+
+
+    /*
     var target = null;
     if(creep.memory.isGathering){ //Go to source
         //(1)
@@ -98,6 +190,7 @@ function getTarget_gatherer(creep){
             target = possibleTargets[0];}
     }
     return target;
+    */
 }
 function init_energyRoom(room, spawnerRoomID){
     /*
