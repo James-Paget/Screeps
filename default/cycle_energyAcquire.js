@@ -10,6 +10,8 @@ function getTarget_miner(creep){
     var target = null;
     if(creep.memory.isMining){ //Go to source
         target = Game.getObjectById(creep.memory.houseKey.sourceID);   //Will be null if you have no vision of the room
+        if(target == null){
+            target = new RoomPosition(25,25,creep.memory.houseKey.roomID);}
     }
     else{               //Go to closest of spawn, ext or container
         var roomIndex    = searchEnergyRooms_roomIndex(creep.memory.houseKey.roomID);
