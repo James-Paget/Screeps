@@ -9,11 +9,16 @@ function getTarget_miner(creep){
     */
     var target = null;
     if(creep.memory.isMining){ //Go to source
-        target = Game.getObjectById(creep.memory.houseKey.sourceID);   //Will be null if you have no vision of the room
+        var hasVision = Game.getObjectById(creep.memory.houseKey.sourceID);
+        if(hasVision){    //If has VISION
+            target = Game.getObjectById(creep.memory.houseKey.sourceID);}
+        else{             //If NO VISION
+            target = creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit));
+        }
     }
     else{               //Go to closest of spawn, ext or container
-        var roomIndex    = searchEnergyRooms_roomIndex(creep.memory.houseKey.roomID);
-        var sourceIndex  = searchEnergyRooms_sourceIndex(roomIndex, creep.memory.houseKey.sourceID);
+        var roomIndex   = searchEnergyRooms_roomIndex(creep.memory.houseKey.roomID);
+        var sourceIndex = searchEnergyRooms_sourceIndex(roomIndex, creep.memory.houseKey.sourceID);
         var hasGatherers = Memory.energyRooms[roomIndex].sources[sourceIndex].gatherers.length > 0;
         if(hasGatherers){
             /*
@@ -70,13 +75,17 @@ function getTarget_gatherer(creep){
         var sourceIndex  = searchEnergyRooms_sourceIndex(roomIndex, creep.memory.houseKey.sourceID);
         containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;
         //(2)
-        var containerObjects = [];
-        for(var index in containerIDs){
-            containerObjects.push(Game.getObjectById(containerIDs[index]));}
-        containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getUsedCapacity(RESOURCE_ENERGY) > 0) });    //Picks out containers with energy available
-        target = creep.pos.findClosestByPath(containerObjects);
-        if(target == null){                                         //But if they arent, or they leave the room, just use the 0th as a fallback
-            target = containerObjects[0];}
+        var hasVision = Game.getObjectById(Memory.energyRooms[roomIndex].sources[sourceIndex].ID);
+        if(hasVision){    //If has VISION
+            var containerObjects = [];
+            for(var index in containerIDs){
+                containerObjects.push(Game.getObjectById(containerIDs[index]));}
+            containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getUsedCapacity(RESOURCE_ENERGY) > 0) });    //Picks out containers with energy available
+            target = creep.pos.findClosestByPath(containerObjects);
+        }
+        else{                                                       //If NOT in the room, DONT search directly (NOT guaranteed vision)
+            target = creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit));
+        }
     }
     else{               //Go to closest of spawn, ext or container
         //(2)
@@ -336,7 +345,7 @@ function getSaturationCondition_gatherers(roomID, energyRooms_info){
             travelDistance = Math.min(travelDistance, 40);   //--> Caps the total distance a source is imagined to be, prevents 20 gatherers for a spawn 1 room away
             var carryRequired    = Math.max(Math.ceil(0.4*travelDistance), 3);             //CARRY required to fully empty whatever a source produces (10 energy tick^-1) --> assumed travelling always at 1 tile tick^-1 --> sets a min so incorrect linear dist is slightly corrected
             */
-            var carryRequired    = 12;  //Fixed amount used here for simplicity in multi-room case
+            var carryRequired    = 12;  //Fixed amount used here for simplicity in multi-room case --> Vision problems
             var total_carryParts = 0;
             for(var gathererIndex in energyRooms_info.gatherers){
                 total_carryParts += _.filter(Game.getObjectById(energyRooms_info.gatherers[gathererIndex]).body, function(part){return (part.type==CARRY)}).length;}
