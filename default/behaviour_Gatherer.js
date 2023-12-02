@@ -7,68 +7,70 @@ var gatherer_tasks = {
             creep.memory.ID = creep.id;}    //## NOT A GREAT METHOD BUT WORKS FOR NOW ##
             
         var target = getTarget_gatherer(creep);
-        if(creep.memory.isGathering){
-            var inCorrectRoom = creep.room.name == creep.memory.houseKey.roomID;    //### COULD BE PROBLEMATIC, ASSUMES ITS TARGET ALSWAYS IN OPPOSITE ROOM ##
-            if(inCorrectRoom){
-                if(creep.memory.travelRoute){
-                    delete creep.memory.travelRoute;}
-                //In correct room, therefore mine to the source you are here for
-                if(creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(target);
+        if(target){
+            if(creep.memory.isGathering){
+                var inCorrectRoom = creep.room.name == creep.memory.houseKey.roomID;    //### COULD BE PROBLEMATIC, ASSUMES ITS TARGET ALSWAYS IN OPPOSITE ROOM ##
+                if(inCorrectRoom){
+                    if(creep.memory.travelRoute){
+                        delete creep.memory.travelRoute;}
+                    //In correct room, therefore mine to the source you are here for
+                    if(creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
+                        creep.moveTo(target);
+                    }
+                }
+                else{
+                    //Not in correct room, therefore path to this room
+                    if(!creep.memory.travelRoute){   //Deleted once it is no longer in use
+                        //Generate route to the final room
+                        creep.memory.travelRoute = Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID);}
+                    else{
+                        //Follow the route to the final room
+                        if(creep.room.name == creep.memory.travelRoute[0].room){    //If in next room, remove it to mark it as travelled
+                            creep.memory.travelRoute.shift();}
+                        if(creep.memory.travelRoute.length > 0){
+                            creep.moveTo(creep.pos.findClosestByPath(creep.room.find(creep.memory.travelRoute[0].exit)));}
+                        //#############################################################################################
+                        //## MAY BREAK AS I ENTER THE FINAL ROOM HERE, HE MAY PAUSE FOR 2 FRAMES BEFORE PROPER GOING ##
+                        //#############################################################################################
+                    }
                 }
             }
             else{
-                //Not in correct room, therefore path to this room
-                if(!creep.memory.travelRoute){   //Deleted once it is no longer in use
-                    //Generate route to the final room
-                    creep.memory.travelRoute = Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID);}
-                else{
-                    //Follow the route to the final room
-                    if(creep.room.name == creep.memory.travelRoute[0].room){    //If in next room, remove it to mark it as travelled
-                        creep.memory.travelRoute.shift();}
-                    if(creep.memory.travelRoute.length > 0){
-                        creep.moveTo(creep.pos.findClosestByPath(creep.room.find(creep.memory.travelRoute[0].exit)));}
-                    //#############################################################################################
-                    //## MAY BREAK AS I ENTER THE FINAL ROOM HERE, HE MAY PAUSE FOR 2 FRAMES BEFORE PROPER GOING ##
-                    //#############################################################################################
+                var inCorrectRoom = creep.room.name == creep.memory.spawnKey.roomID;    //### COULD BE PROBLEMATIC, ASSUMES ITS TARGET ALSWAYS IN OPPOSITE ROOM ##
+                if(inCorrectRoom){
+                    if(creep.memory.travelRoute){
+                        delete creep.memory.travelRoute;}
+                    //In correct room, therefore deposit materials
+                    //Drop off resources
+                    if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
+                        creep.moveTo(target);
+                    }
                 }
-            }
-            //Reset gather condition
-            if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
-                creep.memory.isGathering = false;
+                else{
+                    //Not in correct room, therefore path to this room
+                    if(!creep.memory.travelRoute){   //Deleted once it is no longer in use
+                        //Generate route to the final room
+                        creep.memory.travelRoute = Game.map.findRoute(creep.room.name, creep.memory.spawnKey.roomID);}
+                    else{
+                        //Follow the route to the final room
+                        if(creep.room.name == creep.memory.travelRoute[0].room){    //If in next room, remove it to mark it as travelled
+                            creep.memory.travelRoute.shift();}
+                        if(creep.memory.travelRoute.length > 0){
+                            creep.moveTo(creep.pos.findClosestByPath(creep.room.find(creep.memory.travelRoute[0].exit)));}
+                        //#############################################################################################
+                        //## MAY BREAK AS I ENTER THE FINAL ROOM HERE, HE MAY PAUSE FOR 2 FRAMES BEFORE PROPER GOING ##
+                        //#############################################################################################
+                    }
+                }
             }
         }
-        else{
-            var inCorrectRoom = creep.room.name == creep.memory.spawnKey.roomID;    //### COULD BE PROBLEMATIC, ASSUMES ITS TARGET ALSWAYS IN OPPOSITE ROOM ##
-            if(inCorrectRoom){
-                if(creep.memory.travelRoute){
-                    delete creep.memory.travelRoute;}
-                //In correct room, therefore deposit materials
-                //Drop off resources
-                if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(target);
-                }
-            }
-            else{
-                //Not in correct room, therefore path to this room
-                if(!creep.memory.travelRoute){   //Deleted once it is no longer in use
-                    //Generate route to the final room
-                    creep.memory.travelRoute = Game.map.findRoute(creep.room.name, creep.memory.spawnKey.roomID);}
-                else{
-                    //Follow the route to the final room
-                    if(creep.room.name == creep.memory.travelRoute[0].room){    //If in next room, remove it to mark it as travelled
-                        creep.memory.travelRoute.shift();}
-                    if(creep.memory.travelRoute.length > 0){
-                        creep.moveTo(creep.pos.findClosestByPath(creep.room.find(creep.memory.travelRoute[0].exit)));}
-                    //#############################################################################################
-                    //## MAY BREAK AS I ENTER THE FINAL ROOM HERE, HE MAY PAUSE FOR 2 FRAMES BEFORE PROPER GOING ##
-                    //#############################################################################################
-                }
-            }
-            //Reset gather condition
-            if(creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0){
-                creep.memory.isGathering = true;
-            }
+        //Reset gather condition
+        if(creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0){
+            creep.memory.isGathering = true;
+        }
+        //Reset gather condition
+        if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
+            creep.memory.isGathering = false;
         }
     },
     queue : function(roomID, sourceID, parts){
