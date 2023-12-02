@@ -8,7 +8,7 @@ var gatherer_tasks = {
             
         var target = getTarget_gatherer(creep);
         if(creep.memory.isGathering){
-            var inCorrectRoom = creep.room.name == creep.memory.houseKey.roomID;
+            var inCorrectRoom = creep.room.name == target.roon.name;//creep.memory.houseKey.roomID;
             if(inCorrectRoom){
                 if(creep.memory.travelRoute){
                     delete creep.memory.travelRoute;}
@@ -39,7 +39,7 @@ var gatherer_tasks = {
             }
         }
         else{
-            var inCorrectRoom = creep.room.name == creep.memory.spawnKey.roomID;
+            var inCorrectRoom = creep.room.name == target.room.name;//creep.memory.spawnKey.roomID;
             if(inCorrectRoom){
                 if(creep.memory.travelRoute){
                     delete creep.memory.travelRoute;}
