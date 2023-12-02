@@ -80,7 +80,9 @@ function getTarget_gatherer(creep){
     }
     else{               //Go to closest of spawn, ext or container
         //(2)
-        var possibleTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
+        var possibleTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});   //Fill spawnerRoom with energy
+        if(possibleTargets.length == 0){
+            possibleTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return (structure.structureType == STRUCTURE_TERMINAL && structure.store.getUsedCapacity(RESOURCE_ENERGY) <= 150000)}});}  //Fill terminal with energy
         if(creep.room.name == creep.memory.spawnKey.roomID){    //If in spawn room (where resources being delivered), then find closest thing
             target = creep.pos.findClosestByPath(possibleTargets);}
         else{                                                   //If not in the spawn room, just choose any of them --> Wll re-path properly once they enter the room
