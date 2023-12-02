@@ -8,7 +8,7 @@ var miner_tasks = {
 
         var target = getTarget_miner(creep);    //This function already considers the state of the miner to determine what must be done
         if(creep.memory.isMining){
-            var inCorrectRoom = creep.room.name == target.room.name;//creep.memory.houseKey.roomID;
+            var inCorrectRoom = creep.room.name == creep.memory.houseKey.roomID;
             if(inCorrectRoom){
                 if(creep.memory.travelRoute){
                     delete creep.memory.travelRoute;}
