@@ -14,7 +14,7 @@ function getTarget_miner(creep){
             target = Game.getObjectById(creep.memory.houseKey.sourceID);
         }
         else{           //=> Will have to path to the room generally to gain vision
-            target = creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit));
+            target = {room:creep.memory.houseKey.roomID, pos:creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit))};
         }
     }
     else{                       //Depositing => want to deliver to associated container OR spawn (both could be in other rooms => need to vision check)
@@ -40,7 +40,7 @@ function getTarget_miner(creep){
                         target = containerObjects[0];}
                 }
                 else{           //=> Will need to path to the room generally to gain vision
-                    target = creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit));   //## PATHING TO CONTAINERS, ASSUMED ALL INSIDE ROOM IN QUESTION, => JUST SAME AS PATHING TO SOURCE IN THAT ROOM ##
+                    target = {room:creep.memory.houseKey.roomID, pos:creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit))};   //## PATHING TO CONTAINERS, ASSUMED ALL INSIDE ROOM IN QUESTION, => JUST SAME AS PATHING TO SOURCE IN THAT ROOM ##
                 }
             }
         }
@@ -140,7 +140,7 @@ function getTarget_gatherer(creep){
                     target = containerObjects[0];}
             }
             else{           //=> Will have to path to the room generally to gain vision
-                target = creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit));
+                target = {room:creep.memory.houseKey.roomID, pos:creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit))};
             }
         }
         //No containers => do nothing (null target)
