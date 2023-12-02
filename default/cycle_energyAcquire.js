@@ -32,7 +32,7 @@ function getTarget_miner(creep){
                     //var containerIDs = [];                                                            //To stop reference parsing --> #####LIKELY NOT NEEDED#####
                     //containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;     //To stop reference parsing --> #####LIKELY NOT NEEDED#####
                     for(var index in Memory.energyRooms[roomIndex].sources[sourceIndex].containers){
-                        containerObjects.push(Game.getObjectById(containerIDs[index]));}                //No vision problem as have ASSUMED VISION
+                        containerObjects.push(Game.getObjectById(Memory.energyRooms[roomIndex].sources[sourceIndex].containers[index]));}                //No vision problem as have ASSUMED VISION
                     containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0) });
                     if(creep.room.name == creep.memory.houseKey.roomID){    //Same room      => direct pathing
                         target = creep.findClosestByPath(containerObjects);}
@@ -132,7 +132,7 @@ function getTarget_gatherer(creep){
                 //var containerIDs = [];                                                            //To stop reference parsing --> #####LIKELY NOT NEEDED#####
                 //containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;     //To stop reference parsing --> #####LIKELY NOT NEEDED#####
                 for(var index in Memory.energyRooms[roomIndex].sources[sourceIndex].containers){
-                    containerObjects.push(Game.getObjectById(containerIDs[index]));}                //No vision problem as have ASSUMED VISION
+                    containerObjects.push(Game.getObjectById(Memory.energyRooms[roomIndex].sources[sourceIndex].containers[index]));}                //No vision problem as have ASSUMED VISION
                 containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0) });
                 if(creep.room.name == creep.memory.houseKey.roomID){    //Same room      => direct pathing
                     target = creep.findClosestByPath(containerObjects);}
