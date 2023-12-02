@@ -24,11 +24,11 @@ var miner_tasks = {
                 }
             }
             else{   //Move to required room
-                if(!creep.memory.travelRoute){                                                                      //Create multi-room travel route
-                    creep.memory.travelRoute = Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID);}  //
+                if(!creep.memory.travelRoute){                                                          //Create multi-room travel route
+                    creep.memory.travelRoute = Game.map.findRoute(creep.room.name, target.room.name);}  //
                 else{
-                    if(creep.memory.travelRoute.length == 0){            //Backup precaution
-                        delete creep.memory.travelRoute;}   //
+                    if(creep.memory.travelRoute.length == 0){   //Backup precaution
+                        delete creep.memory.travelRoute;}       //
                     else{
                         if(creep.room.name == creep.memory.travelRoute[0].room){                                            //Move along travel route to required room
                             creep.memory.travelRoute.shift();}                                                              //
