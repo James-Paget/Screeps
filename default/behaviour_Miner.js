@@ -36,7 +36,7 @@ var miner_tasks = {
         }
         else{
             //Move resources to storage
-            var inCorrectRoom = creep.room.name == target.room.name;//creep.memory.spawnKey.roomID;
+            var inCorrectRoom = creep.room.name == creep.memory.spawnKey.roomID;    //target.room.name; ------------> THIS NEEDS FIXING VISON TROUBLES EVERYWHERE #######
             if(inCorrectRoom){
                 if(creep.memory.travelRoute){
                     delete creep.memory.travelRoute;}
