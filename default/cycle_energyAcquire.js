@@ -35,7 +35,7 @@ function getTarget_miner(creep){
                         containerObjects.push(Game.getObjectById(Memory.energyRooms[roomIndex].sources[sourceIndex].containers[index]));}                //No vision problem as have ASSUMED VISION
                     containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0) });
                     if(creep.room.name == creep.memory.houseKey.roomID){    //Same room      => direct pathing
-                        target = creep.findClosestByPath(containerObjects);}
+                        target = creep.pos.findClosestByPath(containerObjects);}
                     else{                                                   //Different room => indirect pathing (will become direct after)
                         target = containerObjects[0];}
                 }
@@ -135,7 +135,7 @@ function getTarget_gatherer(creep){
                     containerObjects.push(Game.getObjectById(Memory.energyRooms[roomIndex].sources[sourceIndex].containers[index]));}                //No vision problem as have ASSUMED VISION
                 containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0) });
                 if(creep.room.name == creep.memory.houseKey.roomID){    //Same room      => direct pathing
-                    target = creep.findClosestByPath(containerObjects);}
+                    target = creep.pos.findClosestByPath(containerObjects);}
                 else{                                                   //Different room => indirect pathing (will become direct after)
                     target = containerObjects[0];}
             }
