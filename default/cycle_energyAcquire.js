@@ -31,17 +31,26 @@ function getTarget_miner(creep){
             containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0) });    //Picks out containers with energy available
 
             if(containerObjects.length > 0){
-                target = creep.pos.findClosestByPath(containerObjects);
+                target = creep.pos.findClosestByPath(containerObjects);     //All containers shold be in the same room as the miner
+                if(target == null){                                         //But if they arent, or they leave the room, just use the 0th as a fallback
+                    target = containerObjects[0];}
             }
             else{
                 //(2)
                 var possibleTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
-                target = creep.pos.findClosestByPath(possibleTargets);
+                if(creep.room.name == creep.memory.spawnKey.roomID){    //If in spawn room (where resources being delivered), then find closest thing
+                    target = creep.pos.findClosestByPath(possibleTargets);}
+                else{                                                   //If not in the spawn room, just choose any of them --> Wll re-path properly once they enter the room
+                    target = possibleTargets[0];}
             }
         }
         else{
+            //(2)
             var possibleTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
-            target = creep.pos.findClosestByPath(possibleTargets);
+            if(creep.room.name == creep.memory.spawnKey.roomID){    //If in spawn room (where resources being delivered), then find closest thing
+                target = creep.pos.findClosestByPath(possibleTargets);}
+            else{                                                   //If not in the spawn room, just choose any of them --> Wll re-path properly once they enter the room
+                target = possibleTargets[0];}
         }
     }
     return target;
@@ -66,10 +75,16 @@ function getTarget_gatherer(creep){
             containerObjects.push(Game.getObjectById(containerIDs[index]));}
         containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getUsedCapacity(RESOURCE_ENERGY) > 0) });    //Picks out containers with energy available
         target = creep.pos.findClosestByPath(containerObjects);
+        if(target == null){                                         //But if they arent, or they leave the room, just use the 0th as a fallback
+            target = containerObjects[0];}
     }
     else{               //Go to closest of spawn, ext or container
+        //(2)
         var possibleTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
-        target = creep.pos.findClosestByPath(possibleTargets);
+        if(creep.room.name == creep.memory.spawnKey.roomID){    //If in spawn room (where resources being delivered), then find closest thing
+            target = creep.pos.findClosestByPath(possibleTargets);}
+        else{                                                   //If not in the spawn room, just choose any of them --> Wll re-path properly once they enter the room
+            target = possibleTargets[0];}
     }
     return target;
 }
@@ -224,7 +239,7 @@ function queueCreeps_energyRooms(){
         for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
             //Check mining is saturated
             var saturationCondition_miners = getSaturationCondition_miners(Memory.energyRooms[roomIndex].spawnerRoomID, Memory.energyRooms[roomIndex].sources[sourceIndex]);    //Check mining is saturated
-            if(saturationCondition_miners != null){                                                                                 //Not saturated => put new miners into the queue
+            if(saturationCondition_miners != null){     //Not saturated => put new miners into the queue
                 //miner_tasks.queue(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex].ID, saturationCondition_miners.parts);         //#### RESULTS IN CIRCULARNESS
                 var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_miners.parts, role:"Miner", time:Game.time};
                 Memory.spawnerRooms[getSpawnerRoomIndex(Memory.energyRooms[roomIndex].spawnerRoomID)].queue.push(creepSpec);
