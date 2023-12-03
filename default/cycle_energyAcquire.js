@@ -349,7 +349,7 @@ function updateContainers_energyRooms(){
                 var containerIDs   = [];
                 for(var containerIndex in roomContainers){
                     if( sourceObject.pos.inRangeTo(roomContainers[containerIndex], thresholdDist_container) ){
-                        containerIDs.push(roomContainer_Objects[containerIndex].id);
+                        containerIDs.push(roomContainers[containerIndex].id);
                     }
                 }
                 Memory.energyRooms[roomIndex].sources[sourceIndex].containers = containerIDs;    //Replace old list with this
