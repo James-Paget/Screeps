@@ -33,6 +33,9 @@ module.exports.loop = function () {
 
     //Build structures where required
     //...
+
+    //Market functionality
+    calcMarket_general();
 }
 
 function creep_taskManager(){
