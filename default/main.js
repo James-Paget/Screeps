@@ -9,6 +9,7 @@ var {military_tasks, tower_tasks} = require("behaviour_Military");
 var respawnManager   = require("manager_Respawn");
 var {init_energyRoom, updateContainers_energyRooms, assignCreeps_energyRooms} = require("cycle_energyAcquire");
 var {manageMemory_energyRooms, manageMemory_queues, manageMemory_towers} = require("manager_Memory");
+var {calcMarket_general} = require("manager_Market");
 
 module.exports.loop = function () {
     //Ensure memory values are accurate and up to date
