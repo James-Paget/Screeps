@@ -5,11 +5,7 @@ function calcMarket_general(){
     var transactionCost = Game.market.calcTransactionCost(1000, "E53N22", "E44N1");
     console.log("TransactionCost; ",transactionCost);
 }
-function other(){
-    //pass
-}
 
 module.exports = {
-    calcMarket_general,
-    other
+    calcMarket_general
 };
