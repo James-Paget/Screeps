@@ -332,6 +332,31 @@ function getSource_freeSpace(room, cSource){
     }
     return totalFreeTiles;
 }
+function updateContainers_energyRooms(){
+    /*
+    -- Run this periodically, not too often
+    . Checks all sources of all energy rooms
+    . Removes old containers (that have been destroyed since)
+    . Adds new containers that have been added since
+    */
+    var thresholdDist_container = 4;
+    for(var roomIndex in Memory.energyRooms){                               //For each energy room
+        for(var sourceIndex in Memory.energyRooms[roomIndex].sources){      //For each source
+            var hasVision = Game.rooms[Memory.energyRooms[roomIndex].ID];   //No vision => no update
+            if(hasVision){
+                var sourceObject   = Game.getObjectById(Memory.energyRooms[roomIndex].sources[sourceIndex].ID);
+                var roomContainers = Game.rooms[Memory.energyRooms[roomIndex].ID].find(FIND_STRUCTURES, {filter:(structure) => {return(structure.structureType == STRUCTURE_CONTAINER)}}); //List all containers in given room
+                var containerIDs   = [];
+                for(var containerIndex in roomContainers){
+                    if( sourceObject.pos.inRangeTo(roomContainers[containerIndex], thresholdDist_container) ){
+                        containerIDs.push(roomContainer_Objects[containerIndex].id);
+                    }
+                }
+                Memory.energyRooms[roomIndex].sources[sourceIndex].containers = containerIDs;    //Replace old list with this
+            }
+        }
+    }
+}
 function queueCreeps_energyRooms(){
     /*
     -- Call this periodically or continually
@@ -524,4 +549,5 @@ module.exports = {
     init_energyRoom,
     removeCreep_energyRooms,
     queueCreeps_energyRooms,
+    updateContainers_energyRooms,
     assignCreeps_energyRooms};

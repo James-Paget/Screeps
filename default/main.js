@@ -7,11 +7,12 @@ var defender_tasks  = require("behaviour_Defender");
 var extractor_tasks = require("behaviour_Extractor");
 var {military_tasks, tower_tasks} = require("behaviour_Military");
 var respawnManager   = require("manager_Respawn");
-var {init_energyRoom, assignCreeps_energyRooms} = require("cycle_energyAcquire");
+var {init_energyRoom, updateContainers_energyRooms, assignCreeps_energyRooms} = require("cycle_energyAcquire");
 var {manageMemory_energyRooms, manageMemory_queues, manageMemory_towers} = require("manager_Memory");
 
 module.exports.loop = function () {
     //Ensure memory values are accurate and up to date
+    periodic_updateContainers_energyRooms();
     manageMemory_queues();
     manageMemory_energyRooms();
     manageMemory_towers();
@@ -82,4 +83,8 @@ function manageMemory_dead_cleanup(){
             delete Memory.creeps[memoryName];
         }
     }
+}
+function periodic_updateContainers_energyRooms(){
+    if(Game.time.toString().slice(-1) == 5){
+        updateContainers_energyRooms();}
 }
