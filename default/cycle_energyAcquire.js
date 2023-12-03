@@ -6,6 +6,10 @@ function getTarget_miner(creep){
     . Returns the target location this creep should move to
     . If SOURCE in the same room as this, that is directly the target
     . If SOURCE is in a different room to this, the target should be a route to the next room, that is closer to the target room (multi-room pathing)
+
+    ####
+    ## BE AWARE THAT THE 'FAKE' TARGET USED FOR PATHING WITH NO VISION IS IMMITAATING A ROOM OBJECT, SO MAY NOT HAVE ALL THE REQUIRED ATTRIBUTES
+    ####
     */
     var target = null;
     if(creep.memory.isMining){  //Mining => want to go to associated source
@@ -14,7 +18,7 @@ function getTarget_miner(creep){
             target = Game.getObjectById(creep.memory.houseKey.sourceID);
         }
         else{           //=> Will have to path to the room generally to gain vision
-            target = {room:creep.memory.houseKey.roomID, pos:creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit))};
+            target = {room:{name:creep.memory.houseKey.roomID}, pos:creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit))};
         }
     }
     else{                       //Depositing => want to deliver to associated container OR spawn (both could be in other rooms => need to vision check)
@@ -40,7 +44,7 @@ function getTarget_miner(creep){
                         target = containerObjects[0];}
                 }
                 else{           //=> Will need to path to the room generally to gain vision
-                    target = {room:creep.memory.houseKey.roomID, pos:creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit))};   //## PATHING TO CONTAINERS, ASSUMED ALL INSIDE ROOM IN QUESTION, => JUST SAME AS PATHING TO SOURCE IN THAT ROOM ##
+                    target = {room:{name:creep.memory.houseKey.roomID}, pos:creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit))};   //## PATHING TO CONTAINERS, ASSUMED ALL INSIDE ROOM IN QUESTION, => JUST SAME AS PATHING TO SOURCE IN THAT ROOM ##
                 }
             }
         }
@@ -119,6 +123,10 @@ function getTarget_gatherer(creep){
     . Returns the target location this creep should move to
     . If SOURCE in the same room as this, move to containers associated with this source
     . If SOURCE is in a different room to this, the target should be a route to the next room, that is closer to the target room (multi-room pathing)
+
+    ####
+    ## BE AWARE THAT THE 'FAKE' TARGET USED FOR PATHING WITH NO VISION IS IMMITAATING A ROOM OBJECT, SO MAY NOT HAVE ALL THE REQUIRED ATTRIBUTES
+    ####
     */
     var target = null;
     if(creep.memory.isGathering){  //Gathering => want to go to associated source
@@ -140,7 +148,7 @@ function getTarget_gatherer(creep){
                     target = containerObjects[0];}
             }
             else{           //=> Will have to path to the room generally to gain vision
-                target = {room:creep.memory.houseKey.roomID, pos:creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit))};
+                target = {room:{name:creep.memory.houseKey.roomID}, pos:creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit))};
             }
         }
         //No containers => do nothing (null target)
