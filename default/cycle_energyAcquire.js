@@ -133,7 +133,7 @@ function getTarget_gatherer(creep){
                 //containerIDs = Memory.energyRooms[roomIndex].sources[sourceIndex].containers;     //To stop reference parsing --> #####LIKELY NOT NEEDED#####
                 for(var index in Memory.energyRooms[roomIndex].sources[sourceIndex].containers){
                     containerObjects.push(Game.getObjectById(Memory.energyRooms[roomIndex].sources[sourceIndex].containers[index]));}                //No vision problem as have ASSUMED VISION
-                containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getFreeCapacity(RESOURCE_ENERGY) > 0) });
+                containerObjects = _.filter(containerObjects, function(obj) { return (obj.store.getUsedCapacity(RESOURCE_ENERGY) > 0) });
                 if(creep.room.name == creep.memory.houseKey.roomID){    //Same room      => direct pathing
                     target = creep.pos.findClosestByPath(containerObjects);}
                 else{                                                   //Different room => indirect pathing (will become direct after)
