@@ -16,10 +16,8 @@ function towerAttack_hostileCreeps(tower){
     . Note;#### this is bad method of defense, the tower should target heals and such, this should be changed ####
     */
     var target = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-    if(target.length > 0){
-        if(target){
-            tower.attack(target);
-        }
+    if(target){
+        tower.attack(target);
     }
 }
 function towerRepair_prioirity(tower){

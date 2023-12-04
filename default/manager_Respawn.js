@@ -96,7 +96,7 @@ var respawnManager = {
         var sourceOccupied_gatherers = getSummed_potential_role(roomID, "Gatherer") >= Game.rooms[roomID].find(FIND_STRUCTURES, {filter:(structure)=>{return(structure.structureType == STRUCTURE_CONTAINER)}}).length;
         if(sourceOccupied_miners && sourceOccupied_gatherers){
             var repairerFilter = getSummed_potential_role(roomID, "Repairer");
-            if(repairerFilter > 1){
+            if(repairerFilter >= 0){    //<--- Repairers are being phased out, replaced with towers doing repair work alongside miners
                 var builderFilter  = getSummed_potential_role(roomID, "Builder");
                 if(builderFilter > 1){
                     var upgraderFilter = getSummed_potential_role(roomID, "Upgrader");
