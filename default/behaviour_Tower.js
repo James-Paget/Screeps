@@ -1,6 +1,6 @@
 var tower_tasks = {
     task : function(tower){
-        var isInvasion = tower.room.find(FIND_HOSTILE_CREEPS);
+        var isInvasion = tower.room.find(FIND_HOSTILE_CREEPS).length > 0;
         if(isInvasion){
             towerAttack_hostileCreeps(tower);}
         else{
