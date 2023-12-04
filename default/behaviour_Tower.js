@@ -51,6 +51,4 @@ function towerRepair_prioirity(tower){
     tower.repair(target);
 }
 
-module.exports = {
-    tower_tasks
-};
+module.exports = tower_tasks;

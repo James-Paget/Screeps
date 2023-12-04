@@ -13,6 +13,4 @@ Maybe split into multiple var sections;
 
 --> So different behaviours can be switched between and triggered at an instant
 */
-module.exports = {
-    military_tasks
-};
+module.exports = military_tasks;
