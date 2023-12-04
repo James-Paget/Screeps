@@ -102,7 +102,7 @@ var respawnManager = {
                     var upgraderFilter = getSummed_potential_role(roomID, "Upgrader");
                     if(upgraderFilter >= 2){
                         var extractorFilter = getSummed_potential_role(roomID, "Extractor");
-                        if(extractorFilter > 0){
+                        if(extractorFilter > 1){
                             var armyFilter     = getSummed_potential_role(roomID, "Defender");
                             if(armyFilter < 3){
                                 defender_tasks.queue(roomID);}

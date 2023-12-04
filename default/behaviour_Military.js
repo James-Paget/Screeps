@@ -3,16 +3,16 @@ var military_tasks = {
         //pass
     }
 }
-var tower_tasks = {
-    task : function(tower){
-        var target = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-        if(target){
-            tower.attack(target);
-        }
-    }
-}
+/*
+Maybe split into multiple var sections;
+- Army Guard
+- Post Guard
+- Army Attack
+- Post Attack
+- Militia Attack
 
+--> So different behaviours can be switched between and triggered at an instant
+*/
 module.exports = {
-    military_tasks,
-    tower_tasks
+    military_tasks
 };
