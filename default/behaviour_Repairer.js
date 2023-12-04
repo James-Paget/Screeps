@@ -66,7 +66,7 @@ var repairing_tasks = {
         Looks at the state of the spawner and determines what modules to build on this creep
         */
         var creepParts   = null;
-        var creepsOwned  = _.filter(Game.creeps, function(creep) {return (creep.spawnKey.roomID == spawnerRoomID && creep.role == "Repairer")}); //Owned by this spawner, of this type
+        var creepsOwned  = _.filter(Game.creeps, function(creep) {return (creep.memory.spawnKey.roomID == spawnerRoomID && creep.memory.role == "Repairer")}); //Owned by this spawner, of this type
         var creepNumberRequired = creepsOwned.length -2;    //<-- Specify the number of creeps wanted here
         if(creepNumberRequired > 0){    //If actually need any more workers
             var workPerCreep = 2;       //A rough Guess at an upper bound/ideal value --> Can make it more sophisticated

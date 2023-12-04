@@ -36,7 +36,7 @@ var upgrading_tasks = {
         Looks at the state of the spawner and determines what modules to build on this creep
         */
         var creepParts   = null;
-        var creepsOwned  = _.filter(Game.creeps, function(creep) {return (creep.spawnKey.roomID == spawnerRoomID && creep.role == "Upgrader")}); //Owned by this spawner, of this type
+        var creepsOwned  = _.filter(Game.creeps, function(creep) {return (creep.memory.spawnKey.roomID == spawnerRoomID && creep.memory.role == "Upgrader")}); //Owned by this spawner, of this type
         var creepNumberRequired = creepsOwned.length -3;    //<-- Specify the number of creeps wanted here
         if(creepNumberRequired > 0){    //If actually need any more workers
             var workPerCreep = 5;       //A rough Guess at an upper bound/ideal value --> Can make it more sophisticated
