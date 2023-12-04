@@ -85,39 +85,35 @@ var respawnManager = {
         (3) Upgraders
         (4) Army
         */
-        //#################################################################################################
-        //#### NOTE LOTS OF THESE DEPEND ON CREEPS IN A ROOM, => CANNOT LEAVE OR WILL INFINTE RESPAWN #####
-        //#################################################################################################
-
         //#############################################################################################################
         //## REPLACE THIS WITH FUNCTIONAL CONDITION, MAKE IT FAR BETTER, THIS IS A TERRIBLE METRIC FOR WHEN TO SPAWN ##
         //#############################################################################################################
         var sourceOccupied_miners    = getSummed_potential_role(roomID, "Miner")    >= Game.rooms[roomID].find(FIND_SOURCES).length;
         var sourceOccupied_gatherers = getSummed_potential_role(roomID, "Gatherer") >= Game.rooms[roomID].find(FIND_STRUCTURES, {filter:(structure)=>{return(structure.structureType == STRUCTURE_CONTAINER)}}).length;
         if(sourceOccupied_miners && sourceOccupied_gatherers){
-            var repairerFilter = getSummed_potential_role(roomID, "Repairer");
-            if(repairerFilter >= 0){    //<--- Repairers are being phased out, replaced with towers doing repair work alongside miners
-                var builderFilter  = getSummed_potential_role(roomID, "Builder");
-                if(builderFilter > 1){
-                    var upgraderFilter = getSummed_potential_role(roomID, "Upgrader");
-                    if(upgraderFilter >= 2){
-                        var extractorFilter = getSummed_potential_role(roomID, "Extractor");
+            var repairerFilter = repairing_tasks.generateCreepParts(roomID);//getSummed_potential_role(roomID, "Repairer");
+            if(!repairerFilter){    //<--- Repairers are being phased out, replaced with towers doing repair work alongside miners
+                var builderFilter  = building_tasks.generateCreepParts(roomID);//getSummed_potential_role(roomID, "Builder");
+                if(!builderFilter){
+                    var upgraderFilter = upgrading_tasks.generateCreepParts(roomID);//getSummed_potential_role(roomID, "Upgrader");
+                    if(!upgraderFilter){
+                        var extractorFilter = extractor_tasks.generateCreepParts(roomID);//getSummed_potential_role(roomID, "Extractor");
                         if(extractorFilter > 1){
-                            var armyFilter     = getSummed_potential_role(roomID, "Defender");
-                            if(armyFilter < 3){
-                                defender_tasks.queue(roomID);}
+                            var armyFilter     = defender_tasks.generateCreepParts(roomID);//getSummed_potential_role(roomID, "Defender");
+                            if(!armyFilter){
+                                defender_tasks.queue(roomID, null, armyFilter);}
                         }
                         else{
-                            extractor_tasks.queue(roomID);}
+                            extractor_tasks.queue(roomID, null, extractorFilter);}
                     }
                     else{
-                        upgrading_tasks.queue(roomID);}
+                        upgrading_tasks.queue(roomID, null, upgraderFilter);}
                 }
                 else{
-                    building_tasks.queue(roomID);}
+                    building_tasks.queue(roomID, null, builderFilter);}
             }
             else{
-                repairing_tasks.queue(roomID);}
+                repairing_tasks.queue(roomID, null, repairerFilter);}
         }
     }
 }

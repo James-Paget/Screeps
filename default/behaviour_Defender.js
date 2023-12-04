@@ -23,9 +23,33 @@ var defender_tasks = {
             creep.memory.isDefending = false;
         }
     },
-    queue : function(roomID){
+    generateCreepParts : function(spawnerRoomID){
+        /*
+        Looks at the state of the spawner and determines what modules to build on this creep
+        */
+        var creepParts   = null;
+        var creepsOwned  = _.filter(Game.creeps, function(creep) {return (creep.spawnKey.roomID == spawnerRoomID && creep.role == "Defender")}); //Owned by this spawner, of this type
+        var creepNumberRequired = creepsOwned.length -4;    //<-- Specify the number of creeps wanted here
+        if(creepNumberRequired > 0){    //If actually need any more workers
+            var workPerCreep = 3;       //A rough Guess at an upper bound/ideal value --> Can make it more sophisticated
+            var energyMax = Game.rooms[getSpawnerRoomIndex(spawnerRoomID)].energyCapacityAvailable;
+            var partSet = [ATTACK,MOVE];            //Base line body parts required
+            for(var i=0; i<workPerCreep; i++){  //Attempts to spawn the most expensive (but not overkill) miner it can afford
+                partSet.unshift(ATTACK);
+                partSet.unshift(MOVE);
+                var energyCost = _.sum(partSet, part => BODYPART_COST[part]);
+                if(energyCost > energyMax){
+                    partSet.shift();
+                    partSet.shift();
+                    break;}
+            }
+            creepParts = partSet;
+        }
+        return creepParts;
+    },
+    queue : function(roomID, sourceID, parts){
         //Note; Have null for houseKey information as this is irrelevent to them
-        var creepSpec = {roomID:roomID, sourceID:null, parts:[TOUGH, TOUGH, ATTACK, ATTACK, MOVE, MOVE], role:"Defender", time:Game.time};
+        var creepSpec = {roomID:roomID, sourceID:sourceID, parts:parts, role:"Defender", time:Game.time};
         Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].queue.push(creepSpec);
     },
     respawn : function(creepName, spawnerID, creepSpec){

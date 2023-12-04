@@ -19,9 +19,7 @@ module.exports.loop = function () {
     manageMemory_energyRooms();
     manageMemory_towers();
     manageMemory_dead_cleanup();
-    init_energyRoom(Game.spawns["Spawn1"].room, "E53N22");    //### MOVE THIS OUT ### ---> HAVE A PERIODIC CHECK FOR E_ROOMS, CONTAAINERS LOST, ETC --> e.g every 5/10/20 frames
-    //init_energyRoom(Game.creeps["..."].room, "E53N23");
-    //init_energyRoom(Game.creeps["..."].room, "E53N21");
+    //init_energyRoom(Game.spawns["Spawn1"].room, "E51N21");    //### MOVE THIS OUT ### ---> HAVE A PERIODIC CHECK FOR E_ROOMS, CONTAAINERS LOST, ETC --> e.g every 5/10/20 frames
 
     //Spawn & assign required dudes
     assignCreeps_energyRooms();         //this order is important, prevents nulls occurring when spawning and istantly assigning, gives a frame of breather room
