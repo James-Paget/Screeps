@@ -47,7 +47,7 @@ function towerRepair_prioirity(tower){
             }
         }
     }
-    var target  = creep.pos.findClosestByRange(targetsPrio);
+    var target  = tower.pos.findClosestByRange(targetsPrio);
     tower.repair(target);
 }
 
