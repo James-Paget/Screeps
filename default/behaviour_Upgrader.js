@@ -43,7 +43,6 @@ var upgrading_tasks = {
                 var energyCost = _.sum(partSet, part => BODYPART_COST[part]);
                 if(energyCost > energyMax){
                     partSet.shift();
-                    partSet.shift();
                     break;}
             }
             creepParts = partSet;
