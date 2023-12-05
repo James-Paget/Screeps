@@ -92,15 +92,15 @@ var respawnManager = {
         var sourceOccupied_gatherers = getSummed_potential_role(roomID, "Gatherer") >= Game.rooms[roomID].find(FIND_STRUCTURES, {filter:(structure)=>{return(structure.structureType == STRUCTURE_CONTAINER)}}).length;
         if(sourceOccupied_miners && sourceOccupied_gatherers){
             var repairerFilter = repairing_tasks.generateCreepParts(roomID);//getSummed_potential_role(roomID, "Repairer");
-            if(repairerFilter != null){    //<--- Repairers are being phased out, replaced with towers doing repair work alongside miners
+            if(repairerFilter==null){    //<--- Repairers are being phased out, replaced with towers doing repair work alongside miners
                 var builderFilter  = building_tasks.generateCreepParts(roomID);//getSummed_potential_role(roomID, "Builder");
-                if(builderFilter != null){
+                if(builderFilter==null){
                     var upgraderFilter = upgrading_tasks.generateCreepParts(roomID);//getSummed_potential_role(roomID, "Upgrader");
-                    if(upgraderFilter != null){
+                    if(upgraderFilter==null){
                         var extractorFilter = extractor_tasks.generateCreepParts(roomID);//getSummed_potential_role(roomID, "Extractor");
-                        if(extractorFilter != null){
+                        if(extractorFilter==null){
                             var armyFilter     = defender_tasks.generateCreepParts(roomID);//getSummed_potential_role(roomID, "Defender");
-                            if(armyFilter != null){
+                            if(armyFilter==null){
                                 defender_tasks.queue(roomID, null, armyFilter);}
                         }
                         else{
