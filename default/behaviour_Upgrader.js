@@ -8,28 +8,24 @@ var upgrading_tasks = {
                     creep.moveTo(creep.room.controller);
                 }
             }
-            if(creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0){
-                creep.memory.isUpgrading = false;
-            }
         }
         else{
-            if(creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0){
+            if(creep.room.energyAvailable >= 0.8*creep.room.energyCapacityAvailable){   //Above 80% energy in order to start upgrading
                 var energyCaches = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_SPAWN && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_EXTENSION && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) )}});
-                if(creep.room.energyAvailable >= 0.8*creep.room.energyCapacityAvailable){   //Above 80% energy in order to start upgrading
-                    var target = creep.pos.findClosestByPath(energyCaches);
-                    if(creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
-                        creep.moveTo(target);
-                    }
-                }
-                else{
-                    //Move out of the way
-                    creep.moveTo(creep.room.controller);
+                var target = creep.pos.findClosestByPath(energyCaches);
+                if(creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(target);
                 }
             }
             else{
-                creep.memory.isUpgrading = true;
+                //Move out of the way
+                creep.moveTo(creep.room.controller);
             }
         }
+        if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
+            creep.memory.isUpgrading = true;}
+        if(creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0){
+            creep.memory.isUpgrading = false;}
     },
     generateCreepParts : function(spawnerRoomID){
         /*
