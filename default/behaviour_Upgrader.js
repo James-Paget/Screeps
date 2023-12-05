@@ -43,8 +43,10 @@ var upgrading_tasks = {
             var partSet = [WORK,CARRY,MOVE,MOVE];   //Base line body parts required
             for(var i=0; i<workPerCreep; i++){      //Attempts to spawn the most expensive (but not overkill) miner it can afford
                 partSet.unshift(WORK);
+                partSet.unshift(MOVE);
                 var energyCost = _.sum(partSet, part => BODYPART_COST[part]);
                 if(energyCost > energyMax){
+                    partSet.shift();
                     partSet.shift();
                     break;}
             }
