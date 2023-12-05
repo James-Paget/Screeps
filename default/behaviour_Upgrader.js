@@ -3,11 +3,11 @@ var {getSpawnerRoomIndex} = require("manager_Memory");
 var upgrading_tasks = {
     task : function(creep){
         if(creep.memory.isUpgrading){
-            if(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].queue.length == 0){    //Only upgrade when no one is being spawned at YOUR spawner, e.g excess energy
-                if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(creep.room.controller);
-                }
+            //if(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].queue.length == 0){    //Only upgrade when no one is being spawned at YOUR spawner, e.g excess energy ==> THIS SEEMS EXCESSIVE AND UNCESSARY GIVEN THE 80% CONDITION
+            if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE){
+                creep.moveTo(creep.room.controller);
             }
+            //}
         }
         else{
             if(creep.room.energyAvailable >= 0.8*creep.room.energyCapacityAvailable){   //Above 80% energy in order to start upgrading
