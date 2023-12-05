@@ -161,7 +161,7 @@ function getTarget_gatherer(creep){
         //If all full, just try wait by relevent flag
         if(deliveryTargets.length == 0){    //If STILL no targets, go wait by a wait flag
             if(Game.flags["GathererWait"]){
-                target = Game.flags["GathererWait"].pos;
+                target = Game.flags["GathererWait"];
             }
         }
         else{   //OR if you did find targets, go to them
