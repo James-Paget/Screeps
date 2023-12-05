@@ -54,23 +54,26 @@ var extractor_tasks = {
         /*
         Looks at the state of the spawner and determines what modules to build on this creep
         */
-        var creepParts   = null;
-        var creepsOwned  = _.filter(Game.creeps, function(creep) {return (creep.memory.spawnKey.roomID == spawnerRoomID && creep.memory.role == "Extractor")}); //Owned by this spawner, of this type
-        var creepNumberRequired = 2 -creepsOwned.length;    //<-- Specify the number of creeps wanted here
-        if(creepNumberRequired > 0){    //If actually need any more workers
-            var workPerCreep = 3;       //A rough Guess at an upper bound/ideal value --> Can make it more sophisticated
-            var energyMax = Game.rooms[spawnerRoomID].energyCapacityAvailable;
-            var partSet = [WORK,CARRY,CARRY,MOVE];            //Base line body parts required
-            for(var i=0; i<workPerCreep; i++){  //Attempts to spawn the most expensive (but not overkill) miner it can afford
-                partSet.unshift(WORK);
-                partSet.unshift(MOVE);
-                var energyCost = _.sum(partSet, part => BODYPART_COST[part]);
-                if(energyCost > energyMax){
-                    partSet.shift();
-                    partSet.shift();
-                    break;}
+        var creepParts  = null;
+        var extractorNumber = Game.rooms[spawnerRoomID].find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_EXTRACTOR)}}).length;    //If you need to mine minerals
+        if(extractorNumber  > 0){
+            var creepsOwned  = _.filter(Game.creeps, function(creep) {return (creep.memory.spawnKey.roomID == spawnerRoomID && creep.memory.role == "Extractor")});         //Owned by this spawner, of this type
+            var creepNumberRequired = 2 -creepsOwned.length;    //<-- Specify the number of creeps wanted here
+            if(creepNumberRequired > 0){    //If actually need any more workers
+                var workPerCreep = 3;       //A rough Guess at an upper bound/ideal value --> Can make it more sophisticated
+                var energyMax = Game.rooms[spawnerRoomID].energyCapacityAvailable;
+                var partSet = [WORK,CARRY,CARRY,MOVE];            //Base line body parts required
+                for(var i=0; i<workPerCreep; i++){  //Attempts to spawn the most expensive (but not overkill) miner it can afford
+                    partSet.unshift(WORK);
+                    partSet.unshift(MOVE);
+                    var energyCost = _.sum(partSet, part => BODYPART_COST[part]);
+                    if(energyCost > energyMax){
+                        partSet.shift();
+                        partSet.shift();
+                        break;}
+                }
+                creepParts = partSet;
             }
-            creepParts = partSet;
         }
         return creepParts;
     },
