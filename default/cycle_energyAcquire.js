@@ -160,6 +160,8 @@ function getTarget_gatherer(creep){
             if(deliveryTargets.length == 0){                            //E.g if no terminal to put into OR terminal is full, just stand by extensions
                 if(Game.flags["GathererWait"]){                         // and a "wait" flag exists, wait there
                     deliveryTargets = [Game.flags["GathererWait"]];}    //
+            }
+        }
         if(creep.room.name == creep.memory.spawnKey.roomID){        //Same room      => direct pathing
             target = creep.pos.findClosestByPath(deliveryTargets);}
         else{                                                       //Different room => indirect pathing (will become direct after)
