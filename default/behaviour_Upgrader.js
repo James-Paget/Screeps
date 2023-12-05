@@ -19,7 +19,10 @@ var upgrading_tasks = {
             }
             else{
                 //Move out of the way
-                creep.moveTo(creep.room.controller);
+                if(Game.flags["UpgraderWait"]){
+                    creep.moveTo(Game.flags["UpgraderWait"].pos);}
+                else{
+                    creep.moveTo(creep.room.controller);}
             }
         }
         if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
