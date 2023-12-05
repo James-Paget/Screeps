@@ -157,6 +157,8 @@ function getTarget_gatherer(creep){
         var deliveryTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
         if(deliveryTargets.length == 0){    //If spawner full of energy, give to any terminals in the room
             deliveryTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return (structure.structureType == STRUCTURE_TERMINAL && structure.store.getUsedCapacity(RESOURCE_ENERGY) <= 150000)}});}
+            if(deliveryTargets.length == 0){    //E.g if no terminal to put into OR terminal is full, just stand by extensions
+                deliveryTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return (structure.structureType == STRUCTURE_EXTENSION)}});} //## THIS MAY WORK HORRIBLY AND LEAD TO GIGA PILE UPS ##
         if(creep.room.name == creep.memory.spawnKey.roomID){        //Same room      => direct pathing
             target = creep.pos.findClosestByPath(deliveryTargets);}
         else{                                                       //Different room => indirect pathing (will become direct after)
@@ -540,8 +542,6 @@ function clearSpawnerRoom_queue(roomID){
 function clearSpawnerRoom_unassigned(roomID){
     Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].unassigned = [];
 }
-// . MAKE FUNCTION TO REMAKE THE CONTAINER SET FOR EACH SOURCE
-// . MAKE FUNCTION TO REASSIGN ALL MINERS TO SOURCES AGAIN; WILL FIX SITUATIONS WHEN EVERYONE IS CONFUSED WHERE THEY ARE --> GlobalReassignment
 
 module.exports = {
     getTarget_miner,
