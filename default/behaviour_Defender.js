@@ -29,10 +29,10 @@ var defender_tasks = {
         */
         var creepParts   = null;
         var creepsOwned  = _.filter(Game.creeps, function(creep) {return (creep.memory.spawnKey.roomID == spawnerRoomID && creep.memory.role == "Defender")}); //Owned by this spawner, of this type
-        var creepNumberRequired = creepsOwned.length -4;    //<-- Specify the number of creeps wanted here
+        var creepNumberRequired = 4 -creepsOwned.length;    //<-- Specify the number of creeps wanted here
         if(creepNumberRequired > 0){    //If actually need any more workers
             var workPerCreep = 3;       //A rough Guess at an upper bound/ideal value --> Can make it more sophisticated
-            var energyMax = Game.rooms[getSpawnerRoomIndex(spawnerRoomID)].energyCapacityAvailable;
+            var energyMax = Game.rooms[spawnerRoomID].energyCapacityAvailable;
             var partSet = [ATTACK,MOVE];            //Base line body parts required
             for(var i=0; i<workPerCreep; i++){  //Attempts to spawn the most expensive (but not overkill) miner it can afford
                 partSet.unshift(ATTACK);

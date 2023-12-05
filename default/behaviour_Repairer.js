@@ -19,9 +19,9 @@ var repairing_tasks = {
         */
         if(creep.memory.isRepairing){
             //Target selection
-            //###############################################################################
-            //### CAREFUL, THIS LIKELY WILL INSTANTLY GO BELOW THRESHOLD AGAIN IN SECONDFS ##
-            //###############################################################################
+            //#########################################################################
+            //### CAREFUL, THIS WILL GO BELOW THRESHOLD AGAIN IN A FEW HUNDRED TICKS ##
+            //#########################################################################
             var targetsPrio;
             targetsPrio = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_CONTAINER) && (structure.hits < structure.hitsMax*0.8) )}});
             if(targetsPrio.length == 0){
@@ -67,10 +67,10 @@ var repairing_tasks = {
         */
         var creepParts   = null;
         var creepsOwned  = _.filter(Game.creeps, function(creep) {return (creep.memory.spawnKey.roomID == spawnerRoomID && creep.memory.role == "Repairer")}); //Owned by this spawner, of this type
-        var creepNumberRequired = creepsOwned.length -2;    //<-- Specify the number of creeps wanted here
+        var creepNumberRequired = 2 -creepsOwned.length;    //<-- Specify the number of creeps wanted here
         if(creepNumberRequired > 0){    //If actually need any more workers
             var workPerCreep = 2;       //A rough Guess at an upper bound/ideal value --> Can make it more sophisticated
-            var energyMax = Game.rooms[getSpawnerRoomIndex(spawnerRoomID)].energyCapacityAvailable;
+            var energyMax = Game.rooms[spawnerRoomID].energyCapacityAvailable;
             var partSet = [WORK,CARRY,MOVE];            //Base line body parts required
             for(var i=0; i<workPerCreep; i++){  //Attempts to spawn the most expensive (but not overkill) miner it can afford
                 partSet.unshift(WORK);
