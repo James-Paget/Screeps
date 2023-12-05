@@ -154,15 +154,17 @@ function getTarget_gatherer(creep){
         //No containers => do nothing (null target)
     }
     else{                       //Depositing => returning to spawnerRoom => always vision
+        //Try find delivery target
         var deliveryTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
         if(deliveryTargets.length == 0){    //If spawner full of energy, give to any terminals in the room
             deliveryTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return (structure.structureType == STRUCTURE_TERMINAL && structure.store.getUsedCapacity(RESOURCE_ENERGY) <= 150000)}});}
+        //If all full, just try wait by relevent flag
         if(deliveryTargets.length == 0){    //If STILL no targets, go wait by a wait flag
             if(Game.flags["GathererWait"]){
                 target = Game.flags["GathererWait"].pos;
             }
         }
-        else{
+        else{   //OR if you did find targets, go to them
             if(creep.room.name == creep.memory.spawnKey.roomID){        //Same room      => direct pathing
                 target = creep.pos.findClosestByPath(deliveryTargets);}
             else{                                                       //Different room => indirect pathing (will become direct after)
