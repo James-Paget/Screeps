@@ -472,7 +472,7 @@ function getSaturationCondition_gatherers(roomID, energyRooms_info){
             travelDistance = Math.min(travelDistance, 40);   //--> Caps the total distance a source is imagined to be, prevents 20 gatherers for a spawn 1 room away
             var carryRequired    = Math.max(Math.ceil(0.4*travelDistance), 3);             //CARRY required to fully empty whatever a source produces (10 energy tick^-1) --> assumed travelling always at 1 tile tick^-1 --> sets a min so incorrect linear dist is slightly corrected
             */
-            var carryRequired    = 12;  //Fixed amount used here for simplicity in multi-room case --> Vision problems
+            var carryRequired    = 15;  //Fixed amount used here for simplicity in multi-room case --> Vision problems
             var total_carryParts = 0;
             for(var gathererIndex in energyRooms_info.gatherers){
                 total_carryParts += _.filter(Game.getObjectById(energyRooms_info.gatherers[gathererIndex]).body, function(part){return (part.type==CARRY)}).length;}
@@ -483,7 +483,7 @@ function getSaturationCondition_gatherers(roomID, energyRooms_info){
                 //Now make decision
                 var carryNeeded_perWorker = Math.ceil(carryNeeded / Math.abs(3.0 -energyRooms_info.gatherers.length));   //Spreads work over multiple gatherers, not all on just one (3 workers used here)
                 var partSet = [CARRY,MOVE];
-                var partMax = 3;    //Max 3 sets of each => 3+initial = 4 full pairs 
+                var partMax = 5;    //Max 3 sets of each => 3+initial = 4 full pairs 
                 for(var i=0; i<carryNeeded_perWorker; i++){                     //Attempts to spawn the most expensive (but not overkill) miner it can => however need to still have cheap miner above as extensions imply unreachable goals GIVEN you have 0 miners, => have to fullly rely on passive income
                     partSet.unshift(MOVE);                                      //MOVES made alongside CARRYs to ensure they stay at max move speed (on regular ground)
                     partSet.unshift(CARRY);
