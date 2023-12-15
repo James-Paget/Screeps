@@ -67,7 +67,7 @@ var repairing_tasks = {
         */
         var creepParts   = null;
         var creepsOwned  = _.filter(Game.creeps, function(creep) {return (creep.memory.spawnKey.roomID == spawnerRoomID && creep.memory.role == "Repairer")}); //Owned by this spawner, of this type
-        var creepNumberRequired = 1 -creepsOwned.length;    //<-- Specify the number of creeps wanted here
+        var creepNumberRequired = 0 -creepsOwned.length;    //<-- Specify the number of creeps wanted here
         if(creepNumberRequired > 0){    //If actually need any more workers
             var workPerCreep = 2;       //A rough Guess at an upper bound/ideal value --> Can make it more sophisticated
             var energyMax = Game.rooms[spawnerRoomID].energyCapacityAvailable;

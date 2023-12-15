@@ -36,7 +36,7 @@ var upgrading_tasks = {
         */
         var creepParts   = null;
         var creepsOwned  = _.filter(Game.creeps, function(creep) {return (creep.memory.spawnKey.roomID == spawnerRoomID && creep.memory.role == "Upgrader")}); //Owned by this spawner, of this type
-        var creepNumberRequired = 3 -creepsOwned.length;    //<-- Specify the number of creeps wanted here
+        var creepNumberRequired = 5 -creepsOwned.length;    //<-- Specify the number of creeps wanted here
         if(creepNumberRequired > 0){    //If actually need any more workers
             var workPerCreep = 5;       //A rough Guess at an upper bound/ideal value --> Can make it more sophisticated
             var energyMax = Game.rooms[spawnerRoomID].energyCapacityAvailable;

@@ -4,8 +4,10 @@ var tower_tasks = {
         if(isInvasion){
             towerAttack_hostileCreeps(tower);}
         else{
-            if(tower.store.getUsedCapacity(RESOURCE_ENERGY) >= 0.5*tower.store.getCapacity()){  //Any repair when over half energy, in case of attack
-                towerRepair_prioirity(tower);}
+            if(tower.room.find(FIND_CONSTRUCTION_SITES).length == 0){
+                if(tower.store.getUsedCapacity(RESOURCE_ENERGY) >= 0.5*tower.store.getCapacity(RESOURCE_ENERGY)){  //Any repair when over half energy, in case of attack
+                    towerRepair_prioirity(tower);}
+                }
             }
     }
 };

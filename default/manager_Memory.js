@@ -8,7 +8,7 @@ function manageMemory_queues(){
     //Make sure Queues{} exist
     if(!Memory.spawnerRooms){
         Memory.spawnerRooms = [];
-        init_spawnerRooms("E51N21");      //#### WILL NEED TO CLEVERLY CHECK WHEN TO MAKE THIS DEPENDING ON WHAT IS BEING ASKED TO BE SPAWNED, NEED TO CHECK IF THIS QUEUE FOR THIS ROOM ALREADY EXISTS
+        init_spawnerRooms("W7S14");      //#### WILL NEED TO CLEVERLY CHECK WHEN TO MAKE THIS DEPENDING ON WHAT IS BEING ASKED TO BE SPAWNED, NEED TO CHECK IF THIS QUEUE FOR THIS ROOM ALREADY EXISTS
     }
 
     //Remove old queued creeps --> prevents clogging
@@ -56,10 +56,20 @@ function manageMemory_towers(){
         Memory.towers = []; //List of IDs
     }
 }
+function updateTowers_spawnerRooms(){
+    for(var spawnerRoomIndex in Memory.spawnerRooms){
+        //Spawner room => never vision problems
+        var towers = Game.rooms[Memory.spawnerRooms[spawnerRoomIndex].roomID].find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType == STRUCTURE_TOWER)&&(structure.progress == null) )}});
+        //##################################################
+        //## PUT TOWERS INTO SPAWNER ROOM OBJECT LOCATION ##
+        //##################################################
+    }
+}
 
 module.exports = {
     getSpawnerRoomIndex,
     manageMemory_energyRooms,
     manageMemory_queues,
+    updateTowers_spawnerRooms,
     manageMemory_towers
 };

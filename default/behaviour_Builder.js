@@ -10,7 +10,7 @@ var building_tasks = {
                     if(creep.memory.travelRoute){
                         delete creep.memory.travelRoute;}
                     //In correct room, therefore mine to the source you are here for
-                    if(target.structureType == STRUCTURE_TOWER){    //(1) Refill towers as a priority
+                    if(target.structureType == STRUCTURE_TOWER && target.progress == null){    //(1) Refill towers as a priority (UNLESS ITS A CONSTRUCTION SITE --> THEN BUILD IT)
                         if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                             creep.moveTo(target);}
                     }

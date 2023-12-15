@@ -9,12 +9,23 @@ var tower_tasks     = require("behaviour_Tower");
 var military_tasks  = require("behaviour_Military");
 var respawnManager  = require("manager_Respawn");
 var {init_energyRoom, updateContainers_energyRooms, assignCreeps_energyRooms} = require("cycle_energyAcquire");
-var {manageMemory_energyRooms, manageMemory_queues, manageMemory_towers} = require("manager_Memory");
+var {manageMemory_energyRooms, manageMemory_queues, updateTowers_spawnerRooms, manageMemory_towers} = require("manager_Memory");
 var {calcMarket_general} = require("manager_Market");
 
 module.exports.loop = function () {
+    //## PUT THIS INOT A "RESTART COLONY" FUNCTION
+    //## PUT THIS INOT A "RESTART COLONY" FUNCTION
+    //delete Memory.energyRooms;
+    //delete Memory.spawnerRooms;
+    //Memory.towers = [];
+    // + CHANGE E ROOM INIT NAME
+    // + CHANGE SPAWNER ROOM INIT NAME
+    //## PUT THIS INOT A "RESTART COLONY" FUNCTION
+    //## PUT THIS INOT A "RESTART COLONY" FUNCTION
+
     //Ensure memory values are accurate and up to date
     periodic_updateContainers_energyRooms();
+    periodic_updateTowers_spawnerRooms();
     manageMemory_queues();
     manageMemory_energyRooms();
     manageMemory_towers();
@@ -90,4 +101,8 @@ function manageMemory_dead_cleanup(){
 function periodic_updateContainers_energyRooms(){
     if(Game.time.toString().slice(-1) == 5){
         updateContainers_energyRooms();}
+}
+function periodic_updateTowers_spawnerRooms(){
+    if(Game.time.toString().slice(-1) == 8){
+        updateTowers_spawnerRooms();}
 }
