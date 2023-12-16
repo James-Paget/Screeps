@@ -29,7 +29,7 @@ function towerRepair_prioirity(tower){
     */
     var repairPriority = ["tower_min", "storage_min", "container_min", "rampart_min", "wall_min", "wall_mid", "rampart_mid"]; //*Add more conditions here if required
     for(var condition in repairPriority){
-        var target = fetch_priorityCondition(tower, condition);
+        var target = fetch_priorityCondition(tower, repairPriority[condition]);
         if(target){
             tower.repair(target);   //Do condition
             break;                  //Then leave (only do most urgent condition)
