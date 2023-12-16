@@ -3,12 +3,11 @@ var tower_tasks = {
         var isInvasion = tower.room.find(FIND_HOSTILE_CREEPS).length > 0;
         if(isInvasion){
             towerAttack_hostileCreeps(tower);}
-        else{                                                           //#### THIS WILL RQUIRE SMARTER BUILDERS TOO, PICKING A TARGET AND STICKING TO IT #####
-            if(tower.room.find(FIND_CONSTRUCTION_SITES).length == 0){   //############# REMAKE THIS, HAVE IT EITHER (1) REPAIR ESSENTIAL THINGS LIKE TOWERS, CONTAINERS, RAMPARTS WHILE CONSTRUCTION OCCURS OR (2) REPAIR WALLS & RAMPARTS FULLY WHEN EXCESS
-                if(tower.store.getUsedCapacity(RESOURCE_ENERGY) >= 0.5*tower.store.getCapacity(RESOURCE_ENERGY)){  //Any repair when over half energy, in case of attack
-                    towerRepair_prioirity(tower);}
-                }
+        else{
+            if(tower.store.getUsedCapacity(RESOURCE_ENERGY) >= 0.5*tower.store.getCapacity(RESOURCE_ENERGY)){  //Any repair when over half energy, in case of attack
+                towerRepair_prioirity(tower);
             }
+        }
     }
 };
 
@@ -25,33 +24,58 @@ function towerAttack_hostileCreeps(tower){
 function towerRepair_prioirity(tower){
     /*
     Repairs everything in the room the tower is located
-    Target priority is;
-    1. Containers
-    2. Turrets
-    3. Other not walls
-    4. Walls
+    - The priority is as defined below using the codes specified
+    - The codes relate to a condition to check, which is then used to repair if any elements exist with the condition applied
     */
-    var targetsPrio;
-    targetsPrio = tower.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_CONTAINER) && (structure.hits < structure.hitsMax*0.8) )}});
-    if(targetsPrio.length == 0){
-        targetsPrio = tower.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_TOWER) && (structure.hits < structure.hitsMax*0.8) )}});
-        if(targetsPrio.length == 0){
-            targetsPrio = tower.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_RAMPART) && (structure.hits < structure.hitsMax*0.0001) )}});  //Prio. Rampart over walls as ramparts can decay to destruction, walls cant
-            if(targetsPrio.length == 0){
-                targetsPrio = tower.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType != STRUCTURE_WALL) && (structure.hits < structure.hitsMax*0.8) )}});
-                if(targetsPrio.length == 0){
-                    if(tower.room.energyCapacityAvailable -tower.room.energyAvailable <= 50){   //If loads of spare energy, then do walls                                                                       //Do Walls
-                        targetsPrio = tower.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_WALL) && (structure.hits < structure.hitsMax*0.0001) )}});      // --> Do all walls to a small degree
-                        if(targetsPrio.length == 0){                                                                                                                                                            //
-                            targetsPrio = tower.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_WALL) && (structure.hits < structure.hitsMax*0.01) )}});    // --> Do all walls to a larger degree after
-                        }
-                    }
-                }
+    var repairPriority = ["tower_min", "storage_min", "container_min", "rampart_min", "wall_min", "wall_mid", "rampart_mid"]; //*Add more conditions here if required
+    for(var condition in repairPriority){
+        var target = fetch_priorityCondition(tower, condition);
+        if(target){
+            tower.repair(target);   //Do condition
+            break;                  //Then leave (only do most urgent condition)
+        }
+        //If no target, move onto next condition
+    }
+    //If never find any targets, just do nothing
+}
+
+//Priority Conditions
+function fetch_priorityCondition(tower, condition){
+    var target = null;
+    if     (condition == "tower_min"){
+        find_priorityCondition(tower, STRUCTURE_TOWER    , 1.0);}
+    else if(condition == "storage_min"){
+        find_priorityCondition(tower, STRUCTURE_STORAGE  , 1.0);}
+    else if(condition == "container_min"){
+        find_priorityCondition(tower, STRUCTURE_CONTAINER, 0.8);}
+    else if(condition == "rampart_min"){
+        find_priorityCondition(tower, STRUCTURE_RAMPART  , 0.0001);}
+    else if(condition == "wall_min"){
+        find_priorityCondition(tower, STRUCTURE_WALL     , 0.00001);}
+    else if(condition == "wall_mid"){
+        find_priorityCondition(tower, STRUCTURE_WALL     , 0.001);}
+    else if(condition == "rampart_mid"){
+        find_priorityCondition(tower, STRUCTURE_RAMPART  , 0.1);}
+    //...
+    return target;
+}
+function find_priorityCondition(tower, structureType, healthPercent_threshold){
+    /*
+    - Returns the target with the least health in the set found
+    - Health less than threshold => Repair required
+    */
+    var targets = tower.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == structureType) && (structure.hits < structure.hitsMax*healthPercent_threshold) )}});
+    var target  = null;
+    if(targets.length > 0){     //Find lowest health target
+        var delta_index = 0;
+        for(var index in targets){
+            if(targets[index].hitsMax < targets[delta_index].hitsMax){
+                delta_index = index;
             }
         }
+        target = targets[delta_index];
     }
-    var target  = tower.pos.findClosestByRange(targetsPrio);
-    tower.repair(target);
+    return target;
 }
 
 module.exports = tower_tasks;

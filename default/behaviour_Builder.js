@@ -2,6 +2,7 @@ var {getSpawnerRoomIndex} = require("manager_Memory");
 
 var building_tasks = {
     task : function(creep){
+        //######### CREEPS NEED TO BE ABLE TO FOCUS ON A TARGET AND GO AFTER IT ########
         var target = getTarget_builder(creep);
         if(target){
             if(creep.memory.isBuilding){
@@ -133,19 +134,31 @@ function getTarget_builder(creep){
     */
     var target = null;
     if(creep.memory.isBuilding){
-        //Look for (1) Towers to refill, (2) Construction sites within influence of spawner
-        var resupplyTowers = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_TOWER) && (structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) )}});
-        if(resupplyTowers.length > 0){  //(1)
+        if(creep.memory.refillMode){
+            //If in "refillMode", only refill towers until your tower is completely full, then toggle off refillMode
+            var resupplyTowers = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_TOWER) && (structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) )}});
             target = creep.pos.findClosestByPath(resupplyTowers);
+            if( (resupplyTowers.length == 0) || (target.store.getFreeCapacity(RESOURCE_ENERGY) >= 0.9*target.store.getCapacity(RESOURCE_ENERGY)) ){         //Cancel refill mode when all towers are full OR your tower is almost entirely full
+                delete creep.memory.refillMode;}
         }
-        else{                           //(2)
-            for(var roomIndex in Memory.energyRooms){
-                if(Memory.energyRooms[roomIndex].spawnerRoomID == creep.memory.spawnKey.roomID){    //If this energy room is associated with this builder's spawn, check if he has any jobs he can do there
-                    if(Game.rooms[Memory.energyRooms[roomIndex].ID]){                               //If you currently have vision of that room (this will change as creeps enter, leave and die in a room)
-                        var constructSites = Game.rooms[Memory.energyRooms[roomIndex].ID].find(FIND_CONSTRUCTION_SITES);
-                        if(constructSites.length > 0){
-                            target = constructSites[0]; //May be in other rooms, so cant simply check path diff => just complete them in order (fine assumption because 90% of time nothing will require building)
-                            break;
+        else{
+            //If not in refillMode, look for targets as usual
+            //Look for (1) Towers to refill, (2) Construction sites within influence of spawner
+            var refill_threshold = 0.4;     //If more than x% of capacity is empty, start refills
+            var resupplyTowers = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_TOWER) && (structure.store.getFreeCapacity(RESOURCE_ENERGY) > refill_threshold*structure.getCapacity(RESOURCE_ENERGY)) )}});
+            if(resupplyTowers.length > 0){  //(1)
+                creep.memory.refillMode = true;
+                target = creep.pos.findClosestByPath(resupplyTowers);
+            }
+            else{                           //(2)
+                for(var roomIndex in Memory.energyRooms){
+                    if(Memory.energyRooms[roomIndex].spawnerRoomID == creep.memory.spawnKey.roomID){    //If this energy room is associated with this builder's spawn, check if he has any jobs he can do there
+                        if(Game.rooms[Memory.energyRooms[roomIndex].ID]){                               //If you currently have vision of that room (this will change as creeps enter, leave and die in a room)
+                            var constructSites = Game.rooms[Memory.energyRooms[roomIndex].ID].find(FIND_CONSTRUCTION_SITES);
+                            if(constructSites.length > 0){
+                                target = constructSites[0]; //May be in other rooms, so cant simply check path diff => just complete them in order (fine assumption because 90% of time nothing will require building)
+                                break;
+                            }
                         }
                     }
                 }
