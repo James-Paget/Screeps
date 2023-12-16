@@ -36,12 +36,15 @@ function towerRepair_prioirity(tower){
     if(targetsPrio.length == 0){
         targetsPrio = tower.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_TOWER) && (structure.hits < structure.hitsMax*0.8) )}});
         if(targetsPrio.length == 0){
-            targetsPrio = tower.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType != STRUCTURE_WALL) && (structure.hits < structure.hitsMax*0.8) )}});
+            targetsPrio = tower.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_RAMPART) && (structure.hits < structure.hitsMax*0.8) )}});  //Prio. Rampart over walls as ramparts can decay to destruction, walls cant
             if(targetsPrio.length == 0){
-                if(tower.room.energyCapacityAvailable -tower.room.energyAvailable <= 50){   //If loads of spare energy, then do walls                                                                       //Do Walls
-                    targetsPrio = tower.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_WALL) && (structure.hits < structure.hitsMax*0.0001) )}});      // --> Do all walls to a small degree
-                    if(targetsPrio.length == 0){                                                                                                                                                            //
-                        targetsPrio = tower.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_WALL) && (structure.hits < structure.hitsMax*0.01) )}});    // --> Do all walls to a larger degree after
+                targetsPrio = tower.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType != STRUCTURE_WALL) && (structure.hits < structure.hitsMax*0.8) )}});
+                if(targetsPrio.length == 0){
+                    if(tower.room.energyCapacityAvailable -tower.room.energyAvailable <= 50){   //If loads of spare energy, then do walls                                                                       //Do Walls
+                        targetsPrio = tower.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_WALL) && (structure.hits < structure.hitsMax*0.0001) )}});      // --> Do all walls to a small degree
+                        if(targetsPrio.length == 0){                                                                                                                                                            //
+                            targetsPrio = tower.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_WALL) && (structure.hits < structure.hitsMax*0.01) )}});    // --> Do all walls to a larger degree after
+                        }
                     }
                 }
             }

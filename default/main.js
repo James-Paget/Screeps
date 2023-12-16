@@ -9,7 +9,7 @@ var tower_tasks     = require("behaviour_Tower");
 var military_tasks  = require("behaviour_Military");
 var respawnManager  = require("manager_Respawn");
 var {init_energyRoom, updateContainers_energyRooms, assignCreeps_energyRooms} = require("cycle_energyAcquire");
-var {manageMemory_energyRooms, manageMemory_queues, updateTowers_spawnerRooms, manageMemory_towers} = require("manager_Memory");
+var {manageMemory_energyRooms, manageMemory_queues, updateTowers_spawnerRooms} = require("manager_Memory");
 var {calcMarket_general} = require("manager_Market");
 
 module.exports.loop = function () {
@@ -17,7 +17,7 @@ module.exports.loop = function () {
     //## PUT THIS INOT A "RESTART COLONY" FUNCTION
     //delete Memory.energyRooms;
     //delete Memory.spawnerRooms;
-    //Memory.towers = [];
+    //Memory.spawnerRooms[...].towers = [];
     // + CHANGE E ROOM INIT NAME
     // + CHANGE SPAWNER ROOM INIT NAME
     //## PUT THIS INOT A "RESTART COLONY" FUNCTION
@@ -28,7 +28,6 @@ module.exports.loop = function () {
     periodic_updateTowers_spawnerRooms();
     manageMemory_queues();
     manageMemory_energyRooms();
-    manageMemory_towers();
     manageMemory_dead_cleanup();
     //init_energyRoom(Game.spawns["Spawn1"].room, "E51N21");    //### MOVE THIS OUT ### ---> HAVE A PERIODIC CHECK FOR E_ROOMS, CONTAAINERS LOST, ETC --> e.g every 5/10/20 frames
 
@@ -70,8 +69,10 @@ function creep_taskManager(){
     }
 }
 function tower_taskManager(){
-    for(var towerIndex in Memory.towers){
-        tower_tasks.task( Game.getObjectById(Memory.towers[towerIndex]) );
+    for(var spawnerRoomIndex in Memory.spawnerRooms){
+        for(var towerIndex in Memory.spawnerRooms[spawnerRoomIndex].towers){
+            tower_tasks.task( Game.getObjectById(Memory.spawnerRooms[spawnerRoomIndex].towers[towerIndex]) );
+        }
     }
 }
 function manageMemory_dead_cleanup(){

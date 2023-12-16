@@ -50,19 +50,12 @@ function getSpawnerRoomIndex(roomID){
     }
     return requiredIndex;
 }
-function manageMemory_towers(){
-    //Make sure towers[] exist
-    if(!Memory.towers){
-        Memory.towers = []; //List of IDs
-    }
-}
 function updateTowers_spawnerRooms(){
     for(var spawnerRoomIndex in Memory.spawnerRooms){
         //Spawner room => never vision problems
-        var towers = Game.rooms[Memory.spawnerRooms[spawnerRoomIndex].roomID].find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType == STRUCTURE_TOWER)&&(structure.progress == null) )}});
-        //##################################################
-        //## PUT TOWERS INTO SPAWNER ROOM OBJECT LOCATION ##
-        //##################################################
+        var towers = Game.rooms[Memory.spawnerRooms[spawnerRoomIndex].roomID].find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType == STRUCTURE_TOWER)&&(structure.progress == null) )}});    //Is is a tower, and is finished building
+        //Add towers in this room to the list
+        Memory.spawnerRooms[spawnerRoomIndex].towers = towers;
     }
 }
 
@@ -70,6 +63,5 @@ module.exports = {
     getSpawnerRoomIndex,
     manageMemory_energyRooms,
     manageMemory_queues,
-    updateTowers_spawnerRooms,
-    manageMemory_towers
+    updateTowers_spawnerRooms
 };
