@@ -33,6 +33,7 @@ function init_spawnerRooms(roomID){
     */
     var queueSet          = [];
     var unassignedSet     = [];
+    var towers            = [];
     var mineralStorageSet = [];   //Stores minerals -> This holds IDs for storages used to hold minerals
     var spawnerRoom_elem  = {roomID:roomID, queue:queueSet, unassigned:unassignedSet, mineralStorage:mineralStorageSet};
     Memory.spawnerRooms.push(spawnerRoom_elem);
