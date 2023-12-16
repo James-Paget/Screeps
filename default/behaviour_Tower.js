@@ -43,19 +43,19 @@ function towerRepair_prioirity(tower){
 function fetch_priorityCondition(tower, condition){
     var target = null;
     if     (condition == "tower_min"){
-        find_priorityCondition(tower, STRUCTURE_TOWER    , 1.0);}
+        target = find_priorityCondition(tower, STRUCTURE_TOWER    , 1.0);}
     else if(condition == "storage_min"){
-        find_priorityCondition(tower, STRUCTURE_STORAGE  , 1.0);}
+        target = find_priorityCondition(tower, STRUCTURE_STORAGE  , 1.0);}
     else if(condition == "container_min"){
-        find_priorityCondition(tower, STRUCTURE_CONTAINER, 0.8);}
+        target = find_priorityCondition(tower, STRUCTURE_CONTAINER, 0.8);}
     else if(condition == "rampart_min"){
-        find_priorityCondition(tower, STRUCTURE_RAMPART  , 0.0001);}
+        target = find_priorityCondition(tower, STRUCTURE_RAMPART  , 0.0001);}
     else if(condition == "wall_min"){
-        find_priorityCondition(tower, STRUCTURE_WALL     , 0.00001);}
+        target = find_priorityCondition(tower, STRUCTURE_WALL     , 0.00001);}
     else if(condition == "wall_mid"){
-        find_priorityCondition(tower, STRUCTURE_WALL     , 0.001);}
+        target = find_priorityCondition(tower, STRUCTURE_WALL     , 0.001);}
     else if(condition == "rampart_mid"){
-        find_priorityCondition(tower, STRUCTURE_RAMPART  , 0.1);}
+        target = find_priorityCondition(tower, STRUCTURE_RAMPART  , 0.1);}
     //...
     return target;
 }
