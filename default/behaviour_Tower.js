@@ -27,7 +27,7 @@ function towerRepair_prioirity(tower){
     - The priority is as defined below using the codes specified
     - The codes relate to a condition to check, which is then used to repair if any elements exist with the condition applied
     */
-    var repairPriority = ["tower_min", "storage_min", "container_min", "rampart_min", "wall_min", "wall_mid", "rampart_mid"]; //*Add more conditions here if required
+    var repairPriority = ["tower_min", "storage_min", "container_min", "rampart_min", "wall_min"]; //*Add more conditions here if required
     for(var condition in repairPriority){
         var target = fetch_priorityCondition(tower, repairPriority[condition]);
         if(target){
