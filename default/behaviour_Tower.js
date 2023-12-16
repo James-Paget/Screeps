@@ -49,7 +49,7 @@ function fetch_priorityCondition(tower, condition){
     else if(condition == "container_min"){
         target = find_priorityCondition(tower, STRUCTURE_CONTAINER, 0.8);}
     else if(condition == "rampart_min"){
-        target = find_priorityCondition(tower, STRUCTURE_RAMPART  , 0.0001);}
+        target = find_priorityCondition(tower, STRUCTURE_RAMPART  , 0.001);}
     else if(condition == "wall_min"){
         target = find_priorityCondition(tower, STRUCTURE_WALL     , 0.00001);}
     else if(condition == "wall_mid"){
