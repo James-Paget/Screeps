@@ -3,7 +3,7 @@ var tower_tasks = {
         var isInvasion = tower.room.find(FIND_HOSTILE_CREEPS).length > 0;
         if(isInvasion){
             towerAttack_hostileCreeps(tower);}
-        else{
+        else{                                                           //#### THIS WILL RQUIRE SMARTER BUILDERS TOO, PICKING A TARGET AND STICKING TO IT #####
             if(tower.room.find(FIND_CONSTRUCTION_SITES).length == 0){   //############# REMAKE THIS, HAVE IT EITHER (1) REPAIR ESSENTIAL THINGS LIKE TOWERS, CONTAINERS, RAMPARTS WHILE CONSTRUCTION OCCURS OR (2) REPAIR WALLS & RAMPARTS FULLY WHEN EXCESS
                 if(tower.store.getUsedCapacity(RESOURCE_ENERGY) >= 0.5*tower.store.getCapacity(RESOURCE_ENERGY)){  //Any repair when over half energy, in case of attack
                     towerRepair_prioirity(tower);}
