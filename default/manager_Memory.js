@@ -56,7 +56,10 @@ function updateTowers_spawnerRooms(){
         //Spawner room => never vision problems
         var towers = Game.rooms[Memory.spawnerRooms[spawnerRoomIndex].roomID].find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType == STRUCTURE_TOWER)&&(structure.progress == null) )}});    //Is is a tower, and is finished building
         //Add towers in this room to the list
-        Memory.spawnerRooms[spawnerRoomIndex].towers = towers;
+        Memory.spawnerRooms[spawnerRoomIndex].towers = [];
+        for(var towerIndex in towers){
+            Memory.spawnerRooms[spawnerRoomIndex].towers.push(towers[towerIndex].id);
+        }
     }
 }
 
