@@ -3,7 +3,6 @@
 ################################
 ## BEING PHASED OUT OF COLONY ##
 ################################
-################################
 */
 
 var {getSpawnerRoomIndex} = require("manager_Memory");
