@@ -55,7 +55,7 @@ var extractor_tasks = {
         Looks at the state of the spawner and determines what modules to build on this creep
         */
         var creepParts  = null;
-        var extractorNumber = Game.rooms[spawnerRoomID].find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_EXTRACTOR)}}).length;    //If you need to mine minerals
+        var extractorNumber = Game.rooms[spawnerRoomID].find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_EXTRACTOR && structure.progress == null)}}).length;    //If you need to mine minerals
         if(extractorNumber  > 0){
             var creepsOwned  = _.filter(Game.creeps, function(creep) {return (creep.memory.spawnKey.roomID == spawnerRoomID && creep.memory.role == "Extractor")});         //Owned by this spawner, of this type
             var creepNumberRequired = 2 -creepsOwned.length;    //<-- Specify the number of creeps wanted here
