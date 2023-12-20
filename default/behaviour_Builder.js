@@ -138,8 +138,11 @@ function getTarget_builder(creep){
             //If in "refillMode", only refill towers until your tower is completely full, then toggle off refillMode
             var resupplyTowers = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_TOWER) && (structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) )}});
             target = creep.pos.findClosestByPath(resupplyTowers);
-            if( (resupplyTowers.length == 0) || (target.store.getFreeCapacity(RESOURCE_ENERGY) >= 0.9*target.store.getCapacity(RESOURCE_ENERGY)) ){         //Cancel refill mode when all towers are full OR your tower is almost entirely full
-                delete creep.memory.refillMode;}
+            if(target){
+                if( (resupplyTowers.length == 0) || (target.store.getFreeCapacity(RESOURCE_ENERGY) >= 0.9*target.store.getCapacity(RESOURCE_ENERGY)) ){         //Cancel refill mode when all towers are full OR your tower is almost entirely full
+                    delete creep.memory.refillMode;
+                }
+            }
         }
         else{
             //If not in refillMode, look for targets as usual
