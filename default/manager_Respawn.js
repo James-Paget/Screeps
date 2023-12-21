@@ -88,18 +88,20 @@ var respawnManager = {
         //#############################################################################################################
         //## REPLACE THIS WITH FUNCTIONAL CONDITION, MAKE IT FAR BETTER, THIS IS A TERRIBLE METRIC FOR WHEN TO SPAWN ##
         //#############################################################################################################
+        //## REPLACE WITH SAME SYSTEM AS REPAIR TOWER --> SIMPLE LIST QUEUE ##
+        //####################################################################
         var sourceOccupied_miners    = getSummed_potential_role(roomID, "Miner")    >= Game.rooms[roomID].find(FIND_SOURCES).length;
         var sourceOccupied_gatherers = getSummed_potential_role(roomID, "Gatherer") >= Game.rooms[roomID].find(FIND_STRUCTURES, {filter:(structure)=>{return(structure.structureType == STRUCTURE_CONTAINER)}}).length;
         if(sourceOccupied_miners && sourceOccupied_gatherers){
             var repairerFilter = repairing_tasks.generateCreepParts(roomID);//getSummed_potential_role(roomID, "Repairer");
             if(repairerFilter==null){    //<--- Repairers are being phased out, replaced with towers doing repair work alongside miners
-                var builderFilter  = building_tasks.generateCreepParts(roomID);//getSummed_potential_role(roomID, "Builder");
+                var builderFilter  = building_tasks.generateCreepParts(roomID);
                 if(builderFilter==null){
-                    var upgraderFilter = upgrading_tasks.generateCreepParts(roomID);//getSummed_potential_role(roomID, "Upgrader");
+                    var upgraderFilter = upgrading_tasks.generateCreepParts(roomID);
                     if(upgraderFilter==null){
-                        var extractorFilter = extractor_tasks.generateCreepParts(roomID);//getSummed_potential_role(roomID, "Extractor");
+                        var extractorFilter = extractor_tasks.generateCreepParts(roomID);
                         if(extractorFilter==null){
-                            var armyFilter     = defender_tasks.generateCreepParts(roomID);//getSummed_potential_role(roomID, "Defender");
+                            var armyFilter     = defender_tasks.generateCreepParts(roomID);
                             if(armyFilter==null){
                                 defender_tasks.queue(roomID, null, armyFilter);}
                         }
