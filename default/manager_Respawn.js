@@ -4,7 +4,7 @@ var upgrading_tasks = require("behaviour_Upgrader");
 var building_tasks  = require("behaviour_Builder");
 var repairing_tasks = require("behaviour_Repairer");
 var defender_tasks  = require("behaviour_Defender");
-var extractor_tasks = require("behaviour_Extractor");
+var {getExtractionID, extractor_tasks} = require("behaviour_Extractor");
 var {getSpawnerRoomIndex} = require("manager_Memory");
 var {queueCreeps_energyRooms} = require("cycle_energyAcquire");
 
@@ -104,7 +104,8 @@ var respawnManager = {
                                 defender_tasks.queue(roomID, null, armyFilter);}
                         }
                         else{
-                            extractor_tasks.queue(roomID, null, extractorFilter);}
+                            var mineralID = getExtractionID(roomID);
+                            extractor_tasks.queue(roomID, mineralID, extractorFilter);}
                     }
                     else{
                         upgrading_tasks.queue(roomID, null, upgraderFilter);}

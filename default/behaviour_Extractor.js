@@ -110,4 +110,6 @@ function getExtractionID(roomID){
     return sourceID;
 }
 
-module.exports = extractor_tasks;
+module.exports = {
+    getExtractionID,
+    extractor_tasks};
