@@ -4,10 +4,9 @@ var extractor_tasks = {
     task : function(creep){
         if(creep.memory.sourceID != "null"){      //If an extractor exists --> source here referes to mineral instead
             var resourceType = Game.getObjectById(creep.memory.houseKey.sourceID).mineralType;
-            if(creep.memory.isExtracting){
-                var target = Game.getObjectById(creep.memory.houseKey.sourceID);
-                if(target.mineralAmount > 0){  //----->Start mining minerals
-                    //Go mine from somewhere
+            var target = Game.getObjectById(creep.memory.houseKey.sourceID);
+            if(target.mineralAmount > 0){   //State; Mining Mineral
+                if(creep.memory.isExtracting){
                     //####################################################
                     //## MAKE IT WIAT FOR THE COOLDOWN BETWEEN HARVESTS ##
                     //####################################################
@@ -15,23 +14,7 @@ var extractor_tasks = {
                         creep.moveTo(target);
                     }
                 }
-                else{   //----->Start selling minerals (If you have a terminal)
-                    var targets = creep.room.find(FIND_STRUCTURES, {filter: (structure) => {return( (structure.structureType == STRUCTURE_TERMINAL) && (structure.progress == null) )}});
-                    if(targets.length > 0){
-                        target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
-                        if(creep.withdraw(target, resourceType) == ERR_NOT_IN_RANGE){
-                            creep.moveTo(target);
-                        }
-                    }
-                }
-                if(creep.store.getFreeCapacity(resourceType) == 0){
-                    creep.memory.isExtracting = false;
-                }
-            }
-            else{
-                //When not extracting...
-                var target = Game.getObjectById(creep.memory.houseKey.sourceID);
-                if(target.mineralAmount > 0){   //If mineral patch still has minerals left, deliver to the storage
+                else{
                     if(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage.length > 0){
                         target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
                         if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
@@ -39,7 +22,17 @@ var extractor_tasks = {
                         }
                     }
                 }
-                else{                           //If has no minerals left, deliver tot he terminal (if it exists)
+            }
+            else{                           //State; Fill up terminal
+                if(creep.memory.isExtracting){
+                    if(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage.length > 0){
+                        target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
+                        if(creep.withdraw(target, resourceType) == ERR_NOT_IN_RANGE){
+                            creep.moveTo(target);
+                        }
+                    }
+                }
+                else{
                     var targets = creep.room.find(FIND_STRUCTURES, {filter: (structure) => {return( (structure.structureType == STRUCTURE_TERMINAL) && (structure.progress == null) )}});
                     if(targets.length > 0){
                         target = targets[0];
@@ -48,9 +41,12 @@ var extractor_tasks = {
                         }
                     }
                 }
-                if(creep.store.getUsedCapacity(resourceType) == 0){
-                    creep.memory.isExtracting = true;
-                }
+            }
+            if(creep.store.getFreeCapacity(resourceType) == 0){
+                creep.memory.isExtracting = false;
+            }
+            if(creep.store.getUsedCapacity(resourceType) == 0){
+                creep.memory.isExtracting = true;
             }
         }
     },
