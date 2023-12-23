@@ -15,8 +15,9 @@ var extractor_tasks = {
                     }
                 }
                 else{
-                    if(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage.length > 0){
-                        target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
+                    var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
+                    if(mineralStorage_available.length > 0){
+                        target = Game.getObjectById(mineralStorage_available[0]);
                         if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
                             creep.moveTo(target);
                         }
