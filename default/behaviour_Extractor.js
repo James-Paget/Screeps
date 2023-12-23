@@ -26,9 +26,9 @@ var extractor_tasks = {
                 }
             }
             else{
+                //When not extracting...
                 var target = Game.getObjectById(creep.memory.houseKey.sourceID);
-                if(target.mineralAmount > 0){  //----->Start mining minerals
-                    //go deliver somewhere
+                if(target.mineralAmount > 0){   //If mineral patch still has minerals left, deliver to the storage
                     if(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage.length > 0){
                         target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
                         if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
@@ -36,10 +36,11 @@ var extractor_tasks = {
                         }
                     }
                 }
-                else{
-                    target = Game.getObjectById("6564e91d3eb96984a8e212a3");
-                    if(target){
-                        if(creep.transfer(target, RESOURCE_KEANIUM) == ERR_NOT_IN_RANGE){
+                else{                           //If has no minerals left, deliver tot he terminal (if it exists)
+                    var targets = creep.room.find(FIND_STRUCTURES, {filter: (structure) => {return( (structure.structureType == STURCTURE_TERMINAL) && (structure.progress == null) )}});
+                    if(targets.length > 0){
+                        target = targets[0];
+                        if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
                             creep.moveTo(target);
                         }
                     }
