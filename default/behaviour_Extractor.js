@@ -37,7 +37,7 @@ var extractor_tasks = {
                     }
                 }
                 else{                           //If has no minerals left, deliver tot he terminal (if it exists)
-                    var targets = creep.room.find(FIND_STRUCTURES, {filter: (structure) => {return( (structure.structureType == STURCTURE_TERMINAL) && (structure.progress == null) )}});
+                    var targets = creep.room.find(FIND_STRUCTURES, {filter: (structure) => {return( (structure.structureType == STRUCTURE_TERMINAL) && (structure.progress == null) )}});
                     if(targets.length > 0){
                         target = targets[0];
                         if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
