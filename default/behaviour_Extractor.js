@@ -15,10 +15,13 @@ var extractor_tasks = {
                         creep.moveTo(target);
                     }
                 }
-                else{   //----->Start selling minerals
-                    target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
-                    if(creep.withdraw(target, resourceType) == ERR_NOT_IN_RANGE){
-                        creep.moveTo(target);
+                else{   //----->Start selling minerals (If you have a terminal)
+                    var targets = creep.room.find(FIND_STRUCTURES, {filter: (structure) => {return( (structure.structureType == STRUCTURE_TERMINAL) && (structure.progress == null) )}});
+                    if(targets.length > 0){
+                        target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
+                        if(creep.withdraw(target, resourceType) == ERR_NOT_IN_RANGE){
+                            creep.moveTo(target);
+                        }
                     }
                 }
                 if(creep.store.getFreeCapacity(resourceType) == 0){
