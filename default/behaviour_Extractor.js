@@ -24,28 +24,19 @@ var extractor_tasks = {
                 }
             }
             else{                           //State; Fill up terminal
-                if(creep.memory.isExtracting){
-                    if(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage.length > 0){
-                        target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
+                var terminals_available      = creep.room.find(FIND_STRUCTURES, {filter: (structure) => {return( (structure.structureType == STRUCTURE_TERMINAL) && (structure.progress == null) )}});
+                var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
+                if( (terminals_available.length > 0) && (mineralStorage_available.length > 0) ){
+                    if(creep.memory.isExtracting){
+                        target = Game.getObjectById(mineralStorage_available[0]);
                         if(creep.withdraw(target, resourceType) == ERR_NOT_IN_RANGE){
                             creep.moveTo(target);
                         }
                     }
-                }
-                else{
-                    var targets = creep.room.find(FIND_STRUCTURES, {filter: (structure) => {return( (structure.structureType == STRUCTURE_TERMINAL) && (structure.progress == null) )}});
-                    if(targets.length > 0){
-                        target = targets[0];
+                    else{
+                        target = terminals_available[0];
                         if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
                             creep.moveTo(target);
-                        }
-                    }
-                    else{
-                        if(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage.length > 0){
-                            target = Game.getObjectById(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage[0]);
-                            if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
-                                creep.moveTo(target);
-                            }
                         }
                     }
                 }
