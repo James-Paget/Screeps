@@ -58,7 +58,8 @@ var extractor_tasks = {
         var extractors_available = Game.rooms[spawnerRoomID].find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_EXTRACTOR && structure.progress == null)}});    //If you need to mine minerals
         if(extractors_available.length  > 0){
             //Only need to check 0th, as a room can have a max of 1 extractor / mineral patch
-            if(extractors_available[0].mineralAmount > 0){  //If extractor requires creeps now
+            var minerals_available = Game.rooms[spawnerRoomID].find(FIND_MINERALS);
+            if(minerals_available[0].mineralAmount > 0){  //If extractor requires creeps now
                 var creepsOwned  = _.filter(Game.creeps, function(creep) {return (creep.memory.spawnKey.roomID == spawnerRoomID && creep.memory.role == "Extractor")});         //Owned by this spawner, of this type
                 var creepNumberRequired = 2 -creepsOwned.length;    //<-- Specify the number of creeps wanted here
                 if(creepNumberRequired > 0){    //If actually need any more workers
