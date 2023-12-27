@@ -66,7 +66,7 @@ var extractor_tasks = {
         if(ableToExtract){
             var minerals_available    = Game.rooms[spawnerRoomID].find(FIND_MINERALS);
             var harvestingNeeded      = minerals_available[0].mineralAmount > 0;
-            var terminalFillingNeeded = (minerals_available[0].mineralAmount == 0) && (mineralStorage_available[0].store.getUsedCapacity(minerals_available[0].mineralType) > 0);
+            var terminalFillingNeeded = (minerals_available[0].mineralAmount == 0) && (Game.getObjectById(mineralStorage_available[0]).store.getUsedCapacity(minerals_available[0].mineralType) > 0);
             if(harvestingNeeded || terminalFillingNeeded){  //If extractor requires creeps now
                 var creepsOwned  = _.filter(Game.creeps, function(creep) {return (creep.memory.spawnKey.roomID == spawnerRoomID && creep.memory.role == "Extractor")});         //Owned by this spawner, of this type
                 var creepNumberRequired = 2 -creepsOwned.length;    //<-- Specify the number of creeps wanted here
