@@ -53,12 +53,21 @@ var extractor_tasks = {
     generateCreepParts : function(spawnerRoomID){
         /*
         Looks at the state of the spawner and determines what modules to build on this creep
+        
+        Only consider making extractor creeps if;
+        (1) You have any extractor constructs
+        (2) You have a mineral with quantity > 0
+        (3) OR You have BOTH a mineral with 0 quantity & storage with non-zero quantity it is tethered to
         */
         var creepParts  = null;
-        var extractors_available = Game.rooms[spawnerRoomID].find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_EXTRACTOR && structure.progress == null)}});    //If you need to mine minerals
-        if(extractors_available.length  > 0){
-            //Only need to check 0th, as a room can have a max of 1 extractor / mineral patch
-            if(extractors_available[0].mineralAmount > 0){  //If extractor requires creeps now
+        var extractors_available     = Game.rooms[spawnerRoomID].find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_EXTRACTOR && structure.progress == null)}});    //If you need to mine minerals
+        var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].mineralStorage;
+        var ableToExtract = (extractors_available.length > 0) && (mineralStorage_available.length > 0);
+        if(ableToExtract){
+            var minerals_available    = Game.rooms[spawnerRoomID].find(FIND_MINERALS);
+            var harvestingNeeded      = minerals_available[0].mineralAmount > 0;
+            var terminalFillingNeeded = (minerals_available[0].mineralAmount == 0) && (mineralStorage_available[0].store.getUsedCapacity(minerals_available[0].mineralType) > 0);
+            if(harvestingNeeded || terminalFillingNeeded){  //If extractor requires creeps now
                 var creepsOwned  = _.filter(Game.creeps, function(creep) {return (creep.memory.spawnKey.roomID == spawnerRoomID && creep.memory.role == "Extractor")});         //Owned by this spawner, of this type
                 var creepNumberRequired = 2 -creepsOwned.length;    //<-- Specify the number of creeps wanted here
                 if(creepNumberRequired > 0){    //If actually need any more workers
