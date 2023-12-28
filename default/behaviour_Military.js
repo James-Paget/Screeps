@@ -15,18 +15,24 @@ var military_tasks = {
         */
         //1
         for(var prioIndex in creep.memory.jobOrder.priority){
+            //2
             var isPrioSatisfied = checkPrioritySatisfied(creep, creep.memory.jobOrder.priority[prioIndex]);
-            if(!isPrioSatisfied){
+            if(isPrioSatisfied==false){ //null NOT allowed to enter if --> cautious wording
                 //3
                 performPriority(creep, creep.memory.jobOrder.priority[prioIndex]);
             }
         }
     },
-    generateCreepParts : function(){
-        //--> Maybe;
-        //Specify creep level; # of multiples of components
-        //Specify the overal job they are doing --> use preset multiples required / HEALER / ATTACKER
-        return [];
+    generateCreepParts : function(creepBuild, lvl, spawnerRoomID){
+        var parts = null;
+        if      (creepBuild == "meleeStrong"){
+            parts = generateCreepParts_meleeStrong(lvl, spawnerRoomID);}
+        else if (creepBuild == "healer"){
+            parts = generateCreepParts_healer(lvl, spawnerRoomID);}
+        else if (creepBuild == "..."){
+            //pass
+        }
+        return parts;
     },
     queue : function(roomID, sourceID, parts, jobOrder){
         //Note; Have null for houseKey information as this is irrelevent to them
@@ -60,7 +66,7 @@ var military_tasks = {
 - Militia Attack
 --> So different behaviours can be switched between and triggered at an instant
 */
-function generate_militia(lvl, spawnerID, targetRoomID){
+function generate_militia(lvl, spawnerRoomID, targetRoomID){
     /*
     #####################################################################
     ## THEY SHOULD SAY ABOVE THEM PERIODICALLY WHAT TYPE OF UNIT THEY ARE 
@@ -69,28 +75,53 @@ function generate_militia(lvl, spawnerID, targetRoomID){
 
     This can be called at any time to queue up a militia squad;
     -From a given spawner, spawnerID
-    -Attacking a given room, markID
+    -Attacking a given room, targetRoomID
     -Of a given power level, lvl
 
-    Militia work as follows;
+    Militia work as follows (roughly);
     (0) Wait for other 'squad members'
     (1) Move to the target room (soft-like)
     (2) Attempt to kill any hostile creeps in that room
     (3) Attempt to destroy any hostile towers
     (4) Attempt to destroy any "Invader Cores" or similar
+    (5) Try to keep all friendly creeps healed during this
+
+    The creepNumber must match the number of creep builds specified
     */
-    var creepNumber = 1*lvl;
+    var creepNumber  = 5;
+    var creepBuilds = ["meleeStrong", "meleeStrong", "meleeStrong", "meleeStrong", "healer"];
     for(var i=0; i<creepNumber; i++){
-        var jobOrder = null;        //#### FIGURE THIS OUT ####
-        var parts    = null;        //#### FIGURE THIS OUT ####
+        var jobOrder = generateJobOrder("militia", creepBuilds[i], targetRoomID);
+        var parts    = generateCreepParts(creepBuilds[i], spawnerRoomID);
         var squadID  = null;    //Used to group squads
         //###################################
-        //MAKE A PART OF THEIR NAME #########
+        //#### MAKE A PART OF THEIR NAME ####
         //###################################
         military_tasks.queue(spawnerRoomID, null, parts, jobOrder);
     }
 }
 //...
+
+//---------------------
+//Job Order Generation
+//---------------------
+function generateJobOrder(squadType, creepBuild, targetRoomID){
+    var jobOrder = null;
+    if      (squadType == "militia"){
+        jobOrder = generateJobOrder_militia(creepBuild, targetRoomID);}
+    else if (squadType == "..."){
+        //pass
+    }
+    return jobOrder;
+}
+function generateJobOrder_militia(creepBuild, targetRoomID){
+    var jobOrder = {targetRoomID:targetRoomID, priority:[]};
+    if(creepBuild == "meleeStrong"){
+        jobOrder.priority = ["moveToTargetSoft", "killCreepsInRoom", "killTowersInRoom", "killCoresInRoom"];}
+    if(creepBuild == "healer"){
+        jobOrder.priority = ["moveToTargetSoft", "healCreepsInRoom"];}
+    return jobOrder;
+}
 
 //--------------------
 //Priority Management
@@ -103,9 +134,17 @@ function checkPrioritySatisfied(creep, priority){
     */
     var isSatisfied = null;
     if      (priority.name == "moveToTargetSoft"){
-        checkPrioritySatisfied_moveToTargetSoft(creep, priority);}
+        isSatisfied = checkPrioritySatisfied_moveToTargetSoft(creep, priority);}
+    else if (priority.name == "killCreepsInRoom"){
+        isSatisfied = checkPrioritySatisfied_killCreepsInRoom(creep, priority);}
+    else if (priority.name == "killTowersInRoom"){
+        isSatisfied = checkPrioritySatisfied_killTowersInRoom(creep, priority);}
+    else if (priority.name == "killCoresInRoom"){
+        isSatisfied = checkPrioritySatisfied_killCoresInRoom(creep, priority);}
+    else if (priority.name == "healCreepsInRoom"){
+        isSatisfied = checkPrioritySatisfied_healCreepsInRoom(creep, priority);}
     else if (priority.name == "..."){
-        //pass
+        //...
     }
     //...
     return isSatisfied; //null OR true => ignore and move onto next priority
@@ -116,14 +155,20 @@ function performPriority(creep, priority){
 
     As more priority types are added, extend this list
     */
-    var isSatisfied = null;
     if      (priority.name == "moveToTargetSoft"){
         performPriority_moveToTargetSoft(creep, priority);}
+    else if (priority.name == "killCreepsInRoom"){
+        performPriority_killCreepsInRoom(creep, priority);}
+    else if (priority.name == "killTowersInRoom"){
+        performPriority_killTowersInRoom(creep, priority);}
+    else if (priority.name == "killCoresInRoom"){
+        performPriority_killCoresInRoom(creep, priority);}
+    else if (priority.name == "healCreepsInRoom"){
+        performPriority_healCreepsInRoom(creep, priority);}
     else if (priority.name == "..."){
         //...
     }
     //...
-    return isSatisfied; //null OR true => ignore and move onto next priority
 }
 
 //-------------------
@@ -141,6 +186,58 @@ function performPriority_moveToTargetSoft(creep, priority){
     Move to room target WITHOUT attacking on the way
     */
     //pass
+}
+function checkPrioritySatisfied_killCreepsInRoom(creep, priority){
+    //pass
+}
+function performPriority_killCreepsInRoom(creep, priority){
+    //pass
+}
+function checkPrioritySatisfied_killTowersInRoom(creep, priority){
+    //pass
+}
+function performPriority_killTowersInRoom(creep, priority){
+    //pass
+}
+function checkPrioritySatisfied_killCoresInRoom(creep, priority){
+    //pass
+}
+function performPriority_killCoresInRoom(creep, priority){
+    //pass
+}
+function checkPrioritySatisfied_healCreepsInRoom(creep, priority){
+    //pass
+}
+function performPriority_healCreepsInRoom(creep, priority){
+    //pass
+}
+
+//----------------
+//Part Generation
+//----------------
+function generateCreepParts_meleeStrong(lvl, spawnerRoomID){
+    var parts = [ATTACK, MOVE];
+    var energyMax = Game.rooms[spawnerRoomID].energyCapacityAvailable;
+    for(var i=0; i<lvl; i++){
+        parts.unshift(ATTACK);parts.unshift(TOUGH);parts.unshift(MOVE);parts.unshift(MOVE);
+        var energyCost = _.sum(partSet, part => BODYPART_COST[part]);
+        if(energyCost > 0.5*energyMax){
+            parts.shift();parts.shift();parts.shift();parts.shift();
+        }
+    }
+    return parts;
+}
+function generateCreepParts_healer(lvl, spawnerRoomID){
+    var parts = [HEAL, MOVE];
+    var energyMax = Game.rooms[spawnerRoomID].energyCapacityAvailable;
+    for(var i=0; i<lvl; i++){
+        parts.unshift(HEAL);parts.unshift(MOVE);
+        var energyCost = _.sum(partSet, part => BODYPART_COST[part]);
+        if(energyCost > 0.5*energyMax){
+            parts.shift();parts.shift();
+        }
+    }
+    return parts;
 }
 
 module.exports = military_tasks;
