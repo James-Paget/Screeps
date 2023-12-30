@@ -115,11 +115,11 @@ function generateJobOrder(squadType, creepBuild, targetRoomID){
     return jobOrder;
 }
 function generateJobOrder_militia(creepBuild, targetRoomID){
-    var jobOrder = {targetRoomID:targetRoomID, priority:[]};
+    var jobOrder = {priority:[]};
     if(creepBuild == "meleeStrong"){
-        jobOrder.priority = ["moveToTargetSoft", "killCreepsInRoom", "killTowersInRoom", "killCoresInRoom"];}
+        jobOrder.priority = [{name:"moveToTargetSoft", targetRoomID:targetRoomID}, {name:"killCreepsInRoom"}, {name:"killTowersInRoom"}, {name:"killCoresInRoom"}];}
     if(creepBuild == "healer"){
-        jobOrder.priority = ["moveToTargetSoft", "healCreepsInRoom"];}
+        jobOrder.priority = [{name:"moveToTargetSoft"}, {name:"healCreepsInRoom"}];}
     return jobOrder;
 }
 
@@ -179,37 +179,114 @@ function checkPrioritySatisfied_moveToTargetSoft(creep, priority){
     Checks if the creep is currently in the required room / exact location (which 
     can be specified through an optional arguement, by changing from null)
     */
-    //pass
+    var isSatisfied = false;
+    if(creep.room.name == priority.targetRoomID){
+        isSatisfied = true;}
+    return isSatisfied;
 }
 function performPriority_moveToTargetSoft(creep, priority){
     /*
     Move to room target WITHOUT attacking on the way
     */
-    //pass
+    var inRequiredRoom = (creep.room.name == priority.targetRoomID);
+    if(inRequiredRoom){
+        //(1) Reset routing
+        if(creep.memory.travelRoute){           //If you still have a travel route, clear that space
+            delete creep.memory.travelRoute;}
+        //(2) Do task
+        //Nothing required here -> Just moving towards room
+    }
+    else{   //Move to required room
+        if(!creep.memory.travelRoute){                                                          //Create multi-room travel route
+            creep.memory.travelRoute = Game.map.findRoute(creep.room.name, priority.targetRoomID);}  //
+        else{
+            if(creep.memory.travelRoute.length == 0){   //Backup precaution
+                delete creep.memory.travelRoute;}       //
+            else{
+                if(creep.room.name == creep.memory.travelRoute[0].room){                                            //Move along travel route to required room
+                    creep.memory.travelRoute.shift();}                                                              //
+                if(creep.memory.travelRoute.length > 0){                                                            //
+                    creep.moveTo(creep.pos.findClosestByPath(creep.room.find(creep.memory.travelRoute[0].exit)));}  //
+            }
+        }
+    }
 }
 function checkPrioritySatisfied_killCreepsInRoom(creep, priority){
-    //pass
+    var isSatisfied = false;
+    var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS);
+    if(hostileCreeps.length == 0){
+        isSatisfied = true;}
+    return isSatisfied;
 }
 function performPriority_killCreepsInRoom(creep, priority){
-    //pass
+    var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS);
+    var target = creep.pos.findClosestByPath(hostileCreeps); //#### BY RANGE MIGHT BE FAR LESS TAXING ON CPU ####
+    var isCreepRanged = _.filter(creep.body, function(part) {return (part.type==RANGED_ATTACK)});
+    if(isCreepRanged.length > 0){
+        if(creep.ranged_attack(target) == ERR_NOT_IN_RANGE){
+            creep.moveTo(target);}
+    }
+    else{
+        if(creep.attack(target) == ERR_NOT_IN_RANGE){
+            creep.moveTo(target);}
+    }
 }
 function checkPrioritySatisfied_killTowersInRoom(creep, priority){
-    //pass
+    var isSatisfied = false;
+    var hostileTowers = creep.room.find(FIND_STRUCTURES, (structure) => {return (structure.structureType == STRUCTURE_TOWER)});
+    if(hostileTowers.length == 0){
+        isSatisfied = true;}
+    return isSatisfied;
 }
 function performPriority_killTowersInRoom(creep, priority){
-    //pass
+    var hostileTowers = creep.room.find(FIND_STRUCTURES, (structure) => {return (structure.structureType == STRUCTURE_TOWER)});
+    var target = creep.pos.findClosestByPath(hostileTowers); //#### BY RANGE MIGHT BE FAR LESS TAXING ON CPU ####
+    var isCreepRanged = _.filter(creep.body, function(part) {return (part.type==RANGED_ATTACK)});
+    if(isCreepRanged.length > 0){
+        if(creep.ranged_attack(target) == ERR_NOT_IN_RANGE){
+            creep.moveTo(target);}
+    }
+    else{
+        if(creep.attack(target) == ERR_NOT_IN_RANGE){
+            creep.moveTo(target);}
+    }
 }
 function checkPrioritySatisfied_killCoresInRoom(creep, priority){
-    //pass
+    var isSatisfied = false;
+    var invaderCores = creep.room.find(FIND_STRUCTURES, (structure) => {return (structure.structureType == STRUCTURE_INVADER_CORE)});
+    if(invaderCores.length == 0){
+        isSatisfied = true;}
+    return isSatisfied;
 }
 function performPriority_killCoresInRoom(creep, priority){
-    //pass
+    var invaderCores = creep.room.find(FIND_STRUCTURES, (structure) => {return (structure.structureType == STRUCTURE_INVADER_CORE)});
+    var target = creep.pos.findClosestByPath(invaderCores); //#### BY RANGE MIGHT BE FAR LESS TAXING ON CPU ####
+    var isCreepRanged = _.filter(creep.body, function(part) {return (part.type==RANGED_ATTACK)});
+    if(isCreepRanged.length > 0){
+        if(creep.ranged_attack(target) == ERR_NOT_IN_RANGE){
+            creep.moveTo(target);}
+    }
+    else{
+        if(creep.attack(target) == ERR_NOT_IN_RANGE){
+            creep.moveTo(target);}
+    }
 }
 function checkPrioritySatisfied_healCreepsInRoom(creep, priority){
-    //pass
+    var alliedCreeps = creep.room.find(FIND_MY_CREEPS);
+    var woundedCreeps = _.filter(alliedCreeps, function(creep) {return(creep.hits < creep.hitsMax)});
+    var isSatisfied = false;
+    if(woundedCreeps.length == 0){
+        isSatisfied = true;}
+    return isSatisfied;
 }
 function performPriority_healCreepsInRoom(creep, priority){
-    //pass
+    var alliedCreeps  = creep.room.find(FIND_MY_CREEPS);
+    var woundedCreeps = _.filter(alliedCreeps, function(creep) {return(creep.hits < creep.hitsMax)});
+    if(woundedCreeps.length > 0){
+        var target = creep.pos.findClosestByRange(woundedCreeps);
+        if(creep.heal(target) == ERR_NOT_IN_RANGE){
+            creep.moveTo(target);}
+    }
 }
 
 //----------------
