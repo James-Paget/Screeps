@@ -164,7 +164,7 @@ function determineCreepState_extractor(creep){
         if(mineralPatches[0].mineralAmount > 0){
             if(creep.store.getUsedCapacity() > 0){
                 //(1.2)
-                var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.ID)].mineralStorage;
+                var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
                 if(mineralStorage_available.length > 0){
                     stateName = "load_storeToTarget";
                     targetID  = mineralStorage_available[0];}
@@ -185,7 +185,7 @@ function determineCreepState_extractor(creep){
             }
             else{
                 //(2.1)
-                var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.spawnID)].mineralStorage;
+                var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
                 if(mineralStorage_available.length > 0){
                     stateName = "unload_storeFromTarget";
                     targetID  = mineralStorage_available[0];}
