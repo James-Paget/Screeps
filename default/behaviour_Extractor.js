@@ -2,13 +2,42 @@ var {getSpawnerRoomIndex} = require("manager_Memory");
 
 var extractor_tasks = {
     task : function(creep){
+        /*
+        Note; Mention of material here can be minerals or energy
+        */
+        if(Game.time.toString().slice(-1) == 2){        //Periodically, e.g every frame ending in X, re-evaluate the state of the creep
+            creep.memory.creepState = determineCreepState_extractor(creep);}    //Will determine what state the creep should be in for general behaviour
+        targetSpec = getTargetSpec_extractor(creep, creep.memory.creepState);       //Target found based on creepState
+        if(targetSpec){
+            var target       = Game.getObjectById(targetSpec.id);
+            var resourceType = targetSpec.resourceType;
+            if(target && resourceType){
+                if(creepState == "mine_minerals"){
+                    //Mine minerals
+                    if(creep.harvest(target, resourceType) == ERR_NOT_IN_RANGE){
+                        creep.moveTo(target);}
+                }
+                if(creepState == "unload_storeToTarget"){
+                    //Unload inventory into main storage
+                    if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
+                        creep.moveTo(target);}
+                }
+                if(creepState == "load_storeFromTarget"){
+                    //Retrieve [material] from main storage
+                    if(creep.withdraw(target, resourceType) == ERR_NOT_IN_RANGE){
+                        creep.moveTo(target);}
+                }
+                //...
+            }
+        }
+        /*
         if(creep.memory.sourceID != "null"){      //If an extractor exists --> source here referes to mineral instead
             var resourceType = Game.getObjectById(creep.memory.houseKey.sourceID).mineralType;
             var target = Game.getObjectById(creep.memory.houseKey.sourceID);
             if(target.mineralAmount > 0){   //State; Mining Mineral
                 if(creep.memory.isExtracting){
                     //####################################################
-                    //## MAKE IT WIAT FOR THE COOLDOWN BETWEEN HARVESTS ##
+                    //## MAKE IT WAIT FOR THE COOLDOWN BETWEEN HARVESTS ##
                     //####################################################
                     if(creep.harvest(target, resourceType) == ERR_NOT_IN_RANGE){
                         creep.moveTo(target);
@@ -52,6 +81,7 @@ var extractor_tasks = {
                 creep.memory.isExtracting = true;
             }
         }
+        */
     },
     generateCreepParts : function(spawnerRoomID){
         /*
@@ -111,6 +141,86 @@ var extractor_tasks = {
         1. ...
         */
     }
+}
+
+function determineCreepState_extractor(creep){
+    /*
+    . Determines the immediate objective the creep wants to resolve
+    . This follows a standard priority chain
+    . An object is returned that contains a [name, target, resourceType] ????????????
+
+    1.1. If there are minerals to be mined, and you are NOT holding anything, [Go mine these]
+    1.2. If there are minerals to be mined, and you are holding something, [Store this]
+    2.1. If no minerals, and you are NOT holding minerals, [Collect minerals]
+    2.2. If no minerals, and you are holding minerals, [process these in a factory]
+    3.
+    */
+    var stateName = null;
+    var targetID  = null;
+    var mineralPatches = creep.room.find(FIND_MINERALS);
+    if(mineralPatches.length > 0){
+        if(mineralPatches[0].mineralAmount > 0){
+            if(creep.store.getUsedCapacity() > 0){
+                //(1.2)
+                var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.ID)].mineralStorage;
+                if(mineralStorage_available.length > 0){
+                    stateName = "load_storeToTarget";
+                    targetID  = mineralStorage_available[0];}
+            }
+            else{
+                //(1.1)
+                stateName = "mine_minerals";
+                targetID  = mineralPatches[0].id;
+            }
+        }
+        else{
+            if(creep.store.getUsedCapacity() > 0){
+                //(2.2)
+                var factories_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_FACTORY)}});
+                if(factories_available.length > 0){
+                    stateName = "load_storeToTarget";
+                    targetID  = factories_available[0].id;}
+            }
+            else{
+                //(2.1)
+                var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.ID)].mineralStorage;
+                if(mineralStorage_available.length > 0){
+                    stateName = "unload_storeFromTarget";
+                    targetID  = mineralStorage_available[0];}
+            }
+        }
+    }
+    var creepState = {name:stateName, targetID:targetID}
+    return creepState;
+}
+function getTargetSpec_extractor(creep, creepState){
+    /*
+    . Determines the target that is required for the given creepState
+
+    #################################################################################
+    ## MAY NOT EVEN USE IDs HERE, JUST PARSE RESOURCE TYPE + OTHER SPECIFICS MAYBE ##
+    #################################################################################
+    */
+    var targetSpec = null;
+    if(creepState.name == "mine_minerals"){
+        //Mine minerals
+        var mineralPatches = creep.room.find(FIND_MINERALS);    //Mineral Object
+        if(mineralPatches.length > 0){
+            if(mineralPatches[0].mineralAmount > 0){            //If there is anything to be mined, go mine it
+                targetSpec = {ID:mineralPatches[0].id, resourceType:mineralPatches[0].resourceType};
+            }
+        }
+    }
+    else if(creepState.name == "unload_storeToTarget"){
+        //Unload inventory into main storage
+        targetSpec = {id:creepState.targetID, resourceType:null}    //###### NULL maybe cause problems
+    }
+    else if(creepState.name == "load_storeFromTarget"){
+        //Retrieve [material] from main storage
+        targetSpec = {id:creepState.targetID, resourceType:null}    //###### NULL maybe cause problems
+    }
+    //...
+    return targetSpec;
 }
 
 function getExtractionID(roomID){
