@@ -5,9 +5,9 @@ var extractor_tasks = {
         /*
         Note; Mention of material here can be minerals or energy
         */
-        if(Game.time.toString().slice(-1) == 2){        //Periodically, e.g every frame ending in X, re-evaluate the state of the creep
-            creep.memory.creepState = determineCreepState_extractor(creep);}    //Will determine what state the creep should be in for general behaviour
-        if(creep.memory.creepState){
+        if(Game.time.toString().slice(-1) == 2){                                        //Periodically, e.g every frame ending in X, re-evaluate the state of the creep
+            creep.memory.creepState = determineCreepState_extractor(creep);}            //Will determine what state the creep should be in for general behaviour
+        if(creep.memory.creepState){                                                    //When you have decided what you need to do, ... then do stuff
             targetSpec = getTargetSpec_extractor(creep, creep.memory.creepState);       //Target found based on creepState
             if(targetSpec){
                 var target       = Game.getObjectById(targetSpec.id);
@@ -185,7 +185,7 @@ function determineCreepState_extractor(creep){
             }
             else{
                 //(2.1)
-                var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.ID)].mineralStorage;
+                var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.spawnID)].mineralStorage;
                 if(mineralStorage_available.length > 0){
                     stateName = "unload_storeFromTarget";
                     targetID  = mineralStorage_available[0];}
