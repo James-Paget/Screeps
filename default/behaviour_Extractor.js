@@ -7,7 +7,7 @@ var extractor_tasks = {
         */
         if(Game.time.toString().slice(-1) == 2){        //Periodically, e.g every frame ending in X, re-evaluate the state of the creep
             creep.memory.creepState = determineCreepState_extractor(creep);}    //Will determine what state the creep should be in for general behaviour
-        if(creepState){
+        if(creep.memory.creepState){
             targetSpec = getTargetSpec_extractor(creep, creep.memory.creepState);       //Target found based on creepState
             if(targetSpec){
                 var target       = Game.getObjectById(targetSpec.id);
