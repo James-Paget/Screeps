@@ -7,27 +7,29 @@ var extractor_tasks = {
         */
         if(Game.time.toString().slice(-1) == 2){        //Periodically, e.g every frame ending in X, re-evaluate the state of the creep
             creep.memory.creepState = determineCreepState_extractor(creep);}    //Will determine what state the creep should be in for general behaviour
-        targetSpec = getTargetSpec_extractor(creep, creep.memory.creepState);       //Target found based on creepState
-        if(targetSpec){
-            var target       = Game.getObjectById(targetSpec.id);
-            var resourceType = targetSpec.resourceType;
-            if(target && resourceType){
-                if(creepState == "mine_minerals"){
-                    //Mine minerals
-                    if(creep.harvest(target, resourceType) == ERR_NOT_IN_RANGE){
-                        creep.moveTo(target);}
+        if(creepState){
+            targetSpec = getTargetSpec_extractor(creep, creep.memory.creepState);       //Target found based on creepState
+            if(targetSpec){
+                var target       = Game.getObjectById(targetSpec.id);
+                var resourceType = targetSpec.resourceType;
+                if(target && resourceType){
+                    if(creepState == "mine_minerals"){
+                        //Mine minerals
+                        if(creep.harvest(target, resourceType) == ERR_NOT_IN_RANGE){
+                            creep.moveTo(target);}
+                    }
+                    if(creepState == "unload_storeToTarget"){
+                        //Unload inventory into main storage
+                        if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
+                            creep.moveTo(target);}
+                    }
+                    if(creepState == "load_storeFromTarget"){
+                        //Retrieve [material] from main storage
+                        if(creep.withdraw(target, resourceType) == ERR_NOT_IN_RANGE){
+                            creep.moveTo(target);}
+                    }
+                    //...
                 }
-                if(creepState == "unload_storeToTarget"){
-                    //Unload inventory into main storage
-                    if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
-                        creep.moveTo(target);}
-                }
-                if(creepState == "load_storeFromTarget"){
-                    //Retrieve [material] from main storage
-                    if(creep.withdraw(target, resourceType) == ERR_NOT_IN_RANGE){
-                        creep.moveTo(target);}
-                }
-                //...
             }
         }
         /*
