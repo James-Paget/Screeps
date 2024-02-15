@@ -156,9 +156,18 @@ function determineCreepState_extractor(creep){
     2.1. If no minerals, and you are NOT holding minerals, [Collect minerals]
     2.2. If no minerals, and you are holding minerals, [process these in a factory]
     3.
+
+    ################################################################################################################################
+    ## NOTE HERE; ALWAYS ARE USING THE MINERAL IN THEIR ROOM --> THIS ASSUMES NOTHING IS TRADED OR BROUGHT INTO THE SYSTEM OTHER  ##
+    ## THAN THE MINERAL YOU HAVE ---> HAVE SOME CHAIN OF COMMAND PASS DOWN THE MINERAL YOU WISH TO WORK WITH RATHER THAN DO THIS  ##
+    ################################################################################################################################
+    ##
+    ## --> ESPECIALLY TRUE FOR WHEN YOU START MOVING ENERGY AROUND TOO
+    ##
     */
     var stateName = null;
     var targetID  = null;
+    var resourceType = null;
     var mineralPatches = creep.room.find(FIND_MINERALS);
     if(mineralPatches.length > 0){
         if(mineralPatches[0].mineralAmount > 0){
@@ -167,12 +176,14 @@ function determineCreepState_extractor(creep){
                 var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
                 if(mineralStorage_available.length > 0){
                     stateName = "unload_storeToTarget";
-                    targetID  = mineralStorage_available[0];}
+                    targetID  = mineralStorage_available[0];
+                    resourceType = mineralPatches[0].mineralType;}      //################
             }
             else{
                 //(1.1)
                 stateName = "mine_minerals";
                 targetID  = mineralPatches[0].id;
+                resourceType = mineralPatches[0].mineralType;           //################
             }
         }
         else{
@@ -181,18 +192,20 @@ function determineCreepState_extractor(creep){
                 var factories_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_FACTORY)}});
                 if(factories_available.length > 0){
                     stateName = "unload_storeToTarget";
-                    targetID  = factories_available[0].id;}
+                    targetID  = factories_available[0].id;
+                    resourceType = mineralPatches[0].mineralType;}      //################
             }
             else{
                 //(2.1)
                 var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
                 if(mineralStorage_available.length > 0){
                     stateName = "load_storeFromTarget";
-                    targetID  = mineralStorage_available[0];}
+                    targetID  = mineralStorage_available[0];
+                    resourceType = mineralPatches[0].mineralType;}      //################
             }
         }
     }
-    var creepState = {name:stateName, targetID:targetID}
+    var creepState = {name:stateName, targetID:targetID, resourceType:resourceType}
     return creepState;
 }
 function getTargetSpec_extractor(creep, creepState){
@@ -200,7 +213,7 @@ function getTargetSpec_extractor(creep, creepState){
     . Determines the target that is required for the given creepState
 
     #################################################################################
-    ## MAY NOT EVEN USE IDs HERE, JUST PARSE RESOURCE TYPE + OTHER SPECIFICS MAYBE ##
+    ## MAY NOT EVEN USE IDs HERE, JUST PARSE RESOURCE TYPE + OTHER SPECIFICS MAYBE ## ----> both not used currently ---> maybe reconsider a bunch
     #################################################################################
     */
     var targetSpec = null;
@@ -215,11 +228,11 @@ function getTargetSpec_extractor(creep, creepState){
     }
     else if(creepState.name == "unload_storeToTarget"){
         //Unload inventory into main storage
-        targetSpec = {ID:creepState.targetID, resourceType:null}    //###### NULL maybe cause problems
+        targetSpec = {ID:creepState.targetID, resourceType:creepState.resourceType}    //###### NULL maybe cause problems
     }
     else if(creepState.name == "load_storeFromTarget"){
         //Retrieve [material] from main storage
-        targetSpec = {ID:creepState.targetID, resourceType:null}    //###### NULL maybe cause problems
+        targetSpec = {ID:creepState.targetID, resourceType:creepState.resourceType}    //###### NULL maybe cause problems
     }
     //...
     return targetSpec;
