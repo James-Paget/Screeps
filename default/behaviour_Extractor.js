@@ -164,6 +164,10 @@ function determineCreepState_extractor(creep){
     ##
     ## --> ESPECIALLY TRUE FOR WHEN YOU START MOVING ENERGY AROUND TOO
     ##
+
+    #####
+    ## HAVE A BETTER PRIO SYSTEM THAN THIS; USE TURRET STYLE PRIO, FUNCTION LIST, CHECKS EACH FUNCTION, IF SATISFIED, GIVE VALUES ---> MAYBE STORE AS DICT FOR RESULTS->VALUES
+    #####
     */
     var stateName = null;
     var targetID  = null;
@@ -188,12 +192,25 @@ function determineCreepState_extractor(creep){
         }
         else{
             if(creep.store.getUsedCapacity() > 0){
-                //(2.2)
                 var factories_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_FACTORY)}});
+                //(2.2)
                 if(factories_available.length > 0){
-                    stateName = "unload_storeToTarget";
-                    targetID  = factories_available[0].id;
-                    resourceType = mineralPatches[0].mineralType;}      //################
+                    if(factories_available[0].store.getFreeCapacity() > 0){
+                        //In no minerals, and you inventory is full, and a factory is NOT full
+                        stateName = "unload_storeToTarget";
+                        targetID  = factories_available[0].id;
+                        resourceType = mineralPatches[0].mineralType;}      //################
+                    }
+                    else{
+                        var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
+                        if(mineralStorage_available.length > 0){
+                            //In no minerals, and you inventory is full, and a factory IS full
+                            //Just store everything
+                            stateName = "unload_storeToTarget";
+                            targetID  = mineralStorage_available[0];
+                            resourceType = mineralPatches[0].mineralType;}      //################
+                        }
+                    }
             }
             else{
                 //(2.1)
