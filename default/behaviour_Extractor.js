@@ -199,7 +199,7 @@ function determineCreepState_extractor(creep){
                         //In no minerals, and you inventory is full, and a factory is NOT full
                         stateName = "unload_storeToTarget";
                         targetID  = factories_available[0].id;
-                        resourceType = mineralPatches[0].mineralType;}      //################
+                        resourceType = mineralPatches[0].mineralType;      //################
                     }
                     else{
                         var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
