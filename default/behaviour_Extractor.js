@@ -13,17 +13,17 @@ var extractor_tasks = {
                 var target       = Game.getObjectById(targetSpec.ID);
                 var resourceType = targetSpec.resourceType;
                 if(target){
-                    if(creep.memory.creepState == "mine_minerals"){
+                    if(creep.memory.creepState.name == "mine_minerals"){
                         //Mine minerals
                         if(creep.harvest(target, resourceType) == ERR_NOT_IN_RANGE){
                             creep.moveTo(target);}
                     }
-                    if(creep.memory.creepState == "unload_storeToTarget"){
+                    if(creep.memory.creepState.name == "unload_storeToTarget"){
                         //Unload inventory into main storage
                         if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
                             creep.moveTo(target);}
                     }
-                    if(creep.memory.creepState == "load_storeFromTarget"){
+                    if(creep.memory.creepState.name == "load_storeFromTarget"){
                         //Retrieve [material] from main storage
                         if(creep.withdraw(target, resourceType) == ERR_NOT_IN_RANGE){
                             creep.moveTo(target);}
