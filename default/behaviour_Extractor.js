@@ -228,11 +228,11 @@ function getTargetSpec_extractor(creep, creepState){
     }
     else if(creepState.name == "unload_storeToTarget"){
         //Unload inventory into main storage
-        targetSpec = {ID:creepState.targetID, resourceType:creepState.resourceType}    //###### NULL maybe cause problems
+        targetSpec = {ID:creepState.targetID, resourceType:creepState.resourceType}
     }
     else if(creepState.name == "load_storeFromTarget"){
         //Retrieve [material] from main storage
-        targetSpec = {ID:creepState.targetID, resourceType:creepState.resourceType}    //###### NULL maybe cause problems
+        targetSpec = {ID:creepState.targetID, resourceType:creepState.resourceType}
     }
     //...
     return targetSpec;
