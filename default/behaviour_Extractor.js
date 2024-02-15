@@ -208,7 +208,7 @@ function determineCreepState_extractor(creep){
                             //Just store everything
                             stateName = "unload_storeToTarget";
                             targetID  = mineralStorage_available[0];
-                            resourceType = mineralPatches[0].mineralType;}      //################
+                            resourceType = mineralPatches[0].mineralType;      //################
                         }
                     }
             }
