@@ -211,14 +211,15 @@ function determineCreepState_extractor(creep){
                             resourceType = mineralPatches[0].mineralType;      //################
                         }
                     }
-            }
-            else{
-                //(2.1)
-                var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
-                if(mineralStorage_available.length > 0){
-                    stateName = "load_storeFromTarget";
-                    targetID  = mineralStorage_available[0];
-                    resourceType = mineralPatches[0].mineralType;}      //################
+                }
+                else{
+                    //(2.1)
+                    var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
+                    if(mineralStorage_available.length > 0){
+                        stateName = "load_storeFromTarget";
+                        targetID  = mineralStorage_available[0];
+                        resourceType = mineralPatches[0].mineralType;}      //################
+                }
             }
         }
     }
