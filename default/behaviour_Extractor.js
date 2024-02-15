@@ -10,9 +10,9 @@ var extractor_tasks = {
         if(creep.memory.creepState){                                                    //When you have decided what you need to do, ... then do stuff
             targetSpec = getTargetSpec_extractor(creep, creep.memory.creepState);       //Target found based on creepState
             if(targetSpec){
-                var target       = Game.getObjectById(targetSpec.id);
+                var target       = Game.getObjectById(targetSpec.ID);
                 var resourceType = targetSpec.resourceType;
-                if(target && resourceType){
+                if(target){
                     if(creepState == "mine_minerals"){
                         //Mine minerals
                         if(creep.harvest(target, resourceType) == ERR_NOT_IN_RANGE){
@@ -166,7 +166,7 @@ function determineCreepState_extractor(creep){
                 //(1.2)
                 var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
                 if(mineralStorage_available.length > 0){
-                    stateName = "load_storeToTarget";
+                    stateName = "unload_storeToTarget";
                     targetID  = mineralStorage_available[0];}
             }
             else{
@@ -180,14 +180,14 @@ function determineCreepState_extractor(creep){
                 //(2.2)
                 var factories_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_FACTORY)}});
                 if(factories_available.length > 0){
-                    stateName = "load_storeToTarget";
+                    stateName = "unload_storeToTarget";
                     targetID  = factories_available[0].id;}
             }
             else{
                 //(2.1)
                 var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
                 if(mineralStorage_available.length > 0){
-                    stateName = "unload_storeFromTarget";
+                    stateName = "load_storeFromTarget";
                     targetID  = mineralStorage_available[0];}
             }
         }
