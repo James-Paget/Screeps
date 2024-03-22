@@ -169,13 +169,14 @@ function determineCreepState_extractor(creep){
     ## HAVE A BETTER PRIO SYSTEM THAN THIS; USE TURRET STYLE PRIO, FUNCTION LIST, CHECKS EACH FUNCTION, IF SATISFIED, GIVE VALUES ---> MAYBE STORE AS DICT FOR RESULTS->VALUES
     #####
     */
+    /*
     var stateName = null;
     var targetID  = null;
     var resourceType = null;
     var mineralPatches = creep.room.find(FIND_MINERALS);
     if(mineralPatches.length > 0){
         if(mineralPatches[0].mineralAmount > 0){
-            if(creep.store.getUsedCapacity() > 0){
+            if(creep.store.getFreeCapacity() == 0){
                 //(1.2)
                 var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
                 if(mineralStorage_available.length > 0){
@@ -224,6 +225,171 @@ function determineCreepState_extractor(creep){
         }
     }
     var creepState = {name:stateName, targetID:targetID, resourceType:resourceType}
+    return creepState;
+    */
+
+    //Params of the format ---> [HeldObj StoredInMainObj, StoredInFactoryObj, MineralsLeft#]
+    //ParamDesc of format  ---> [isMineralsLeft, isFreeHeldSpace, isFreeStorageSpace, isFreeFactorySpace]
+    //  HeldObj = {max:, current:}, StoredInMainObj = {max:, current:}, StoredInFactoryObj = {max:, current:}
+    //creepStateDict is a 'dictionary' that ties the paramters to required jobs. If no matching job is found for your paramters, null is returned, which implies nothing should be done
+    //Work around wildcards with direct reference to input, so always matches
+    
+    /*
+    var storage_available   = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;                                //#########################################
+    var minerals_available  = creep.room.find(FIND_MINERALS);                                                                                       //#### HOW TO DEAL WITH THESE EXISTING --> JUST SAY NO STORAGE ????
+    var factories_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_FACTORY)}});    //#########################################
+    
+    var StoredInMainObj = {max:-1, current:-1};
+    if(storage_available.length > 0){
+        StoredInMainObj = {max:storage_available[0].store.getCapacity(), current:storage_available[0].store.getUsedCapacity()};}
+    var StoredInFactoryObj = {max   :-1, current:-1};
+    if(factories_available.length > 0){
+        StoredInFactoryObj = {max:factories_available[0].store.getCapacity(), current:factories_available[0].store.getUsedCapacity()};}
+    var MineralsLeft = -1;
+    if(minerals_available.length > 0){
+        MineralsLeft = minerals_available[0].mineralAmount;
+
+    var params    = {HeldObj:{max:creep.store.getCapacity(), current:creep.store.getUsedCapacity()}, StoredInMainObj:StoredInMainObj, StoredInFactoryObj:StoredInFactoryObj, MineralsLeft:MineralsLeft};    //Raw parameters
+    var paramDesc = [params.MineralsLeft > 0, params.HeldObj.current < params.HeldObj.max, params.StoredInMainObj.current < params.StoredInMainObj.max, params.StoredInFactoryObj.current < params.StoredInFactoryObj.max];    //Parameters used to evaluate required metrics
+    //NOTE; Will only be satisfied if the id of the thing it wants is not empty => can assume list is non-empty too
+    var creepStateDict = {
+        [true , true , true , paramDec[3]]:{name:"mine_minerals", targetID:minerals_available[0].id, resourceType:minerals_available[0].resourceType},
+        [true , false, true , paramDec[3]]:{name:"unload_storeToTarget", targetID:storage_available[0], resourceType:minerals_available[0].resourceType},   //### WILL NEED TO GENERALISE TO ALLOW ENERGY TO BE MOVED MAYBE ?? OR MAYBE HAVE THAT AS ITS OWN CUSTOM ORDER ONLY
+        [false, true , isFreeStorageSpace, paramDec[3]]:..., //### -> Load up on storage
+        [false, false, isFreeStorageSpace, paramDec[3]]:..., //### ->
+        []:... 
+    };
+    */
+    //############
+    //## REDO TRUE FALSE THING, QUITE RESTRICTIVE --> NEED MORE FLEXIBILITY IN CONDITIONS MAYBE ???? BUT THEN MAYBE YOU GET OVERLAPS WHICH IS BAD
+    //############
+
+
+
+
+
+
+
+    /*
+    -If minerals left
+        -If there is storage space
+            -
+        -If there is NO storage space
+            -
+    -If NO minerals left
+
+    ##################################################################
+    THIS WOULD BE FAR MORE MANAGABLE AS A PRIO LIST ##################
+    ##################################################################
+
+    */
+    var storage_available   = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
+    var minerals_available  = creep.room.find(FIND_MINERALS);
+    var factories_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_FACTORY)}});
+    var terminals_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_TERMINAL)}});
+
+    var stateName = null;
+    var targetID  = null;
+    var resourceType = null;
+    
+    //If are patches, work as usual (should be only 1 patch max)
+    if(minerals_available.length > 0){
+        //If patch has minerals
+        if(minerals_available[0].mineralAmount > 0){
+            //If any storage units
+            if(storage_available.length > 0){
+                //If you have holding space
+                if(creep.store.getFreeCapacity() > 0){
+                    //(SET STATE):Then you should go mine from mineral patch
+                    //...
+                    //...
+                    //...
+                }
+                //If you have NO holding space
+                else{
+                    //(SET STATE):Then you should go store your minerals in main storage
+                    //...
+                    //...
+                    //...
+                }
+            }
+            //If NO storage units
+            else{
+                //Dont do anything, nowhere to store material
+                //pass
+            }
+        }
+        //If no minerals in patch left
+        else{
+            //If any storage units
+            if(storage_available.length > 0){
+                //If have factories OR terminals to work at
+                if( (factories_available.length > 0) || (terminals_available.length > 0) ){
+                    //If you have holding space
+                    if(creep.store.getFreeCapacity() > 0){
+                        //If there is a factory
+                        if(factories_available.length > 0){
+                            //If factory has processed material, collect it
+                            if(){
+                                //(SET STATE):Then you should collect this material
+                                //...
+                                //...
+                                //...
+                            }
+                            //If factory has NO processed material, ignore it, collect from storage
+                            else{
+                                //pass
+                            }
+                        }
+                        //If NO factory, just get minerals from storage
+                        else{
+                            //(SET STATE):Then you should collect minerals OR energy from storage
+                            //...
+                            //...
+                            //...
+                        }
+                    }
+                    //If you have NO holding space
+                    else{
+                        //If there is a factory to work at, prioritise this
+                        if(factories_available.length > 0){
+                            //(SET STATE):Then you should deliver minerals to this factory (should only be 1 max)
+                            //...
+                            //...
+                            //...
+                        }
+                        //If there is a terminal (should be, given above condition)
+                        else if(terminals_available.length > 0){
+                            //(SET STATE):Then you should deliver minerals OR energy to this terminal (should only be 1 max)
+                            //...
+                            //...
+                            //...
+                        }
+                        else{
+                            //If none available, do nothing --> cant work anywhere
+                            //pass
+                        }
+                    }
+                }
+                //If NO factories OR terminals to work at
+                else{
+                    //Dont do anything --> No useful place left to do work at
+                    //pass
+                }
+            }
+            //If NO storage units available
+            else{
+                //Dont do anything --> Nowhere to pull minerals from
+                //pass
+            }
+        }
+    }
+    //If no patches, maybe move back to spawn to find minerals again
+    else{
+        //pass
+    }
+
+    var creepState = creepStateDict.paramDesc;
     return creepState;
 }
 function getTargetSpec_extractor(creep, creepState){
