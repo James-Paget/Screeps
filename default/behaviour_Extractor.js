@@ -5,25 +5,27 @@ var extractor_tasks = {
         /*
         Note; Mention of material here can be minerals or energy
         */
-        if(Game.time.toString().slice(-1) == 2){                                        //Periodically, e.g every frame ending in X, re-evaluate the state of the creep
-            creep.memory.creepState = determineCreepState_extractor(creep);}            //Will determine what state the creep should be in for general behaviour
-        if(creep.memory.creepState){                                                    //When you have decided what you need to do, ... then do stuff
-            targetSpec = getTargetSpec_extractor(creep, creep.memory.creepState);       //Target found based on creepState
+        if(creep.memory.jobOrders.length){                                                  //If you have any jobs to do
+            creepState = creep.memory.jobOrders[0];                                         //Do the first job in the queue
+            targetSpec = getTargetSpec_extractor(creep, creepState);       //Target found based on creepState
             if(targetSpec){
                 var target       = Game.getObjectById(targetSpec.ID);
                 var resourceType = targetSpec.resourceType;
                 if(target){
-                    if(creep.memory.creepState.name == "mine_minerals"){
+                    //#############
+                    //## GIVE SPECIFICS IN THE JOB ORDER
+                    //#############
+                    if(creepState.name == "mine_minerals"){
                         //Mine minerals
                         if(creep.harvest(target, resourceType) == ERR_NOT_IN_RANGE){
                             creep.moveTo(target);}
                     }
-                    if(creep.memory.creepState.name == "unload_storeToTarget"){
+                    if(creepState.name == "unload_storeToTarget"){
                         //Unload inventory into main storage
                         if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
                             creep.moveTo(target);}
                     }
-                    if(creep.memory.creepState.name == "load_storeFromTarget"){
+                    if(creepState.name == "load_storeFromTarget"){
                         //Retrieve [material] from main storage
                         if(creep.withdraw(target, resourceType) == ERR_NOT_IN_RANGE){
                             creep.moveTo(target);}
@@ -145,252 +147,97 @@ var extractor_tasks = {
     }
 }
 
-function determineCreepState_extractor(creep){
+function determine_automaticJobOrder_extractor(creep){
     /*
-    . Determines the immediate objective the creep wants to resolve
-    . This follows a standard priority chain
-    . An object is returned that contains a [name, target, resourceType] ????????????
+    This is called whenever the excavator runs out of jobs and automatically determines what to do next.
 
-    1.1. If there are minerals to be mined, and you are NOT holding anything, [Go mine these]
-    1.2. If there are minerals to be mined, and you are holding something, [Store this]
-    2.1. If no minerals, and you are NOT holding minerals, [Collect minerals]
-    2.2. If no minerals, and you are holding minerals, [process these in a factory]
-    3.
+    The job chosen is based on a job priority, where the 1st unsatisified found is assigned.
 
-    ################################################################################################################################
-    ## NOTE HERE; ALWAYS ARE USING THE MINERAL IN THEIR ROOM --> THIS ASSUMES NOTHING IS TRADED OR BROUGHT INTO THE SYSTEM OTHER  ##
-    ## THAN THE MINERAL YOU HAVE ---> HAVE SOME CHAIN OF COMMAND PASS DOWN THE MINERAL YOU WISH TO WORK WITH RATHER THAN DO THIS  ##
-    ################################################################################################################################
-    ##
-    ## --> ESPECIALLY TRUE FOR WHEN YOU START MOVING ENERGY AROUND TOO
-    ##
-
-    #####
-    ## HAVE A BETTER PRIO SYSTEM THAN THIS; USE TURRET STYLE PRIO, FUNCTION LIST, CHECKS EACH FUNCTION, IF SATISFIED, GIVE VALUES ---> MAYBE STORE AS DICT FOR RESULTS->VALUES
-    #####
-    */
-    /*
-    var stateName = null;
-    var targetID  = null;
-    var resourceType = null;
-    var mineralPatches = creep.room.find(FIND_MINERALS);
-    if(mineralPatches.length > 0){
-        if(mineralPatches[0].mineralAmount > 0){
-            if(creep.store.getFreeCapacity() == 0){
-                //(1.2)
-                var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
-                if(mineralStorage_available.length > 0){
-                    stateName = "unload_storeToTarget";
-                    targetID  = mineralStorage_available[0];
-                    resourceType = mineralPatches[0].mineralType;}      //################
-            }
-            else{
-                //(1.1)
-                stateName = "mine_minerals";
-                targetID  = mineralPatches[0].id;
-                resourceType = mineralPatches[0].mineralType;           //################
-            }
-        }
-        else{
-            if(creep.store.getUsedCapacity() > 0){
-                var factories_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_FACTORY)}});
-                //(2.2)
-                if(factories_available.length > 0){
-                    if(factories_available[0].store.getFreeCapacity() > 0){
-                        //In no minerals, and you inventory is full, and a factory is NOT full
-                        stateName = "unload_storeToTarget";
-                        targetID  = factories_available[0].id;
-                        resourceType = mineralPatches[0].mineralType;      //################
-                    }
-                    else{
-                        var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
-                        if(mineralStorage_available.length > 0){
-                            //In no minerals, and you inventory is full, and a factory IS full
-                            //Just store everything
-                            stateName = "unload_storeToTarget";
-                            targetID  = mineralStorage_available[0];
-                            resourceType = mineralPatches[0].mineralType;      //################
-                        }
-                    }
-                }
-                else{
-                    //(2.1)
-                    var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
-                    if(mineralStorage_available.length > 0){
-                        stateName = "load_storeFromTarget";
-                        targetID  = mineralStorage_available[0];
-                        resourceType = mineralPatches[0].mineralType;}      //################
-                }
-            }
-        }
-    }
-    var creepState = {name:stateName, targetID:targetID, resourceType:resourceType}
-    return creepState;
-    */
-
-    //Params of the format ---> [HeldObj StoredInMainObj, StoredInFactoryObj, MineralsLeft#]
-    //ParamDesc of format  ---> [isMineralsLeft, isFreeHeldSpace, isFreeStorageSpace, isFreeFactorySpace]
-    //  HeldObj = {max:, current:}, StoredInMainObj = {max:, current:}, StoredInFactoryObj = {max:, current:}
-    //creepStateDict is a 'dictionary' that ties the paramters to required jobs. If no matching job is found for your paramters, null is returned, which implies nothing should be done
-    //Work around wildcards with direct reference to input, so always matches
-    
-    /*
-    var storage_available   = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;                                //#########################################
-    var minerals_available  = creep.room.find(FIND_MINERALS);                                                                                       //#### HOW TO DEAL WITH THESE EXISTING --> JUST SAY NO STORAGE ????
-    var factories_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_FACTORY)}});    //#########################################
-    
-    var StoredInMainObj = {max:-1, current:-1};
-    if(storage_available.length > 0){
-        StoredInMainObj = {max:storage_available[0].store.getCapacity(), current:storage_available[0].store.getUsedCapacity()};}
-    var StoredInFactoryObj = {max   :-1, current:-1};
-    if(factories_available.length > 0){
-        StoredInFactoryObj = {max:factories_available[0].store.getCapacity(), current:factories_available[0].store.getUsedCapacity()};}
-    var MineralsLeft = -1;
-    if(minerals_available.length > 0){
-        MineralsLeft = minerals_available[0].mineralAmount;
-
-    var params    = {HeldObj:{max:creep.store.getCapacity(), current:creep.store.getUsedCapacity()}, StoredInMainObj:StoredInMainObj, StoredInFactoryObj:StoredInFactoryObj, MineralsLeft:MineralsLeft};    //Raw parameters
-    var paramDesc = [params.MineralsLeft > 0, params.HeldObj.current < params.HeldObj.max, params.StoredInMainObj.current < params.StoredInMainObj.max, params.StoredInFactoryObj.current < params.StoredInFactoryObj.max];    //Parameters used to evaluate required metrics
-    //NOTE; Will only be satisfied if the id of the thing it wants is not empty => can assume list is non-empty too
-    var creepStateDict = {
-        [true , true , true , paramDec[3]]:{name:"mine_minerals", targetID:minerals_available[0].id, resourceType:minerals_available[0].resourceType},
-        [true , false, true , paramDec[3]]:{name:"unload_storeToTarget", targetID:storage_available[0], resourceType:minerals_available[0].resourceType},   //### WILL NEED TO GENERALISE TO ALLOW ENERGY TO BE MOVED MAYBE ?? OR MAYBE HAVE THAT AS ITS OWN CUSTOM ORDER ONLY
-        [false, true , isFreeStorageSpace, paramDec[3]]:..., //### -> Load up on storage
-        [false, false, isFreeStorageSpace, paramDec[3]]:..., //### ->
-        []:... 
-    };
-    */
-    //############
-    //## REDO TRUE FALSE THING, QUITE RESTRICTIVE --> NEED MORE FLEXIBILITY IN CONDITIONS MAYBE ???? BUT THEN MAYBE YOU GET OVERLAPS WHICH IS BAD
-    //############
-
-
-
-
-
-
-
-    /*
-    -If minerals left
-        -If there is storage space
-            -
-        -If there is NO storage space
-            -
-    -If NO minerals left
-
-    ##################################################################
-    THIS WOULD BE FAR MORE MANAGABLE AS A PRIO LIST ##################
-    ##################################################################
-
+    Jobs are defined as follows;
+    {name, ...} <-- All jobs have a 'name', the rest is specific to the name given and the job itself
     */
     var storage_available   = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
     var minerals_available  = creep.room.find(FIND_MINERALS);
     var factories_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_FACTORY)}});
     var terminals_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_TERMINAL)}});
-
-    var stateName = null;
-    var targetID  = null;
-    var resourceType = null;
     
-    //If are patches, work as usual (should be only 1 patch max)
-    if(minerals_available.length > 0){
-        //If patch has minerals
-        if(minerals_available[0].mineralAmount > 0){
-            //If any storage units
-            if(storage_available.length > 0){
-                //If you have holding space
-                if(creep.store.getFreeCapacity() > 0){
-                    //(SET STATE):Then you should go mine from mineral patch
-                    //...
-                    //...
-                    //...
-                }
-                //If you have NO holding space
-                else{
-                    //(SET STATE):Then you should go store your minerals in main storage
-                    //...
-                    //...
-                    //...
-                }
-            }
-            //If NO storage units
-            else{
-                //Dont do anything, nowhere to store material
-                //pass
-            }
+    //####
+    //## REMEMBER TO SUBTRACT FROM ORDER
+    //##
+    //## MAYBE MERGE SOME OF THESE --> HAVE A JOB FOR MINE & DELIVER ]]]] MAKES PROCESS A BIT SMOOTHER
+    //####
+    jobOrder_mineAndDeposit_minerals = {name:"mineAndDeposit_minerals", deliverTo_id:"CONTAINER_ID", patch_id:"MINERAL_PATCH_ID", patch_type:"MATERIAL_TYPE", patch_amount:"MATERIAL_AMOUNT"};
+    jobOrder_process_minerals        = {name:"processed_minerals", deliverFrom_id:"CONTAINER_ID", deliverTo_id:"CONTAINER_ID", factory_id:"FACTORY_ID", mineral_type:"MINERAL_TYPE", mineral_amount:"MINERAL_AMOUNT"};
+    jobOrder_sellProcessed_minerals  = {name:"sellProcessed_minerals", deliverFrom_id:"CONTAINER_ID", terminal_id:"TERMINAL_ID", mineral_type:"MINERAL_TYPE", mineral_amount:"MINERAL_AMOUNT"};
+    jobOrder_sell_minerals           = {name:"sell_minerals", deliverFrom_id:"CONTAINER_ID", terminal_id:"TERMINAL_ID", mineral_type:"MINERAL_TYPE", mineral_amount:"MINERAL_AMOUNT"};
+    
+    priority_order = [jobOrder_mineAndDeposit_minerals, jobOrder_process_minerals, jobOrder_sellProcessed_minerals, jobOrder_sell_minerals];
+
+    for(var i=0; i<priority_order.length; i++){
+        priority_satisfied = checkJobOrder_automatic_satisfied(creep, priority_order[i]);
+        if(!priority_satisfied){    //if not satisfied, add to the list of jobs to be done and leave
+            //## ADD TO CREEPS JOBORDER ---> NOT SETUP YET
+            creep.memory.jobOrder.push(priority_order[i]);  //<--- MAKE SURE NOT BY REFERENCE, SO THE AMOUNT OF MATERIAL TO MOVE IS A COPY EACH TIME, SO IT CAN BE SUBTRACTED FROM
+            //## ADD TO CREEPS JOBORDER ---> NOT SETUP YET
+            break;
         }
-        //If no minerals in patch left
-        else{
-            //If any storage units
-            if(storage_available.length > 0){
-                //If have factories OR terminals to work at
-                if( (factories_available.length > 0) || (terminals_available.length > 0) ){
-                    //If you have holding space
-                    if(creep.store.getFreeCapacity() > 0){
-                        //If there is a factory
-                        if(factories_available.length > 0){
-                            //If factory has processed material, collect it
-                            if(){
-                                //(SET STATE):Then you should collect this material
-                                //...
-                                //...
-                                //...
-                            }
-                            //If factory has NO processed material, ignore it, collect from storage
-                            else{
-                                //pass
-                            }
-                        }
-                        //If NO factory, just get minerals from storage
-                        else{
-                            //(SET STATE):Then you should collect minerals OR energy from storage
-                            //...
-                            //...
-                            //...
-                        }
-                    }
-                    //If you have NO holding space
-                    else{
-                        //If there is a factory to work at, prioritise this
-                        if(factories_available.length > 0){
-                            //(SET STATE):Then you should deliver minerals to this factory (should only be 1 max)
-                            //...
-                            //...
-                            //...
-                        }
-                        //If there is a terminal (should be, given above condition)
-                        else if(terminals_available.length > 0){
-                            //(SET STATE):Then you should deliver minerals OR energy to this terminal (should only be 1 max)
-                            //...
-                            //...
-                            //...
-                        }
-                        else{
-                            //If none available, do nothing --> cant work anywhere
-                            //pass
-                        }
-                    }
-                }
-                //If NO factories OR terminals to work at
-                else{
-                    //Dont do anything --> No useful place left to do work at
-                    //pass
-                }
-            }
-            //If NO storage units available
-            else{
-                //Dont do anything --> Nowhere to pull minerals from
-                //pass
-            }
-        }
-    }
-    //If no patches, maybe move back to spawn to find minerals again
-    else{
-        //pass
     }
 
     var creepState = creepStateDict.paramDesc;
     return creepState;
+}
+function checkJobOrder_automatic_satisfied(creep, jobOrder){
+    /*
+    Checks if an automatic job order needs to be completed or not
+    
+    False => The job needs to be done
+    True  => The job is already done
+    */
+    orderFulfilled = true;  //Default to handing no jobs out --> only hand out if actually required
+    if(     jobOrder.name == "mineAndDeposit_minerals"){
+        //If any minerals, mine them straight away
+        var areStructuresPresent = ;    //Mineral patch, To
+        if(areStructuresPresent){
+            var isRemainingMinerals = ;
+            if(isRemainingMinerals){
+                orderFulfilled = false;
+            }
+        }
+    }
+    else if(jobOrder.name == "process_minerals"){
+        //If you can process minerals, do so
+        var areStructuresPresent = ;    //Factory, From, To
+        if(areStructuresPresent){
+            var areMineralsPresent = ;
+            if(areMineralsPresent){
+                orderFulfilled = false;
+            }
+        }
+    }
+    else if(jobOrder.name == "sellProcessed_minerals"){
+        var areStructuresPresent = ;    //Terminal, From
+        if(areStructuresPresent){
+            var areProcessedMineralsPresent = ;
+            if(areProcessedMineralsPresent){
+                var isTerminalFull = ;  //Only for the amount of space needed left over
+                if(!isTerminalFull){
+                    orderFulfilled = false;
+                }
+            }
+        }
+    }
+    else if(jobOrder.name == "sell_minerals"){
+        var areStructuresPresent = ;    //Terminal, From
+        if(areStructuresPresent){
+            var areMineralsPresent = ;
+            if(areMineralsPresent){
+                var isTerminalFull = ;  //Only for the amount of space needed left over
+                if(!isTerminalFull){
+                    orderFulfilled = false;
+                }
+            }
+        }
+    }
 }
 function getTargetSpec_extractor(creep, creepState){
     /*
