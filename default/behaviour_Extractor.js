@@ -5,87 +5,15 @@ var extractor_tasks = {
         /*
         Note; Mention of material here can be minerals or energy
         */
-        if(creep.memory.jobOrders.length){                                                  //If you have any jobs to do
-            creepState = creep.memory.jobOrders[0];                                         //Do the first job in the queue
-            targetSpec = getTargetSpec_extractor(creep, creepState);       //Target found based on creepState
-            if(targetSpec){
-                var target       = Game.getObjectById(targetSpec.ID);
-                var resourceType = targetSpec.resourceType;
-                if(target){
-                    //#############
-                    //## GIVE SPECIFICS IN THE JOB ORDER
-                    //#############
-                    if(creepState.name == "mine_minerals"){
-                        //Mine minerals
-                        if(creep.harvest(target, resourceType) == ERR_NOT_IN_RANGE){
-                            creep.moveTo(target);}
-                    }
-                    if(creepState.name == "unload_storeToTarget"){
-                        //Unload inventory into main storage
-                        if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
-                            creep.moveTo(target);}
-                    }
-                    if(creepState.name == "load_storeFromTarget"){
-                        //Retrieve [material] from main storage
-                        if(creep.withdraw(target, resourceType) == ERR_NOT_IN_RANGE){
-                            creep.moveTo(target);}
-                    }
-                    //...
-                }
+        if(creep.memory.jobOrders.length){      //If you have any jobs to do
+            execute_next_jobOrder(creep);       //Do the first job in the queue
+        }
+        else{
+            //If no job orders, look for a new (automatic) one periodically
+            if(Game.time.toString().slice(-1) % 2 == 0){
+                determine_automaticJobOrder_extractor(creep);
             }
         }
-        /*
-        if(creep.memory.sourceID != "null"){      //If an extractor exists --> source here referes to mineral instead
-            var resourceType = Game.getObjectById(creep.memory.houseKey.sourceID).mineralType;
-            var target = Game.getObjectById(creep.memory.houseKey.sourceID);
-            if(target.mineralAmount > 0){   //State; Mining Mineral
-                if(creep.memory.isExtracting){
-                    //####################################################
-                    //## MAKE IT WAIT FOR THE COOLDOWN BETWEEN HARVESTS ##
-                    //####################################################
-                    if(creep.harvest(target, resourceType) == ERR_NOT_IN_RANGE){
-                        creep.moveTo(target);
-                    }
-                }
-                else{
-                    var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
-                    if(mineralStorage_available.length > 0){
-                        target = Game.getObjectById(mineralStorage_available[0]);
-                        if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
-                            creep.moveTo(target);
-                        }
-                    }
-                }
-            }
-            else{                           //State; Fill up terminal
-                var terminals_available      = creep.room.find(FIND_STRUCTURES, {filter: (structure) => {return( (structure.structureType == STRUCTURE_TERMINAL) && (structure.progress == null) )}});
-                var mineralStorage_available = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
-                if( (terminals_available.length > 0) && (mineralStorage_available.length > 0) ){
-                    var mineralLimitSatisfied = Game.getObjectById(mineralStorage_available[0]).store.getUsedCapacity(resourceType) > Game.getObjectById(mineralStorage_available[0]).store.getCapacity()/3.0;
-                    if(!mineralLimitSatisfied){
-                        if(creep.memory.isExtracting){
-                            target = Game.getObjectById(mineralStorage_available[0]);
-                            if(creep.withdraw(target, resourceType) == ERR_NOT_IN_RANGE){
-                                creep.moveTo(target);
-                            }
-                        }
-                        else{
-                            target = terminals_available[0];
-                            if(creep.transfer(target, resourceType) == ERR_NOT_IN_RANGE){
-                                creep.moveTo(target);
-                            }
-                        }
-                    }
-                }
-            }
-            if(creep.store.getFreeCapacity(resourceType) == 0){
-                creep.memory.isExtracting = false;
-            }
-            if(creep.store.getUsedCapacity(resourceType) == 0){
-                creep.memory.isExtracting = true;
-            }
-        }
-        */
     },
     generateCreepParts : function(spawnerRoomID){
         /*
@@ -135,7 +63,7 @@ var extractor_tasks = {
         var spawner   = Game.getObjectById(spawnerID);
         var houseKey  = {roomID:creepSpec.roomID , sourceID:creepSpec.sourceID};
         var spawnKey  = {roomID:spawner.room.name, spawnID:spawnerID};
-        spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, spawnKey:spawnKey, houseKey:houseKey, isExtracting:true}});
+        spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, spawnKey:spawnKey, houseKey:houseKey, isExtracting:true, jobOrder:[]}});
     },
     death : function(){
         /*
@@ -156,16 +84,14 @@ function determine_automaticJobOrder_extractor(creep){
     Jobs are defined as follows;
     {name, ...} <-- All jobs have a 'name', the rest is specific to the name given and the job itself
     */
+    //#####################################################
+    //## NEEDED JUST TO FILL IN THESE CONTAINER IDS, ETC ## ---> DO THIS NOW
+    //#####################################################
     var storage_available   = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
     var minerals_available  = creep.room.find(FIND_MINERALS);
     var factories_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_FACTORY)}});
     var terminals_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_TERMINAL)}});
     
-    //####
-    //## REMEMBER TO SUBTRACT FROM ORDER
-    //##
-    //## MAYBE MERGE SOME OF THESE --> HAVE A JOB FOR MINE & DELIVER ]]]] MAKES PROCESS A BIT SMOOTHER
-    //####
     jobOrder_mineAndDeposit_minerals = {name:"mineAndDeposit_minerals", deliverTo_id:"CONTAINER_ID", patch_id:"MINERAL_PATCH_ID", patch_type:"MATERIAL_TYPE", patch_amount:"MATERIAL_AMOUNT"};
     jobOrder_process_minerals        = {name:"processed_minerals", deliverFrom_id:"CONTAINER_ID", deliverTo_id:"CONTAINER_ID", factory_id:"FACTORY_ID", mineral_type:"MINERAL_TYPE", mineral_amount:"MINERAL_AMOUNT"};
     jobOrder_sellProcessed_minerals  = {name:"sellProcessed_minerals", deliverFrom_id:"CONTAINER_ID", terminal_id:"TERMINAL_ID", mineral_type:"MINERAL_TYPE", mineral_amount:"MINERAL_AMOUNT"};
@@ -176,15 +102,11 @@ function determine_automaticJobOrder_extractor(creep){
     for(var i=0; i<priority_order.length; i++){
         priority_satisfied = checkJobOrder_automatic_satisfied(creep, priority_order[i]);
         if(!priority_satisfied){    //if not satisfied, add to the list of jobs to be done and leave
-            //## ADD TO CREEPS JOBORDER ---> NOT SETUP YET
-            creep.memory.jobOrder.push(priority_order[i]);  //<--- MAKE SURE NOT BY REFERENCE, SO THE AMOUNT OF MATERIAL TO MOVE IS A COPY EACH TIME, SO IT CAN BE SUBTRACTED FROM
-            //## ADD TO CREEPS JOBORDER ---> NOT SETUP YET
+            //<--- MAKE SURE NOT BY REFERENCE, SO THE AMOUNT OF MATERIAL TO MOVE IS A COPY EACH TIME, SO IT CAN BE SUBTRACTED FROM
+            creep.memory.jobOrder.push(priority_order[i]);
             break;
         }
     }
-
-    var creepState = creepStateDict.paramDesc;
-    return creepState;
 }
 function checkJobOrder_automatic_satisfied(creep, jobOrder){
     /*
@@ -196,9 +118,9 @@ function checkJobOrder_automatic_satisfied(creep, jobOrder){
     orderFulfilled = true;  //Default to handing no jobs out --> only hand out if actually required
     if(     jobOrder.name == "mineAndDeposit_minerals"){
         //If any minerals, mine them straight away
-        var areStructuresPresent = ;    //Mineral patch, To
+        var areStructuresPresent = (Game.getObjectById(jobOrder.patch_id)) && (Game.getObjectById(jobOrder.deliverTo_id));    //Mineral patch, To
         if(areStructuresPresent){
-            var isRemainingMinerals = ;
+            var isRemainingMinerals = Game.getObjectById(jobOrder.patch_id).mineralAmount > 0;
             if(isRemainingMinerals){
                 orderFulfilled = false;
             }
@@ -206,20 +128,23 @@ function checkJobOrder_automatic_satisfied(creep, jobOrder){
     }
     else if(jobOrder.name == "process_minerals"){
         //If you can process minerals, do so
-        var areStructuresPresent = ;    //Factory, From, To
+        var areStructuresPresent = (Game.getObjectById(jobOrder.factory_id)) && (Game.getObjectById(jobOrder.deliverFrom_id)) && (Game.getObjectById(jobOrder.deliverTo_id));    //Factory, From, To
         if(areStructuresPresent){
-            var areMineralsPresent = ;
+            var areMineralsPresent = Game.getObjectById(jobOrder.deliverFrom_id).store.getUsedCapacity(jobOrder.mineral_type) > 0;
             if(areMineralsPresent){
                 orderFulfilled = false;
             }
         }
     }
     else if(jobOrder.name == "sellProcessed_minerals"){
-        var areStructuresPresent = ;    //Terminal, From
+        var areStructuresPresent = (Game.getObjectById(jobOrder.terminal_id)) && (Game.getObjectById(jobOrder.deliverFrom_id));    //Terminal, From
         if(areStructuresPresent){
-            var areProcessedMineralsPresent = ;
+            var areProcessedMineralsPresent = Game.getObjectById(jobOrder.deliverFrom_id).store.getUsedCapacity(jobOrder.mineral_type) > 0;
             if(areProcessedMineralsPresent){
-                var isTerminalFull = ;  //Only for the amount of space needed left over
+                //############
+                //### WILL WANT TO MAKE THIS ~ HALF FILL THE TERMINAL --> OTHER HALF FOR ENERGY ###
+                //############
+                var isTerminalFull = Game.getObjectById(jobOrder.terminal_id).store.getFreeCapacity() > 0;  //Only for the amount of space needed left over
                 if(!isTerminalFull){
                     orderFulfilled = false;
                 }
@@ -227,11 +152,14 @@ function checkJobOrder_automatic_satisfied(creep, jobOrder){
         }
     }
     else if(jobOrder.name == "sell_minerals"){
-        var areStructuresPresent = ;    //Terminal, From
+        var areStructuresPresent = (Game.getObjectById(jobOrder.terminal_id)) && (Game.getObjectById(jobOrder.deliverFrom_id));    //Terminal, From
         if(areStructuresPresent){
-            var areMineralsPresent = ;
+            var areMineralsPresent = Game.getObjectById(jobOrder.deliverFrom_id).store.getUsedCapacity(jobOrder.mineral_type) > 0;
             if(areMineralsPresent){
-                var isTerminalFull = ;  //Only for the amount of space needed left over
+                //############
+                //### WILL WANT TO MAKE THIS ~ HALF FILL THE TERMINAL --> OTHER HALF FOR ENERGY ###
+                //############
+                var isTerminalFull = Game.getObjectById(jobOrder.terminal_id).store.getFreeCapacity() > 0;  //Only for the amount of space needed left over
                 if(!isTerminalFull){
                     orderFulfilled = false;
                 }
@@ -239,34 +167,119 @@ function checkJobOrder_automatic_satisfied(creep, jobOrder){
         }
     }
 }
-function getTargetSpec_extractor(creep, creepState){
+function execute_next_jobOrder(creep, jobOrder){
     /*
-    . Determines the target that is required for the given creepState
-
-    #################################################################################
-    ## MAY NOT EVEN USE IDs HERE, JUST PARSE RESOURCE TYPE + OTHER SPECIFICS MAYBE ## ----> both not used currently ---> maybe reconsider a bunch
-    #################################################################################
+    Performs an action for the next jobOrder (0th in queue)
+    This assumes an order does exist
     */
-    var targetSpec = null;
-    if(creepState.name == "mine_minerals"){
-        //Mine minerals
-        var mineralPatches = creep.room.find(FIND_MINERALS);    //Mineral Object
-        if(mineralPatches.length > 0){
-            if(mineralPatches[0].mineralAmount > 0){            //If there is anything to be mined, go mine it
-                targetSpec = {ID:mineralPatches[0].id, resourceType:mineralPatches[0].resourceType};
+    var jobOrder = creep.memory.jobOrder[0];
+    if(     jobOrder.name == "mineAndDeposit_minerals"){
+        var mineralPatch = Game.getObjectById(jobOrder.patch_id);
+        var deliverTo    = Game.getObjectById(jobOrder.deliverTo_id);
+        var areStructuresPresent = (mineralPatch) && (deliverTo);
+        if(areStructuresPresent){
+            if(creep.store.getFreeCapacity() > 0){
+                //If remaining free space, go to mine
+                //#########################################
+                //## SUBTRACT DIFFERENCE IN MINED AMOUNT ##
+                //#########################################
+                if(creep.harvest(mineralPatch) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(mineralPatch);
+                }
+            }
+            else{
+                //If completely full, deposit material
+                if(creep.transfer(deliverTo) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(deliverTo);
+                }
             }
         }
     }
-    else if(creepState.name == "unload_storeToTarget"){
-        //Unload inventory into main storage
-        targetSpec = {ID:creepState.targetID, resourceType:creepState.resourceType}
+    else if(jobOrder.name == "process_minerals"){
+        //#####
+        //## NEEDS TO PICK OUT ENERGY AND MINERALS
+        //#####
+        var deliverFrom = Game.getObjectById(jobOrder.deliverFrom_id);
+        var deliverTo   = Game.getObjectById(jobOrder.deliverTo_id);
+        var factory     = Game.getObjectById(jobOrder.factory_id);
+        var areStructuresPresent = (deliverFrom) && (deliverTo) && (factory);
+        if(areStructuresPresent){
+            //#######
+            //## MAKE THIS PROCESS MORE CAREFUL
+            //## EXAMINE WHICH MATERIALS YOU ARE HOLDING e.g DELIVERABLE PROCESSED OR RAW
+            //##    --> EACH REQUIRED DIFFERENT TREATMENT
+            //#######
+            if(creep.store.getFreeCapacity() == 0){
+                //If full on materials, then go process them
+                if(creep.transfer(factory, jobOrder.mineral_type) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(factory);
+                }
+                //####
+                //## NEED TO GRAB PROCESSED AGAIN AFTERWARDS, and store in deliverTo
+                //####
+            }
+            else{
+                //If not full, go grab more
+                if(creep.withdraw(deliverFrom, jobOrder.mineral_type) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(deliverFrom);
+                }
+            }
+        }
     }
-    else if(creepState.name == "load_storeFromTarget"){
-        //Retrieve [material] from main storage
-        targetSpec = {ID:creepState.targetID, resourceType:creepState.resourceType}
+    else if(jobOrder.name == "sellProcessed_minerals"){
+        var terminal    = Game.getObjectById(jobOrder.terminal_id);
+        var deliverFrom = Game.getObjectById(jobOrder.deliverFrom_id);
+        var areStructuresPresent = (terminal) && (deliverFrom);
+        if(areStructuresPresent){
+            if(creep.store.getUsedCapacity() > 0){
+                //If holding anything, go deliver it to the terminal
+                //#####
+                //## NEED TO COLLECT BOTH RESOURCE AND ENERGY
+                //#####
+                if(creep.transfer(terminal, jobOrder.mineral_type) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(terminal);
+                }
+            }
+            else{
+                //If holding nothing, go grab some processed minerals
+                if(creep.withdraw(deliverFrom, jobOrder.mineral_type) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(deliverFrom);
+                }
+            }
+        }
     }
-    //...
-    return targetSpec;
+    else if(jobOrder.name == "sell_minerals"){
+        var terminal    = Game.getObjectById(jobOrder.terminal_id);
+        var deliverFrom = Game.getObjectById(jobOrder.deliverFrom_id);
+        var areStructuresPresent = (terminal) && (deliverFrom);
+        if(areStructuresPresent){
+            if(creep.store.getUsedCapacity() > 0){
+                //If holding anything, go deliver it to the terminal
+                //#####
+                //## NEED TO COLLECT BOTH RESOURCE AND ENERGY
+                //#####
+                if(creep.transfer(terminal, jobOrder.mineral_type) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(terminal);
+                }
+            }
+            else{
+                //If holding nothing, go grab some processed minerals
+                if(creep.withdraw(deliverFrom, jobOrder.mineral_type) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(deliverFrom);
+                }
+            }
+        }
+    }
+
+    //################################################################################
+    //## NEED TO MAKE MINE AND DEPO CONDIOTION ALSO LOOK AT MINERAL AMOUNT REQUIRED ##
+    //################################################################################
+    //Determine if task is complete
+    var jobOrder_complete = checkJobOrder_automatic_satisfied(creep, jobOrder);
+    if(jobOrder_complete){
+        //If so, remove it from the queue
+        creep.memory.jobOrder.shift();
+    }
 }
 
 function getExtractionID(roomID){
