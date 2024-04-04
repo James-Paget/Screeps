@@ -19,7 +19,7 @@ var miner_tasks = {
                         creep.moveTo(target);}
                 }
                 else{                                   //Going to deposit -->Could be anywhere (anywhere to deposit at)
-                    repairNeeded = (target.structureType == STRUCTURE_CONTAINER && target.hits <= 0.8*target.hitsMax);    //If container needs repairing
+                    var repairNeeded = (target.structureType == STRUCTURE_CONTAINER && target.hits <= 0.8*target.hitsMax);    //If container needs repairing
                     if(repairNeeded){
                         if(creep.repair(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                             creep.moveTo(target);}
