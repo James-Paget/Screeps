@@ -5,7 +5,7 @@ var extractor_tasks = {
         /*
         Note; Mention of material here can be minerals or energy
         */
-        if(creep.memory.jobOrders.length){      //If you have any jobs to do
+        if(creep.memory.jobOrder.length){      //If you have any jobs to do
             execute_next_jobOrder(creep);       //Do the first job in the queue
         }
         else{
