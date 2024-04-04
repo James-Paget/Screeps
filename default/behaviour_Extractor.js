@@ -92,12 +92,12 @@ function determine_automaticJobOrder_extractor(creep){
     var factories_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_FACTORY)}});
     var terminals_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_TERMINAL)}});
     
-    jobOrder_mineAndDeposit_minerals = {name:"mineAndDeposit_minerals", deliverTo_id:"CONTAINER_ID", patch_id:"MINERAL_PATCH_ID", patch_type:"MATERIAL_TYPE", patch_amount:"MATERIAL_AMOUNT"};
-    jobOrder_process_minerals        = {name:"processed_minerals", deliverFrom_id:"CONTAINER_ID", deliverTo_id:"CONTAINER_ID", factory_id:"FACTORY_ID", mineral_type:"MINERAL_TYPE", mineral_amount:"MINERAL_AMOUNT"};
-    jobOrder_sellProcessed_minerals  = {name:"sellProcessed_minerals", deliverFrom_id:"CONTAINER_ID", terminal_id:"TERMINAL_ID", mineral_type:"MINERAL_TYPE", mineral_amount:"MINERAL_AMOUNT"};
-    jobOrder_sell_minerals           = {name:"sell_minerals", deliverFrom_id:"CONTAINER_ID", terminal_id:"TERMINAL_ID", mineral_type:"MINERAL_TYPE", mineral_amount:"MINERAL_AMOUNT"};
+    var jobOrder_mineAndDeposit_minerals = {name:"mineAndDeposit_minerals", deliverTo_id:"CONTAINER_ID", patch_id:"MINERAL_PATCH_ID", patch_type:"MATERIAL_TYPE", patch_amount:"MATERIAL_AMOUNT"};
+    var jobOrder_process_minerals        = {name:"processed_minerals", deliverFrom_id:"CONTAINER_ID", deliverTo_id:"CONTAINER_ID", factory_id:"FACTORY_ID", mineral_type:"MINERAL_TYPE", mineral_amount:"MINERAL_AMOUNT"};
+    var jobOrder_sellProcessed_minerals  = {name:"sellProcessed_minerals", deliverFrom_id:"CONTAINER_ID", terminal_id:"TERMINAL_ID", mineral_type:"MINERAL_TYPE", mineral_amount:"MINERAL_AMOUNT"};
+    var jobOrder_sell_minerals           = {name:"sell_minerals", deliverFrom_id:"CONTAINER_ID", terminal_id:"TERMINAL_ID", mineral_type:"MINERAL_TYPE", mineral_amount:"MINERAL_AMOUNT"};
     
-    priority_order = [jobOrder_mineAndDeposit_minerals, jobOrder_process_minerals, jobOrder_sellProcessed_minerals, jobOrder_sell_minerals];
+    var priority_order = [jobOrder_mineAndDeposit_minerals, jobOrder_process_minerals, jobOrder_sellProcessed_minerals, jobOrder_sell_minerals];
 
     for(var i=0; i<priority_order.length; i++){
         priority_satisfied = checkJobOrder_automatic_satisfied(creep, priority_order[i]);
