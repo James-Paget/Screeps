@@ -99,10 +99,11 @@ function determine_automaticJobOrder_extractor(creep){
     var jobOrder_sellProcessed_minerals  = {name:"sellProcessed_minerals" , deliverFrom_id:storage_available[0], terminal_id:terminals_available[0].id, mineral_type:"RESOURCE_..._BAR"               , mineral_amount:10000};
     var jobOrder_sell_minerals           = {name:"sell_minerals"          , deliverFrom_id:storage_available[0], terminal_id:terminals_available[0].id, mineral_type:minerals_available[0].mineralType, mineral_amount:10000};
     
-    var priority_order = [jobOrder_mineAndDeposit_minerals, jobOrder_process_minerals, jobOrder_sellProcessed_minerals, jobOrder_sell_minerals];
+    //var priority_order = [jobOrder_mineAndDeposit_minerals, jobOrder_process_minerals, jobOrder_sellProcessed_minerals, jobOrder_sell_minerals];
+    var priority_order = [jobOrder_sell_minerals, jobOrder_mineAndDeposit_minerals];
 
     for(var i=0; i<priority_order.length; i++){
-        var priority_satisfied = checkJobOrder_automatic_satisfied(creep, priority_order[i]);
+        var priority_satisfied = checkJobOrder_satisfied(creep, priority_order[i]);
         if(!priority_satisfied){    //if not satisfied, add to the list of jobs to be done and leave
             //<--- MAKE SURE NOT BY REFERENCE, SO THE AMOUNT OF MATERIAL TO MOVE IS A COPY EACH TIME, SO IT CAN BE SUBTRACTED FROM
             creep.memory.jobOrder.push(priority_order[i]);
@@ -110,7 +111,7 @@ function determine_automaticJobOrder_extractor(creep){
         }
     }
 }
-function checkJobOrder_automatic_satisfied(creep, jobOrder){
+function checkJobOrder_satisfied(creep, jobOrder){
     /*
     Checks if an automatic job order needs to be completed or not
     
@@ -278,7 +279,7 @@ function execute_next_jobOrder(creep, jobOrder){
     //## NEED TO MAKE MINE AND DEPO CONDIOTION ALSO LOOK AT MINERAL AMOUNT REQUIRED ##
     //################################################################################
     //Determine if task is complete
-    var jobOrder_complete = checkJobOrder_automatic_satisfied(creep, jobOrder);
+    var jobOrder_complete = checkJobOrder_satisfied(creep, jobOrder);
     if(jobOrder_complete){
         //If so, remove it from the queue
         creep.memory.jobOrder.shift();
