@@ -125,7 +125,11 @@ function checkJobOrder_satisfied(creep, jobOrder){
         if(areStructuresPresent){
             var isRemainingMinerals = Game.getObjectById(jobOrder.mineral_id).mineralAmount > 0;
             if(isRemainingMinerals){
-                orderFulfilled = false;
+                threshold = 0.8;    //Percentage full before switching task
+                var storageNotFull = Game.getObjectById(jobOrder.deliverTo_id).store.getFreeCapacity() > threshold*Game.getObjectById(jobOrder.deliverTo_id).store.getCapacity();
+                if(storageNotFull){
+                    orderFulfilled = false;
+                }
             }
         }
     }
