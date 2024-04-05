@@ -84,23 +84,34 @@ function determine_automaticJobOrder_extractor(creep){
     Jobs are defined as follows;
     {name, ...} <-- All jobs have a 'name', the rest is specific to the name given and the job itself
     */
-    //#####################################################
-    //## NEEDED JUST TO FILL IN THESE CONTAINER IDS, ETC ## ---> DO THIS NOW
-    //#####################################################
-    var storage_available   = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
-    var minerals_available  = creep.room.find(FIND_MINERALS);
-    var factories_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_FACTORY)}});
-    var terminals_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_TERMINAL)}});
-    
-    var jobOrder_mineAndDeposit_minerals = {name:"mineAndDeposit_minerals", deliverTo_id:"CONTAINER_ID", patch_id:"MINERAL_PATCH_ID", patch_type:"MATERIAL_TYPE", patch_amount:"MATERIAL_AMOUNT"};
-    var jobOrder_process_minerals        = {name:"processed_minerals", deliverFrom_id:"CONTAINER_ID", deliverTo_id:"CONTAINER_ID", factory_id:"FACTORY_ID", mineral_type:"MINERAL_TYPE", mineral_amount:"MINERAL_AMOUNT"};
-    var jobOrder_sellProcessed_minerals  = {name:"sellProcessed_minerals", deliverFrom_id:"CONTAINER_ID", terminal_id:"TERMINAL_ID", mineral_type:"MINERAL_TYPE", mineral_amount:"MINERAL_AMOUNT"};
-    var jobOrder_sell_minerals           = {name:"sell_minerals", deliverFrom_id:"CONTAINER_ID", terminal_id:"TERMINAL_ID", mineral_type:"MINERAL_TYPE", mineral_amount:"MINERAL_AMOUNT"};
+    //#######################################################
+    //## HAVE A [null] RETURN IF NONE OF THE OBJECT EXISTS ##
+    //#######################################################
+    //## CHOOSE STORAGE MORE SOPHISTICATED WAY --> WHICHEVER HAS ROOM, NOT JUST 0TH
+    //##########
+    storage_available   = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
+    minerals_available  = creep.room.find(FIND_MINERALS);
+    factories_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_FACTORY)}});
+    terminals_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_TERMINAL)}});
+
+    if(storage_available.length == 0){
+        storage_available = [null];}
+    if(minerals_available.length == 0){
+        minerals_available = [null];}
+    if(factories_available.length == 0){
+        factories_available = [null];}
+    if(terminals_available.length == 0){
+        terminals_available = [null];}
+
+    var jobOrder_mineAndDeposit_minerals = {name:"mineAndDeposit_minerals", deliverTo_id:storage_available[0]  , mineral_id:minerals_available[0].id  , mineral_type:minerals_available[0].mineralType, mineral_amount:10000};
+    var jobOrder_process_minerals        = {name:"processed_minerals"     , deliverFrom_id:storage_available[0], deliverTo_id:storage_available[0]    , factory_id:factories_available[0].id          , mineral_type:minerals_available[0].mineralType, mineral_amount:10000};
+    var jobOrder_sellProcessed_minerals  = {name:"sellProcessed_minerals" , deliverFrom_id:storage_available[0], terminal_id:terminals_available[0].id, mineral_type:"RESOURCE_..._BAR"               , mineral_amount:10000};
+    var jobOrder_sell_minerals           = {name:"sell_minerals"          , deliverFrom_id:storage_available[0], terminal_id:terminals_available[0].id, mineral_type:minerals_available[0].mineralType, mineral_amount:10000};
     
     var priority_order = [jobOrder_mineAndDeposit_minerals, jobOrder_process_minerals, jobOrder_sellProcessed_minerals, jobOrder_sell_minerals];
 
     for(var i=0; i<priority_order.length; i++){
-        priority_satisfied = checkJobOrder_automatic_satisfied(creep, priority_order[i]);
+        var priority_satisfied = checkJobOrder_automatic_satisfied(creep, priority_order[i]);
         if(!priority_satisfied){    //if not satisfied, add to the list of jobs to be done and leave
             //<--- MAKE SURE NOT BY REFERENCE, SO THE AMOUNT OF MATERIAL TO MOVE IS A COPY EACH TIME, SO IT CAN BE SUBTRACTED FROM
             creep.memory.jobOrder.push(priority_order[i]);
@@ -115,7 +126,7 @@ function checkJobOrder_automatic_satisfied(creep, jobOrder){
     False => The job needs to be done
     True  => The job is already done
     */
-    orderFulfilled = true;  //Default to handing no jobs out --> only hand out if actually required
+    var orderFulfilled = true;  //Default to handing no jobs out --> only hand out if actually required
     if(     jobOrder.name == "mineAndDeposit_minerals"){
         //If any minerals, mine them straight away
         var areStructuresPresent = (Game.getObjectById(jobOrder.patch_id)) && (Game.getObjectById(jobOrder.deliverTo_id));    //Mineral patch, To

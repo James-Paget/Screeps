@@ -12,6 +12,10 @@ var {init_energyRoom, updateContainers_energyRooms, assignCreeps_energyRooms} = 
 var {manageMemory_energyRooms, manageMemory_queues, updateTowers_spawnerRooms} = require("manager_Memory");
 var {calcMarket_general} = require("manager_Market");
 
+//#####
+//## PROBLEM OCCURRING IN    cycle_energyAcquire     AT GATHERER SATURATIONCONDITION --> MAY ONLY OCCUR IN SIM --> (null).body
+//#####
+
 module.exports.loop = function () {
     //## PUT THIS INOT A "RESTART COLONY" FUNCTION
     //## PUT THIS INOT A "RESTART COLONY" FUNCTION

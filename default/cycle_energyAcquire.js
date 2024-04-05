@@ -475,6 +475,9 @@ function getSaturationCondition_gatherers(roomID, energyRooms_info){
             var carryRequired    = 15;  //Fixed amount used here for simplicity in multi-room case --> Vision problems
             var total_carryParts = 0;
             for(var gathererIndex in energyRooms_info.gatherers){
+                //###############################################################################
+                //## ISSUE IN SIM --> GETTING NULL HERE FOR      Game.getObjectById(energyRooms_info.gatherers[gathererIndex])     WHEN THE CREEP IS SPAWNING
+                //###############################################################################
                 total_carryParts += _.filter(Game.getObjectById(energyRooms_info.gatherers[gathererIndex]).body, function(part){return (part.type==CARRY)}).length;}
             var carryNeeded = carryRequired -total_carryParts;
             if(carryNeeded > 0){          //If actually need any more workers
