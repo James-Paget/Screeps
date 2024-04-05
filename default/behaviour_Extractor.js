@@ -94,15 +94,6 @@ function determine_automaticJobOrder_extractor(creep){
     var factories_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_FACTORY)}});
     var terminals_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_TERMINAL)}});
 
-    if(storage_available.length == 0){
-        storage_available = [null];}
-    if(minerals_available.length == 0){
-        minerals_available = [null];}
-    if(factories_available.length == 0){
-        factories_available = [null];}
-    if(terminals_available.length == 0){
-        terminals_available = [null];}
-
     var jobOrder_mineAndDeposit_minerals = {name:"mineAndDeposit_minerals", deliverTo_id:storage_available[0]  , mineral_id:minerals_available[0].id  , mineral_type:minerals_available[0].mineralType, mineral_amount:10000};
     var jobOrder_process_minerals        = {name:"processed_minerals"     , deliverFrom_id:storage_available[0], deliverTo_id:storage_available[0]    , factory_id:factories_available[0].id          , mineral_type:minerals_available[0].mineralType, mineral_amount:10000};
     var jobOrder_sellProcessed_minerals  = {name:"sellProcessed_minerals" , deliverFrom_id:storage_available[0], terminal_id:terminals_available[0].id, mineral_type:"RESOURCE_..._BAR"               , mineral_amount:10000};
