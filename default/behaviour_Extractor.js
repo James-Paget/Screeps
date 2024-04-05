@@ -147,8 +147,8 @@ function checkJobOrder_satisfied(creep, jobOrder){
                 //############
                 //### WILL WANT TO MAKE THIS ~ HALF FILL THE TERMINAL --> OTHER HALF FOR ENERGY ###
                 //############
-                var isTerminalFull = Game.getObjectById(jobOrder.terminal_id).store.getFreeCapacity() > 0;  //Only for the amount of space needed left over
-                if(!isTerminalFull){
+                var terminalNotFull = Game.getObjectById(jobOrder.terminal_id).store.getFreeCapacity() > 0;  //Only for the amount of space needed left over
+                if(terminalNotFull){
                     orderFulfilled = false;
                 }
             }
@@ -162,8 +162,8 @@ function checkJobOrder_satisfied(creep, jobOrder){
                 //############
                 //### WILL WANT TO MAKE THIS ~ HALF FILL THE TERMINAL --> OTHER HALF FOR ENERGY ###
                 //############
-                var isTerminalFull = Game.getObjectById(jobOrder.terminal_id).store.getFreeCapacity() > 0;  //Only for the amount of space needed left over
-                if(!isTerminalFull){
+                var terminalNotFull = Game.getObjectById(jobOrder.terminal_id).store.getFreeCapacity() > 0;  //Only for the amount of space needed left over
+                if(terminalNotFull){
                     orderFulfilled = false;
                 }
             }
