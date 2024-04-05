@@ -118,7 +118,7 @@ function checkJobOrder_automatic_satisfied(creep, jobOrder){
     True  => The job is already done
     */
     var orderFulfilled = true;  //Default to handing no jobs out --> only hand out if actually required
-    if(     jobOrder.name == "mineAndDeposit_minerals"){
+    if(jobOrder.name == "mineAndDeposit_minerals"){
         //If any minerals, mine them straight away
         var areStructuresPresent = (Game.getObjectById(jobOrder.mineral_id)) && (Game.getObjectById(jobOrder.deliverTo_id));    //Mineral patch, To
         if(areStructuresPresent){
@@ -168,6 +168,7 @@ function checkJobOrder_automatic_satisfied(creep, jobOrder){
             }
         }
     }
+    return orderFulfilled;
 }
 function execute_next_jobOrder(creep, jobOrder){
     /*
@@ -175,7 +176,7 @@ function execute_next_jobOrder(creep, jobOrder){
     This assumes an order does exist
     */
     var jobOrder = creep.memory.jobOrder[0];
-    if(     jobOrder.name == "mineAndDeposit_minerals"){
+    if(jobOrder.name == "mineAndDeposit_minerals"){
         var mineralPatch = Game.getObjectById(jobOrder.mineral_id);
         var deliverTo    = Game.getObjectById(jobOrder.deliverTo_id);
         var areStructuresPresent = (mineralPatch) && (deliverTo);
