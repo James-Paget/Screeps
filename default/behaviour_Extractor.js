@@ -191,7 +191,7 @@ function execute_next_jobOrder(creep, jobOrder){
             }
             else{
                 //If completely full, deposit material
-                if(creep.transfer(deliverTo) == ERR_NOT_IN_RANGE){
+                if(creep.transfer(deliverTo, jobOrder.mineral_type) == ERR_NOT_IN_RANGE){
                     creep.moveTo(deliverTo);
                 }
             }
