@@ -89,10 +89,10 @@ function determine_automaticJobOrder_extractor(creep){
     //#######################################################
     //## CHOOSE STORAGE MORE SOPHISTICATED WAY --> WHICHEVER HAS ROOM, NOT JUST 0TH
     //##########
-    storage_available   = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
-    minerals_available  = creep.room.find(FIND_MINERALS);
-    factories_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_FACTORY)}});
-    terminals_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_TERMINAL)}});
+    var storage_available   = Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].mineralStorage;
+    var minerals_available  = creep.room.find(FIND_MINERALS);
+    var factories_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_FACTORY)}});
+    var terminals_available = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_TERMINAL)}});
 
     if(storage_available.length == 0){
         storage_available = [null];}
