@@ -31,7 +31,7 @@ function calculate_transaction_automatic(){
     if(Game.time.toString().slice(-1) == 0){                    //[Once] every [10 seconds]
         //(2)
         for(var i=0; i<Memory.spawnerRooms.length; i++){        //For each spawner room, look for terminals
-            var terminals = Game.rooms[Memory.spawnerRooms[i].roomID].find(FIND_STRUCTURES, {filter:(structure) => {structure.structureType == STRUCTURE_TERMINAL}});
+            var terminals = Game.rooms[Memory.spawnerRooms[i].roomID].find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_TERMINAL)}});
             if(terminals.length > 0){
                 var terminal = terminals[0];                    //Can only ever have 1 max per room
                 //(3)
@@ -42,7 +42,7 @@ function calculate_transaction_automatic(){
                     var priceDetails = find_bestBuyOrder("balanced", sellResource);     //e.g They are buying
                     if(priceDetails.offerID){                                           //If an offer was found
                         //(5)
-                        var dealSituation = "YEP";//Game.market.deal(priceDetails.offerID, priceDetails.offerAmount, priceDetails.sellingRoom);
+                        var dealSituation = priceDetails.pricePerEnergy;//Game.market.deal(priceDetails.offerID, priceDetails.offerAmount, priceDetails.sellingRoom);
                         console.log("### Auto Deal Executed ### -> Code;",dealSituation);
                     }
                 }
@@ -69,7 +69,7 @@ function find_bestBuyOrder(criteria, sellResource){
         var new_pricePerEnergy = null;
         if(criteria == "balanced"){
             new_pricePerEnergy = get_profitEnergyFactor(marketOrders[i], sellResource);
-            var threshold = 0.5;    //Minimum acceptable pricePerEnergy offer
+            var threshold = 0.0;    //Minimum acceptable pricePerEnergy offer
             if(priceDetails.offerID){
                 threshold = priceDetails.pricePerEnergy;}
             if(new_pricePerEnergy > threshold){
@@ -81,7 +81,8 @@ function find_bestBuyOrder(criteria, sellResource){
         }
         //When a better deal is found, replace old one
         if(betterDeal){
-            offerAmount = min(marketOrders[i].amount, sellResource.resourceAmount);     //In order to sell as much as feasibly possible at the good price found
+            //## CONSIDER MAX ENERGY TO SPEND TOO
+            offerAmount  = calculate_largestSellAmount();
             priceDetails = {offerID:marketOrders[i].id, offerAmount:offerAmount, offerRoom:marketOrders[i].rommName, sellingRoom:sellResource.sellingRoom, pricePerEnergy:new_pricePerEnergy};
         }
     }
@@ -110,9 +111,19 @@ function get_profitEnergyFactor(marketOffer, sellResource){
 
     Larger value is better
     */
-    energy_perUnit = Game.market.calcTransactionCost(1, my_room_name, deal_room_name);
+    energy_perUnit = Game.market.calcTransactionCost(1, sellResource.sellingRoom, marketOffer.roomName);
     profit_perUnit = marketOffer.price;
     return (profit_perUnit) / (energy_perUnit);
+}
+
+function calculate_largestSellAmount(marketOffer, sellResource){
+    /*
+    Considers energy and resource max sell amounts to find and overall largest sell total
+    */
+    var unitCost = Game.market.calcTransactionCost(1, sellResource.sellingRoom, marketOffer.roomName);
+    var resourceMaxAmount = Math.min(marketOffer.amount, sellResource.resourceAmount);     //In order to sell as much as feasibly possible at the good price found
+    var energyMaxAmount   = 0.9*sellResource.energyAmount/unitCost;                        //Max amount of resources permitted to be moved with this
+    return Math.min(resourceMaxAmount, energyMaxAmount);
 }
 
 module.exports = {
