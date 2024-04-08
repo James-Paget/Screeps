@@ -123,8 +123,8 @@ function checkJobOrder_satisfied(creep, jobOrder){
         //If any minerals, mine them straight away
         var areStructuresPresent = (Game.getObjectById(jobOrder.mineral_id)) && (Game.getObjectById(jobOrder.deliverTo_id));    //Mineral patch, To
         if(areStructuresPresent){
-            var noMoreToMine = jobOrder.mineral_amount <= 0;
-            if(noMoreToMine){
+            var moreToMine = jobOrder.mineral_amount > 0;
+            if(moreToMine){
                 var isRemainingMinerals = Game.getObjectById(jobOrder.mineral_id).mineralAmount > 0;
                 if(isRemainingMinerals){
                     var threshold = 0.05;    //Percentage full before switching task
