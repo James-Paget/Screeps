@@ -34,16 +34,18 @@ function calculate_transaction_automatic(){
             var terminals = Game.rooms[Memory.spawnerRooms[i].roomID].find(FIND_STRUCTURES, {filter:(structure) => {return (structure.structureType == STRUCTURE_TERMINAL)}});
             if(terminals.length > 0){
                 var terminal = terminals[0];                    //Can only ever have 1 max per room
-                //(3)
-                var sellResource = find_sellResource(terminal);
-                //(4)
-                if(sellResource.type != null)                                           //If there is a resource to sell that isn't energy
-                {
-                    var priceDetails = find_bestBuyOrder("balanced", sellResource);     //e.g They are buying
-                    if(priceDetails.offerID){                                           //If an offer was found
-                        //(5)
-                        var dealSituation = Game.market.deal(priceDetails.offerID, priceDetails.offerAmount, priceDetails.sellingRoom);
-                        console.log("### Auto Deal Executed ### -> Code;",dealSituation);
+                if(terminal.store.getUsedCapacity(RESOURCE_ENERGY) >= 1000){    //Only trade when at least 1000 energy --> avoid weird trades maybe --> small and not worth it ??????????????? This is likely total bollocks
+                    //(3)
+                    var sellResource = find_sellResource(terminal);
+                    //(4)
+                    if(sellResource.type != null)                                           //If there is a resource to sell that isn't energy
+                    {
+                        var priceDetails = find_bestBuyOrder("balanced", sellResource);     //e.g They are buying
+                        if(priceDetails.offerID){                                           //If an offer was found
+                            //(5)
+                            var dealSituation = Game.market.deal(priceDetails.offerID, priceDetails.offerAmount, priceDetails.sellingRoom);
+                            console.log("### Auto Deal Executed ### -> Code;",dealSituation);
+                        }
                     }
                 }
             }
