@@ -269,14 +269,11 @@ function execute_next_jobOrder(creep, jobOrder){
                 //#####
                 //## NEED TO COLLECT BOTH RESOURCE AND ENERGY
                 //#####
-                var previous_stored = terminal.store.getUsedCapacity(jobOrder.mineral_type);
                 if(creep.transfer(terminal, jobOrder.mineral_type) == ERR_NOT_IN_RANGE){
                     creep.moveTo(terminal);
                 }
                 else{
-                    var post_stored = terminal.store.getUsedCapacity(jobOrder.mineral_type);
-                    var difference_stored = Math.abs(post_stored - previous_stored);
-                    creep.memory.jobOrder[0].mineral_amount = creep.memory.jobOrder[0].mineral_amount-difference_stored;
+                    creep.memory.jobOrder[0].mineral_amount -= creep.store.getUsedCapacity(jobOrder.mineral_type);
                 }
             }
             else{
