@@ -127,7 +127,7 @@ function checkJobOrder_satisfied(creep, jobOrder){
             if(moreToMine){
                 var isRemainingMinerals = Game.getObjectById(jobOrder.mineral_id).mineralAmount > 0;
                 if(isRemainingMinerals){
-                    var threshold = 0.0;    //Percentage full before switching task
+                    var threshold = 0.05;    //Percentage full before switching task
                     var storageNotFull = Game.getObjectById(jobOrder.deliverTo_id).store.getFreeCapacity() > threshold*Game.getObjectById(jobOrder.deliverTo_id).store.getCapacity();
                     if(storageNotFull){
                         orderFulfilled = false;
