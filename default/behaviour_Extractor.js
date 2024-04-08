@@ -100,7 +100,7 @@ function determine_automaticJobOrder_extractor(creep){
     var jobOrder_sell_minerals           = {name:"sell_minerals"          , deliverFrom_id:storage_available[0], terminal_id:terminals_available[0].id, mineral_type:minerals_available[0].mineralType, mineral_amount:10000};
     
     //var priority_order = [jobOrder_mineAndDeposit_minerals, jobOrder_process_minerals, jobOrder_sellProcessed_minerals, jobOrder_sell_minerals];
-    var priority_order = [jobOrder_sell_minerals, jobOrder_mineAndDeposit_minerals];
+    var priority_order = [jobOrder_mineAndDeposit_minerals, jobOrder_sell_minerals];
 
     for(var i=0; i<priority_order.length; i++){
         var priority_satisfied = checkJobOrder_satisfied(creep, priority_order[i]);
