@@ -266,9 +266,13 @@ function execute_next_jobOrder(creep, jobOrder){
                 //#####
                 //## NEED TO COLLECT BOTH RESOURCE AND ENERGY
                 //#####
+                var previous_stored = terminal.store.getUsedCapacity(jobOrder.mineral_type);
                 if(creep.transfer(terminal, jobOrder.mineral_type) == ERR_NOT_IN_RANGE){
                     creep.moveTo(terminal);
                 }
+                var post_stored = terminal.store.getUsedCapacity(jobOrder.mineral_type);
+                var difference_stored = previous_stored - post_stored;
+                creep.memory.jobOrder[0].mineral_amount -= difference_stored;
             }
             else{
                 //If holding nothing, go grab some processed minerals
