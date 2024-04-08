@@ -273,9 +273,11 @@ function execute_next_jobOrder(creep, jobOrder){
                 if(creep.transfer(terminal, jobOrder.mineral_type) == ERR_NOT_IN_RANGE){
                     creep.moveTo(terminal);
                 }
-                var post_stored = terminal.store.getUsedCapacity(jobOrder.mineral_type);
-                var difference_stored = Math.abs(post_stored - previous_stored);
-                creep.memory.jobOrder[0].mineral_amount = creep.memory.jobOrder[0].mineral_amount-difference_stored;
+                else{
+                    var post_stored = terminal.store.getUsedCapacity(jobOrder.mineral_type);
+                    var difference_stored = Math.abs(post_stored - previous_stored);
+                    creep.memory.jobOrder[0].mineral_amount = creep.memory.jobOrder[0].mineral_amount-difference_stored;
+                }
             }
             else{
                 //If holding nothing, go grab some processed minerals
