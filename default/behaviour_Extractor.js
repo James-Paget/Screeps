@@ -171,7 +171,8 @@ function checkJobOrder_satisfied(creep, jobOrder){
                     //############
                     //### WILL WANT TO MAKE THIS ~ HALF FILL THE TERMINAL --> OTHER HALF FOR ENERGY ###
                     //############
-                    var terminalNotFull = Game.getObjectById(jobOrder.terminal_id).store.getFreeCapacity() > 0;  //Only for the amount of space needed left over
+                    threshold = 0.1;    //Leave 10% free for energy to be added
+                    var terminalNotFull = Game.getObjectById(jobOrder.terminal_id).store.getFreeCapacity() > threshold*Game.getObjectById(jobOrder.terminal_id).store.getCapacity();  //Only for the amount of space needed left over
                     if(terminalNotFull){
                         orderFulfilled = false;
                     }
