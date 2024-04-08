@@ -161,14 +161,17 @@ function checkJobOrder_satisfied(creep, jobOrder){
     else if(jobOrder.name == "sell_minerals"){
         var areStructuresPresent = (Game.getObjectById(jobOrder.terminal_id)) && (Game.getObjectById(jobOrder.deliverFrom_id));    //Terminal, From
         if(areStructuresPresent){
-            var areMineralsPresent = Game.getObjectById(jobOrder.deliverFrom_id).store.getUsedCapacity(jobOrder.mineral_type) > 0;
-            if(areMineralsPresent){
-                //############
-                //### WILL WANT TO MAKE THIS ~ HALF FILL THE TERMINAL --> OTHER HALF FOR ENERGY ###
-                //############
-                var terminalNotFull = Game.getObjectById(jobOrder.terminal_id).store.getFreeCapacity() > 0;  //Only for the amount of space needed left over
-                if(terminalNotFull){
-                    orderFulfilled = false;
+            var moreToSell = jobOrder.mineral_amount > 0;
+            if(moreToSell){
+                var areMineralsPresent = Game.getObjectById(jobOrder.deliverFrom_id).store.getUsedCapacity(jobOrder.mineral_type) > 0;
+                if(areMineralsPresent){
+                    //############
+                    //### WILL WANT TO MAKE THIS ~ HALF FILL THE TERMINAL --> OTHER HALF FOR ENERGY ###
+                    //############
+                    var terminalNotFull = Game.getObjectById(jobOrder.terminal_id).store.getFreeCapacity() > 0;  //Only for the amount of space needed left over
+                    if(terminalNotFull){
+                        orderFulfilled = false;
+                    }
                 }
             }
         }
@@ -271,8 +274,8 @@ function execute_next_jobOrder(creep, jobOrder){
                     creep.moveTo(terminal);
                 }
                 var post_stored = terminal.store.getUsedCapacity(jobOrder.mineral_type);
-                var difference_stored = previous_stored - post_stored;
-                creep.memory.jobOrder[0].mineral_amount -= difference_stored;
+                var difference_stored = abs(post_stored - previous_stored);
+                creep.memory.jobOrder[0].mineral_amount = creep.memory.jobOrder[0].mineral_amount-difference_stored;
             }
             else{
                 //If holding nothing, go grab some processed minerals
