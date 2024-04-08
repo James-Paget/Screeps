@@ -82,7 +82,7 @@ function find_bestBuyOrder(criteria, sellResource){
         //When a better deal is found, replace old one
         if(betterDeal){
             //## CONSIDER MAX ENERGY TO SPEND TOO
-            offerAmount  = calculate_largestSellAmount();
+            offerAmount  = calculate_largestSellAmount(marketOrders[i], sellResource);
             priceDetails = {offerID:marketOrders[i].id, offerAmount:offerAmount, offerRoom:marketOrders[i].rommName, sellingRoom:sellResource.sellingRoom, pricePerEnergy:new_pricePerEnergy};
         }
     }
