@@ -125,7 +125,7 @@ function checkJobOrder_satisfied(creep, jobOrder){
         if(areStructuresPresent){
             var isRemainingMinerals = Game.getObjectById(jobOrder.mineral_id).mineralAmount > 0;
             if(isRemainingMinerals){
-                var threshold = 0.1;    //Percentage full before switching task
+                var threshold = 0.0;    //Percentage full before switching task
                 var storageNotFull = Game.getObjectById(jobOrder.deliverTo_id).store.getFreeCapacity() > threshold*Game.getObjectById(jobOrder.deliverTo_id).store.getCapacity();
                 if(storageNotFull){
                     orderFulfilled = false;
@@ -273,6 +273,7 @@ function execute_next_jobOrder(creep, jobOrder){
                     creep.moveTo(terminal);
                 }
                 else{
+                    //Note; This is NOT perfect, as it will assume the full amount is always transferred (NOT true for full storage)
                     creep.memory.jobOrder[0].mineral_amount -= creep.store.getUsedCapacity(jobOrder.mineral_type);
                 }
             }
