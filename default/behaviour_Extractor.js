@@ -274,7 +274,7 @@ function execute_next_jobOrder(creep, jobOrder){
                     creep.moveTo(terminal);
                 }
                 var post_stored = terminal.store.getUsedCapacity(jobOrder.mineral_type);
-                var difference_stored = abs(post_stored - previous_stored);
+                var difference_stored = Math.abs(post_stored - previous_stored);
                 creep.memory.jobOrder[0].mineral_amount = creep.memory.jobOrder[0].mineral_amount-difference_stored;
             }
             else{
