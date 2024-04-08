@@ -1,4 +1,4 @@
-function calcMarket_general(){
+function calculate_transaction_manual(){
     /*
     Just a test function to get a feel for how transactions should occur
     */
@@ -21,26 +21,37 @@ function calcMarket_general(){
 function calculate_transaction_automatic(){
     /*
     . Sells material in the terminal automatically
-    -(1) This action occurs periodically
-    -(2) Prior market orders will be cancelled when this is performed to prevent errors
-    -(3) This will calculate a 'best' price (set to money-price trade off, OR max price)
-    -(4) Make the sale of this new 
+    -(1) This action occurs periodically#
+    -(2) For every terminal you have
+    -(3) Determine what to sell and how much
+    -(4) This will calculate a 'best' price (set to money-price trade off, OR max price)
+    -(5) Make the sale of this new
     */
     //(1)
-    if(Game.time.toString().slice(-1) == 0){    //[Once] every [10 seconds]
+    if(Game.time.toString().slice(-1) == 0){                    //[Once] every [10 seconds]
         //(2)
-        //...
-        //Clear all old stuff
-        //...
-        //(3)
-        var priceDetails = find_bestSellOrder("balanced");
-        //(4)
-        console.log("### Deal Executed ###");
-        Game.market.deal(priceDetails.offerID, priceDetails.offerAmount, priceDetails.sellingRoom);
+        for(var i=0; i<Memory.spawnerRooms.length; i++){        //For each spawner room, look for terminals
+            var terminals = Game.rooms[Memory.spawnerRooms[i].roomID].find(FIND_STRUCTURES, {filter:(structure) => {structure.structureType == STRUCTURE_TERMINAL}});
+            if(terminals.length > 0){
+                var terminal = terminals[0];                    //Can only ever have 1 max per room
+                //(3)
+                var sellResource = find_sellResource(terminal);
+                //(4)
+                if(sellResource.type != null)                                           //If there is a resource to sell that isn't energy
+                {
+                    var priceDetails = find_bestBuyOrder("balanced", sellResource);     //e.g They are buying
+                    if(priceDetails.offerID){                                           //If an offer was found
+                        //(5)
+                        var dealSituation = "YEP";//Game.market.deal(priceDetails.offerID, priceDetails.offerAmount, priceDetails.sellingRoom);
+                        console.log("### Auto Deal Executed ### -> Code;",dealSituation);
+                    }
+                }
+            }
+        }
     }
 }
 
-function find_bestSellOrder(criteria){
+function find_bestBuyOrder(criteria, sellResource){
     /*
     Finds the best sell offer currently in the market fitting the criteria specified
     Criteria can be;
@@ -51,31 +62,60 @@ function find_bestSellOrder(criteria){
     sellingRoom  =>  Room YOU are selling material from (e.g terminal room)
     offerAmount  =>  Amount YOU are going to sell, NOT the max amount that is being offer (although it could be equal to this)
     */
-    var priceDetails = {offerID:"OFFER ID", offerAmount:"OFFER AMOUNT", offerRoom:"OFFER ROOM", sellingRoom:"OFFER SELL ROOM"}
-    for( ... ){                         //Check every sell trade offer in the market
-        var travelCost  = ...;          //FIXED ENERGY cost based on distance to buyer
-        var costPerUnit = ...;          //ENERGY cost per UNIT of MATERIAL
-        //#####################################################################################################
-        //## BETTER DEAL --> DEPENDS ON AMOUNT BEING SOLD --> GRAPH AND CONSIDER MAX AND MINS TO MAKE CHOICE ##
-        //#####################################################################################################
-        //## ---> Sell as much as possible for most gain at any given moment ##
-        //#####################################################################
+    var priceDetails = {offerID:null, offerAmount:null, offerRoom:null, sellingRoom:null, pricePerEnergy:null};
+    var marketOrders = Game.market.getAllOrders({type: ORDER_BUY, resourceType: sellResource.type});
+    for(var i=0; i<marketOrders.length; i++){       //Check every sell trade offer in the market
         betterDeal = false;
+        var new_pricePerEnergy = null;
         if(criteria == "balanced"){
-            //pass
-            //betterDeal = true;
+            new_pricePerEnergy = get_profitEnergyFactor(marketOrders[i], sellResource);
+            var threshold = 0.5;    //Minimum acceptable pricePerEnergy offer
+            if(priceDetails.offerID){
+                threshold = priceDetails.pricePerEnergy;}
+            if(new_pricePerEnergy > threshold){
+                betterDeal = true;}
         }
         if(criteria == "priceOnly"){
             //pass
             //betterDeal = true;
         }
+        //When a better deal is found, replace old one
         if(betterDeal){
-            priceDetails = { ... };
+            offerAmount = min(marketOrders[i].amount, sellResource.resourceAmount);     //In order to sell as much as feasibly possible at the good price found
+            priceDetails = {offerID:marketOrders[i].id, offerAmount:offerAmount, offerRoom:marketOrders[i].rommName, sellingRoom:sellResource.sellingRoom, pricePerEnergy:new_pricePerEnergy};
         }
     }
     return priceDetails;
 }
 
+function find_sellResource(terminal){
+    /*
+    Finds what resource to sell
+    Very simple, just chooses whatever is most abundant
+    However will never return energy (not a a resource to sell alone)
+    */
+    var sellResource = {type:null, resourceAmount:null, energyAmount:null, sellingRoom:null};
+    //var resources = Object.keys(structure.store);
+    var resource = RESOURCE_OXYGEN; //####### JUST HARDCODING OXYGEN FOR NOW ######
+    var amount   = terminal.store.getUsedCapacity(resource);
+    if(amount > 0){
+        sellResource = {type:resource, resourceAmount:amount, energyAmount:terminal.store.getUsedCapacity(RESOURCE_ENERGY), sellingRoom:terminal.room.name};}
+    return sellResource;
+}
+
+function get_profitEnergyFactor(marketOffer, sellResource){
+    /*
+    Calculates the 'Profit-Energy' factor for a given buy trade offer
+    (perfect balance of profit and energy)
+
+    Larger value is better
+    */
+    energy_perUnit = Game.market.calcTransactionCost(1, my_room_name, deal_room_name);
+    profit_perUnit = marketOffer.price;
+    return (profit_perUnit) / (energy_perUnit);
+}
+
 module.exports = {
-    calcMarket_general
+    calculate_transaction_manual,
+    calculate_transaction_automatic
 };

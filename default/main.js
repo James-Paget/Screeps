@@ -10,7 +10,7 @@ var military_tasks  = require("behaviour_Military");
 var respawnManager  = require("manager_Respawn");
 var {init_energyRoom, updateContainers_energyRooms, assignCreeps_energyRooms} = require("cycle_energyAcquire");
 var {manageMemory_energyRooms, manageMemory_queues, updateTowers_spawnerRooms} = require("manager_Memory");
-var {calcMarket_general} = require("manager_Market");
+var {calculate_transaction_manual, calculate_transaction_automatic} = require("manager_Market");
 
 //#####
 //## PROBLEM OCCURRING IN    cycle_energyAcquire     AT GATHERER SATURATIONCONDITION --> MAY ONLY OCCUR IN SIM --> (null).body
@@ -48,7 +48,8 @@ module.exports.loop = function () {
     //...
 
     //Market functionality
-    calcMarket_general();
+    //calculate_transaction_manual();
+    calculate_transaction_automatic();
 }
 
 function creep_taskManager(){
