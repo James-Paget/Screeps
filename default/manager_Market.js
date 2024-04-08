@@ -42,7 +42,7 @@ function calculate_transaction_automatic(){
                     var priceDetails = find_bestBuyOrder("balanced", sellResource);     //e.g They are buying
                     if(priceDetails.offerID){                                           //If an offer was found
                         //(5)
-                        var dealSituation = priceDetails.pricePerEnergy;//Game.market.deal(priceDetails.offerID, priceDetails.offerAmount, priceDetails.sellingRoom);
+                        var dealSituation = Game.market.deal(priceDetails.offerID, priceDetails.offerAmount, priceDetails.sellingRoom);
                         console.log("### Auto Deal Executed ### -> Code;",dealSituation);
                     }
                 }
