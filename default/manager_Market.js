@@ -71,7 +71,7 @@ function find_bestBuyOrder(criteria, sellResource){
         var new_pricePerEnergy = null;
         if(criteria == "balanced"){
             new_pricePerEnergy = get_profitEnergyFactor(marketOrders[i], sellResource);
-            var threshold = 0.0;    //Minimum acceptable pricePerEnergy offer
+            var threshold = 15.0;    //Minimum acceptable pricePerEnergy offer
             if(priceDetails.offerID){
                 threshold = priceDetails.pricePerEnergy;}
             if(new_pricePerEnergy > threshold){
