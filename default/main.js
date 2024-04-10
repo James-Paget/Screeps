@@ -72,6 +72,8 @@ function creep_taskManager(){
             defender_tasks.task(creeps[name]);}
         if(creeps[name].memory.role == "Extractor"){
             extractor_tasks.task(creeps[name]);}
+        if(creeps[name].memory.role == "Military"){
+            military_tasks.task(creeps[name]);}
         //...
     }
 }
@@ -101,6 +103,8 @@ function manageMemory_dead_cleanup(){
                 defender_tasks.death();}
             if(Memory.creeps[memoryName].role == "Extractor"){
                 extractor_tasks.death();}
+            if(Memory.creeps[memoryName].role == "Military"){
+                military_tasks.death();}
             //...
             delete Memory.creeps[memoryName];
         }

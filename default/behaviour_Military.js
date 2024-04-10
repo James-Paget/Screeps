@@ -1,12 +1,7 @@
-//################################################
-//################################################
-//## NEED TO MINIMISE NUMBER OF CREEPS BEING USED --> MAKE LARGER ONES MORE OFTEN
-//################################################
-//################################################
 var {getSpawnerRoomIndex} = require("manager_Memory");
 
 var military_tasks = {
-    task : function(){
+    task : function(creep){
         /*
         1. Go through the creeps priorities
         2. Keep looking until you reach a task that hasnt been satisfied
