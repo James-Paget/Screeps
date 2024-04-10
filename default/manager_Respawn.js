@@ -7,6 +7,7 @@ var defender_tasks  = require("behaviour_Defender");
 var {getExtractionID, extractor_tasks} = require("behaviour_Extractor");
 var {getSpawnerRoomIndex} = require("manager_Memory");
 var {queueCreeps_energyRooms} = require("cycle_energyAcquire");
+const military_tasks = require("./behaviour_Military");
 
 /*
 The current solution for spawning;
@@ -50,6 +51,8 @@ var respawnManager = {
                             defender_tasks.respawn(creepName, spawnerID, creepSpec);}
                         if(Memory.spawnerRooms[spawnerRoomIndex].queue[0].role == "Extractor"){
                             extractor_tasks.respawn(creepName, spawnerID, creepSpec);}
+                        if(Memory.spawnerRooms[spawnerRoomIndex].queue[0].role == "Military"){
+                            military_tasks.respawn(creepName, spawnerID, creepSpec);}
                         //...
                         Memory.spawnerRooms[spawnerRoomIndex].queue.shift();
                     }

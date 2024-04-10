@@ -5,16 +5,12 @@ var building_tasks  = require("behaviour_Builder");
 var repairing_tasks = require("behaviour_Repairer");
 var defender_tasks  = require("behaviour_Defender");
 var {extractor_tasks} = require("behaviour_Extractor");
-var tower_tasks     = require("behaviour_Tower");
-var military_tasks  = require("behaviour_Military");
-var respawnManager  = require("manager_Respawn");
+var tower_tasks       = require("behaviour_Tower");
+var {military_tasks, generate_militia}  = require("behaviour_Military");
+var respawnManager    = require("manager_Respawn");
 var {init_energyRoom, updateContainers_energyRooms, assignCreeps_energyRooms} = require("cycle_energyAcquire");
 var {manageMemory_energyRooms, manageMemory_queues, updateTowers_spawnerRooms} = require("manager_Memory");
 var {calculate_transaction_manual, calculate_transaction_automatic} = require("manager_Market");
-
-//#####
-//## PROBLEM OCCURRING IN    cycle_energyAcquire     AT GATHERER SATURATIONCONDITION --> MAY ONLY OCCUR IN SIM --> (null).body
-//#####
 
 module.exports.loop = function () {
     //## PUT THIS INOT A "RESTART COLONY" FUNCTION
@@ -50,6 +46,9 @@ module.exports.loop = function () {
     //Market functionality
     //calculate_transaction_manual();
     calculate_transaction_automatic();
+
+    //## TEST THIS FUNCTION ##
+    //generate_militia(lvl, spawnerRoomID, targetRoomID)
 }
 
 function creep_taskManager(){
