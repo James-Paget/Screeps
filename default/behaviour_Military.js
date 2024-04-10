@@ -86,7 +86,7 @@ function generate_militia(lvl, spawnerRoomID, targetRoomID){
 
     The creepNumber must match the number of creep builds specified
     */
-    var creepBuilds = ["meleeStrong", "meleeStrong", "healer"];
+    var creepBuilds = ["meleeStrong", "meleeStrong"];//, "healer"
     for(var i=0; i<creepBuilds.length; i++){
         var jobOrder = generateJobOrder("militia", creepBuilds[i], targetRoomID);
         var parts    = military_tasks.generateCreepParts(creepBuilds[i], lvl, spawnerRoomID);
@@ -220,6 +220,7 @@ function performPriority_killCreepsInRoom(creep, priority){
     var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS);
     var target = creep.pos.findClosestByPath(hostileCreeps); //#### BY RANGE MIGHT BE FAR LESS TAXING ON CPU ####
     var isCreepRanged = _.filter(creep.body, function(part) {return (part.type==RANGED_ATTACK)});
+    creep.say("☠️🕷️");
     if(isCreepRanged.length > 0){
         if(creep.ranged_attack(target) == ERR_NOT_IN_RANGE){
             creep.moveTo(target);}
@@ -240,6 +241,7 @@ function performPriority_killTowersInRoom(creep, priority){
     var hostileTowers = creep.room.find(FIND_STRUCTURES, (structure) => {return (structure.structureType == STRUCTURE_TOWER)});
     var target = creep.pos.findClosestByPath(hostileTowers); //#### BY RANGE MIGHT BE FAR LESS TAXING ON CPU ####
     var isCreepRanged = _.filter(creep.body, function(part) {return (part.type==RANGED_ATTACK)});
+    creep.say("☠️🏛️");
     if(isCreepRanged.length > 0){
         if(creep.ranged_attack(target) == ERR_NOT_IN_RANGE){
             creep.moveTo(target);}
@@ -260,7 +262,7 @@ function performPriority_killCoresInRoom(creep, priority){
     var invaderCores = creep.room.find(FIND_STRUCTURES, (structure) => {return (structure.structureType == STRUCTURE_INVADER_CORE)});
     var target = creep.pos.findClosestByPath(invaderCores); //#### BY RANGE MIGHT BE FAR LESS TAXING ON CPU ####
     var isCreepRanged = _.filter(creep.body, function(part) {return (part.type==RANGED_ATTACK)});
-    creep.say("☠️");
+    creep.say("☠️🌀");
     if(isCreepRanged.length > 0){
         if(creep.ranged_attack(target) == ERR_NOT_IN_RANGE){
             creep.moveTo(target);}
