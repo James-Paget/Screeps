@@ -48,7 +48,10 @@ module.exports.loop = function () {
     calculate_transaction_automatic();
 
     //## TEST THIS FUNCTION ##
-    //generate_militia(lvl, spawnerRoomID, targetRoomID)
+    if(Game.time.toString().slice(-1) == 0){
+        console.log("Here RN");
+        //generate_militia(0, "W7S14", "W7S15")
+    }
 }
 
 function creep_taskManager(){

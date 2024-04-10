@@ -7,7 +7,7 @@ var defender_tasks  = require("behaviour_Defender");
 var {getExtractionID, extractor_tasks} = require("behaviour_Extractor");
 var {getSpawnerRoomIndex} = require("manager_Memory");
 var {queueCreeps_energyRooms} = require("cycle_energyAcquire");
-const military_tasks = require("./behaviour_Military");
+var {military_tasks} = require("behaviour_Military");
 
 /*
 The current solution for spawning;

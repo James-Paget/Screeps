@@ -3,6 +3,8 @@
 //## NEED TO MINIMISE NUMBER OF CREEPS BEING USED --> MAKE LARGER ONES MORE OFTEN
 //################################################
 //################################################
+var {getSpawnerRoomIndex} = require("manager_Memory");
+
 var military_tasks = {
     task : function(){
         /*
@@ -37,7 +39,7 @@ var military_tasks = {
     },
     queue : function(roomID, sourceID, parts, jobOrder, squadID){
         //Note; Have null for houseKey information as this is irrelevent to them
-        var creepSpec = {roomID:roomID, sourceID:sourceID, parts:parts, jobOrder:jobOrder, role:"Military", time:Game.time, squadId:squadId};
+        var creepSpec = {roomID:roomID, sourceID:sourceID, parts:parts, jobOrder:jobOrder, role:"Military", time:Game.time, squadID:squadID};
         Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].queue.push(creepSpec);
     },
     respawn : function(creepName, spawnerID, creepSpec){
@@ -92,8 +94,8 @@ function generate_militia(lvl, spawnerRoomID, targetRoomID){
     var creepBuilds = ["meleeStrong", "meleeStrong", "healer"];
     for(var i=0; i<creepBuilds.length; i++){
         var jobOrder = generateJobOrder("militia", creepBuilds[i], targetRoomID);
-        var parts    = generateCreepParts(creepBuilds[i], spawnerRoomID);
-        var squadID  = str(creepBuilds.length) +"-"+ str(Game.time);    //Used to group squads
+        var parts    = military_tasks.generateCreepParts(creepBuilds[i], lvl, spawnerRoomID);
+        var squadID  = creepBuilds.length.toString()+"-"+Game.time.toString();    //Used to group squads
         military_tasks.queue(spawnerRoomID, null, parts, jobOrder, squadID);
     }
 }
