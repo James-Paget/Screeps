@@ -48,8 +48,27 @@ var claimer_tasks = {
 function get_claimerRequired(){
     /*
     Checks more claimers are required anywhere, and returns where
+    (1) Add all room candidates for claiming
+    (2) Remove perma claimed rooms (spawner rooms)
+    (3) Look through current claimers, cross rooms of requiredRoomIDs list, create a new claimer for an unfulfilled room
     */
-    var claimerDetails = null;  //Info about where a claimer is needed
+    var claimerDetails  = null;  //Info about where a claimer is needed
+    var requiredRoomIDs = [];
+    //(1)
+    for(var i=0; i<Memory.energyRooms.length; i++){
+        requiredRoomIDs.push(Memory.energyRooms[i].ID);
+    }
+    //...
+    //(2)
+    for(var i=0; i<Memory.spawnerRooms.length; i++){
+        for(var j=requiredRoomIDs.length-1; j>=0; j--){
+            if(Memory.spawnerRooms[i].roomID == requiredRoomIDs[j]){
+                requiredRoomIDs.splice(j,1);    //Remove jth element
+            }
+        }
+    }
+    //...
+    //(3)
     for(name in Game.creeps){
         if(Game.creeps[name].role == "Claimer"){
             //Look through all claimers
