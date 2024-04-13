@@ -5,6 +5,7 @@ var building_tasks  = require("behaviour_Builder");
 var repairing_tasks = require("behaviour_Repairer");
 var defender_tasks  = require("behaviour_Defender");
 var {extractor_tasks} = require("behaviour_Extractor");
+var {claimer_tasks}   = require("behaviour_Claimer");
 var tower_tasks       = require("behaviour_Tower");
 var {military_tasks, generate_militia}  = require("behaviour_Military");
 var respawnManager    = require("manager_Respawn");
@@ -47,12 +48,17 @@ module.exports.loop = function () {
     //calculate_transaction_manual();
     calculate_transaction_automatic();
 
-    //## TEST THIS FUNCTION ##
+    //## TEST THIS FUNCTION ## ------> THIS IS WORKING NOW (HEALERS BROKE)
     if(Game.time.toString().slice(-1) == 0){
-        console.log("Here RN");
+        //console.log("Here RN");
         //generate_militia(0, "W7S14", "W7S15")
     }
 }
+//##########
+//## NEED TO DEPLOY MILITIA TO KILL CORES AUTOMATICALLY
+//##
+//## NEED TO SETUP CREEPS TO RESERVE ENERGY ROOMS
+//##########
 
 function creep_taskManager(){
     var creeps = Game.creeps;
@@ -74,6 +80,8 @@ function creep_taskManager(){
             extractor_tasks.task(creeps[name]);}
         if(creeps[name].memory.role == "Military"){
             military_tasks.task(creeps[name]);}
+        if(creeps[name].memory.role == "Claimer"){
+            claimer_tasks.task(creeps[name]);}
         //...
     }
 }
@@ -105,6 +113,8 @@ function manageMemory_dead_cleanup(){
                 extractor_tasks.death();}
             if(Memory.creeps[memoryName].role == "Military"){
                 military_tasks.death();}
+            if(Memory.creeps[memoryName].role == "Claimer"){
+                claimer_tasks.death();}
             //...
             delete Memory.creeps[memoryName];
         }

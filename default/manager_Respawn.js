@@ -5,6 +5,7 @@ var building_tasks  = require("behaviour_Builder");
 var repairing_tasks = require("behaviour_Repairer");
 var defender_tasks  = require("behaviour_Defender");
 var {getExtractionID, extractor_tasks} = require("behaviour_Extractor");
+var {claimer_tasks}   = require("behaviour_Claimer");
 var {getSpawnerRoomIndex} = require("manager_Memory");
 var {queueCreeps_energyRooms} = require("cycle_energyAcquire");
 var {military_tasks} = require("behaviour_Military");
@@ -53,6 +54,8 @@ var respawnManager = {
                             extractor_tasks.respawn(creepName, spawnerID, creepSpec);}
                         if(Memory.spawnerRooms[spawnerRoomIndex].queue[0].role == "Military"){
                             military_tasks.respawn(creepName, spawnerID, creepSpec);}
+                        if(Memory.spawnerRooms[spawnerRoomIndex].queue[0].role == "Claimer"){
+                            claimer_tasks.respawn(creepName, spawnerID, creepSpec);}
                         //...
                         Memory.spawnerRooms[spawnerRoomIndex].queue.shift();
                     }
