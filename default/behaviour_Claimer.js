@@ -74,11 +74,13 @@ function generate_claimer(isCapturer, spawnerRoomID, roomID){
     (2) Get creep parts/info & Queue creep up
     */
     //(1)
-    var claimerDetails = {roomID:roomID}
-    if(roomID == null){
+    var claimerDetails = null;
+    if(roomID){                     //If a room is given, then just send them there
+        claimerDetails = {roomID:roomID};}
+    else{                           //If not specified, get next available space left open
         claimerDetails = get_claimerRequired();}
-    if(claimerDetails.roomID){  //If there is a room to be worked on, then generate the parts
-        //(2)
+    //(2)
+    if(claimerDetails.roomID){      //If there is a room to be worked on, then generate the parts
         var creepParts = claimer_tasks.generateCreepParts(spawnerRoomID, isCapturer);
         claimer_tasks.queue(spawnerRoomID, claimerDetails.roomID, null, creepParts);
     }
@@ -157,6 +159,7 @@ function moveToRoom_visionless(creep){
             }
         }
     }
+    return atDestination;
 }
 
 module.exports = {

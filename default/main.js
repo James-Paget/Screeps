@@ -50,9 +50,9 @@ module.exports.loop = function () {
 
     //## TEST THIS FUNCTION ## ------> THIS IS WORKING NOW (HEALERS BROKE)
     if(Game.time.toString().slice(-1) == 0){
-        console.log("Here RN");
+        //console.log("Here RN");
         //generate_militia(0, "W7S14", "W7S15")
-        generate_claimer(false, "W7S14", null);
+        //generate_claimer(false, "W7S14", null);
     }
 }
 //##########
