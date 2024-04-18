@@ -145,7 +145,7 @@ function moveToRoom_visionless(creep){
     }
     else{   //Move to required room
         if(!creep.memory.travelRoute){                                                               //Create multi-room travel route
-            creep.memory.travelRoute = Game.map.findRoute(creep.room.name, priority.targetRoomID);}  //
+            creep.memory.travelRoute = Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID);}  //
         else{
             if(creep.memory.travelRoute.length == 0){   //Backup precaution
                 delete creep.memory.travelRoute;}       //
