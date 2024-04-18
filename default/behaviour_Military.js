@@ -103,7 +103,7 @@ function automatic_clearCores(){
     */
     var checkRate = 700;     //Number of ticks between checks
     if(Game.time % checkRate == 0){
-        for(var i=0; Memory.energyRooms.length; i++){       //Look through all energy rooms
+        for(var i=0; i<Memory.energyRooms.length; i++){       //Look through all energy rooms
             if(Game.rooms[Memory.energyRooms[i].ID]){   //If you have vision in this room
                 var cores = Game.rooms[Memory.energyRooms[i].ID].find(FIND_STRUCTURES, {filter : (structure) => {return (structure.structureType == STRUCTURE_INVADER_CORE)}});
                 if(cores.length > 0){   //If there is a core in this room
