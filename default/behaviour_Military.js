@@ -250,13 +250,13 @@ function performPriority_killCreepsInRoom(creep, priority){
 }
 function checkPrioritySatisfied_killTowersInRoom(creep, priority){
     var isSatisfied = false;
-    var hostileTowers = creep.room.find(FIND_STRUCTURES, (structure) => {return (structure.structureType == STRUCTURE_TOWER)});
+    var hostileTowers = creep.room.find(FIND_HOSTILE_STRUCTURES, (structure) => {return (structure.structureType == STRUCTURE_TOWER)});
     if(hostileTowers.length == 0){
         isSatisfied = true;}
     return isSatisfied;
 }
 function performPriority_killTowersInRoom(creep, priority){
-    var hostileTowers = creep.room.find(FIND_STRUCTURES, (structure) => {return (structure.structureType == STRUCTURE_TOWER)});
+    var hostileTowers = creep.room.find(FIND_HOSTILE_STRUCTURES, (structure) => {return (structure.structureType == STRUCTURE_TOWER)});
     var target = creep.pos.findClosestByPath(hostileTowers); //#### BY RANGE MIGHT BE FAR LESS TAXING ON CPU ####
     var isCreepRanged = _.filter(creep.body, function(part) {return (part.type==RANGED_ATTACK)});
     creep.say("☠️🏛️");
@@ -271,13 +271,13 @@ function performPriority_killTowersInRoom(creep, priority){
 }
 function checkPrioritySatisfied_killCoresInRoom(creep, priority){
     var isSatisfied = false;
-    var invaderCores = creep.room.find(FIND_STRUCTURES, (structure) => {return (structure.structureType == STRUCTURE_INVADER_CORE)});
+    var invaderCores = creep.room.find(FIND_HOSTILE_STRUCTURES, (structure) => {return (structure.structureType == STRUCTURE_INVADER_CORE)});
     if(invaderCores.length == 0){
         isSatisfied = true;}
     return isSatisfied;
 }
 function performPriority_killCoresInRoom(creep, priority){
-    var invaderCores = creep.room.find(FIND_STRUCTURES, (structure) => {return (structure.structureType == STRUCTURE_INVADER_CORE)});
+    var invaderCores = creep.room.find(FIND_HOSTILE_STRUCTURES, (structure) => {return (structure.structureType == STRUCTURE_INVADER_CORE)});
     var target = creep.pos.findClosestByPath(invaderCores); //#### BY RANGE MIGHT BE FAR LESS TAXING ON CPU ####
     var isCreepRanged = _.filter(creep.body, function(part) {return (part.type==RANGED_ATTACK)});
     creep.say("☠️🌀");
