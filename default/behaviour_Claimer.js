@@ -181,7 +181,7 @@ function automatic_spawnClaimers(){
         //For energy rooms
         var roomsToService = Memory.energyRooms.length - Memory.spawnerRooms.length;    //Non-perma energy rooms
         var adjusted_lifeTime = Math.floor(base_lifeTime/roomsToService);
-        if(Game.time.toString().slice(-1) % adjusted_lifeTime == 0){
+        if(Game.time % adjusted_lifeTime == 0){
             //################################################################################################
             //## WILL NEED TO CONSIDER EACH SPAWNER --> THE ROOM ASSOCIATED TO AN ENERGY ROOM --> IN FUTURE ##
             //################################################################################################

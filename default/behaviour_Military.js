@@ -102,7 +102,7 @@ function automatic_clearCores(){
     - Sends militia where cores are found
     */
     var checkRate = 700;     //Number of ticks between checks
-    if(Game.time.toString().slice(-1) % checkRate == 0){
+    if(Game.time % checkRate == 0){
         for(var i=0; Memory.energyRooms.length; i++){       //Look through all energy rooms
             if(Game.rooms[Memory.energyRooms[i].ID]){   //If you have vision in this room
                 var cores = Game.rooms[Memory.energyRooms[i].ID].find(FIND_STRUCTURES, {filter : (structure) => {return (structure.structureType == STRUCTURE_INVADER_CORE)}});
