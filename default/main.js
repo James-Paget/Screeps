@@ -52,7 +52,7 @@ module.exports.loop = function () {
     if(Game.time.toString().slice(-1) == 0){
         console.log("Here RN");
         //generate_militia(0, "W7S14", "W7S15")
-        generate_claimer(false, null);
+        generate_claimer(false, "W7S14", null);
     }
 }
 //##########

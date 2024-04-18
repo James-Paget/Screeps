@@ -64,7 +64,7 @@ var claimer_tasks = {
     }
 }
 
-function generate_claimer(isCapturer, roomID){
+function generate_claimer(isCapturer, spawnerRoomID, roomID){
     /*
     -Spawns a new claimer -> Either reserver or capturer
     -The claimer will working in the "roomID" (name) room if specified, or look for next available space if 'null' is given instead
@@ -79,7 +79,7 @@ function generate_claimer(isCapturer, roomID){
         claimerDetails = get_claimerRequired();}
     if(claimerDetails.roomID){  //If there is a room to be worked on, then generate the parts
         //(2)
-        var creepParts = generateCreepParts(isCapturer);
+        var creepParts = generateCreepParts(spawnerRoomID, isCapturer);
         claimer_tasks.queue(claimerDetails.roomID, null, creepParts);
     }
     else{
