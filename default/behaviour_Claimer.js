@@ -43,10 +43,10 @@ var claimer_tasks = {
         }
         return creepParts;
     },
-    queue : function(roomID, sourceID, parts){
+    queue : function(spawnerRoomID, roomID, sourceID, parts){
         //Note; Have null for houseKey information as this is irrelevent to them
         var creepSpec = {roomID:roomID, sourceID:sourceID, parts:parts, role:"Claimer", time:Game.time};
-        Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].queue.push(creepSpec);
+        Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].queue.push(creepSpec);
     },
     respawn : function(creepName, spawnerID, creepSpec){
         var spawner   = Game.getObjectById(spawnerID);
@@ -80,7 +80,7 @@ function generate_claimer(isCapturer, spawnerRoomID, roomID){
     if(claimerDetails.roomID){  //If there is a room to be worked on, then generate the parts
         //(2)
         var creepParts = claimer_tasks.generateCreepParts(spawnerRoomID, isCapturer);
-        claimer_tasks.queue(claimerDetails.roomID, null, creepParts);
+        claimer_tasks.queue(spawnerRoomID, claimerDetails.roomID, null, creepParts);
     }
     else{
         console.log("Claimer Spawn Error; Null roomID");
