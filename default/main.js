@@ -5,7 +5,7 @@ var building_tasks  = require("behaviour_Builder");
 var repairing_tasks = require("behaviour_Repairer");
 var defender_tasks  = require("behaviour_Defender");
 var {extractor_tasks} = require("behaviour_Extractor");
-var {claimer_tasks}   = require("behaviour_Claimer");
+var {claimer_tasks, generate_claimer}   = require("behaviour_Claimer");
 var tower_tasks       = require("behaviour_Tower");
 var {military_tasks, generate_militia}  = require("behaviour_Military");
 var respawnManager    = require("manager_Respawn");
@@ -50,8 +50,9 @@ module.exports.loop = function () {
 
     //## TEST THIS FUNCTION ## ------> THIS IS WORKING NOW (HEALERS BROKE)
     if(Game.time.toString().slice(-1) == 0){
-        //console.log("Here RN");
+        console.log("Here RN");
         //generate_militia(0, "W7S14", "W7S15")
+        generate_claimer(false, null);
     }
 }
 //##########
