@@ -73,6 +73,12 @@ function generate_claimer(isCapturer, spawnerRoomID, roomID){
 
     (1) Get details for the claimer
     (2) Get creep parts/info & Queue creep up
+
+    ####################################################################
+    ####################################################################
+    ## CURRENTLY BROKEN --> NOT CHECKING CREEPS OFF THE LIST PROPERLY ##
+    ####################################################################
+    ####################################################################
     */
     //(1)
     var claimerDetails = null;
