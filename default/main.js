@@ -5,9 +5,9 @@ var building_tasks  = require("behaviour_Builder");
 var repairing_tasks = require("behaviour_Repairer");
 var defender_tasks  = require("behaviour_Defender");
 var {extractor_tasks} = require("behaviour_Extractor");
-var {claimer_tasks, generate_claimer, automatic_spawnClaimers}   = require("behaviour_Claimer");
+var {claimer_tasks, generate_claimer, automatic_spawnClaimers} = require("behaviour_Claimer");
 var tower_tasks       = require("behaviour_Tower");
-var {military_tasks, generate_militia}  = require("behaviour_Military");
+var {military_tasks, generate_militia, automatic_clearCores}   = require("behaviour_Military");
 var respawnManager    = require("manager_Respawn");
 var {init_energyRoom, updateContainers_energyRooms, assignCreeps_energyRooms} = require("cycle_energyAcquire");
 var {manageMemory_energyRooms, manageMemory_queues, updateTowers_spawnerRooms} = require("manager_Memory");
@@ -50,6 +50,7 @@ module.exports.loop = function () {
 
     //BIT BODGED
     automatic_spawnClaimers();
+    automatic_clearCores();
 
     //## TEST THIS FUNCTION ## ------> THIS IS WORKING NOW (HEALERS BROKE)
     if(Game.time.toString().slice(-1) == 0){
