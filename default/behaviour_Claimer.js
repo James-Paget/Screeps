@@ -79,7 +79,7 @@ function generate_claimer(isCapturer, spawnerRoomID, roomID){
         claimerDetails = get_claimerRequired();}
     if(claimerDetails.roomID){  //If there is a room to be worked on, then generate the parts
         //(2)
-        var creepParts = generateCreepParts(spawnerRoomID, isCapturer);
+        var creepParts = claimer_tasks.generateCreepParts(spawnerRoomID, isCapturer);
         claimer_tasks.queue(claimerDetails.roomID, null, creepParts);
     }
     else{
