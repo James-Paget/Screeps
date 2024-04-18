@@ -39,7 +39,8 @@ var claimer_tasks = {
         }
         else{
             //Basic claimer -> Should never really get more complex
-            creepParts = [CLAIM, MOVE];
+            //creepParts = [CLAIM, MOVE];   //--> Holds reserved, but never has build-up => open once they die
+            creepParts = [CLAIM, MOVE, CLAIM, MOVE];
         }
         return creepParts;
     },
@@ -80,12 +81,14 @@ function generate_claimer(isCapturer, spawnerRoomID, roomID){
     else{                           //If not specified, get next available space left open
         claimerDetails = get_claimerRequired();}
     //(2)
-    if(claimerDetails.roomID){      //If there is a room to be worked on, then generate the parts
-        var creepParts = claimer_tasks.generateCreepParts(spawnerRoomID, isCapturer);
-        claimer_tasks.queue(spawnerRoomID, claimerDetails.roomID, null, creepParts);
-    }
-    else{
-        console.log("Claimer Spawn Error; Null roomID");
+    if(claimerDetails){                 //If found somewhere
+        if(claimerDetails.roomID){      //(a double check) If there is a room to be worked on, then generate the parts
+            var creepParts = claimer_tasks.generateCreepParts(spawnerRoomID, isCapturer);
+            claimer_tasks.queue(spawnerRoomID, claimerDetails.roomID, null, creepParts);
+        }
+        else{
+            console.log("Claimer Spawn Error; Null roomID");
+        }
     }
 }
 
@@ -162,7 +165,27 @@ function moveToRoom_visionless(creep){
     return atDestination;
 }
 
+function automatic_spawnClaimers(){
+    /*
+    - Determines when a new claimer should be made
+    - Currently only factors in energy room considerations
+    */
+    if(Memory.energyRooms.length > 0){
+        var base_lifeTime = 600;    //###### CURRENTLY A GUESS ###### -> NUMBER OF TICKS OF LIFE
+        //For energy rooms
+        var roomsToService = Memory.energyRooms.length - Memory.spawnerRooms.length;    //Non-perma energy rooms
+        var adjusted_lifeTime = Math.floor(base_lifeTime/roomsToService);
+        if(Game.time.toString().slice(-1) % adjusted_lifeTime == 0){
+            //################################################################################################
+            //## WILL NEED TO CONSIDER EACH SPAWNER --> THE ROOM ASSOCIATED TO AN ENERGY ROOM --> IN FUTURE ##
+            //################################################################################################
+            generate_claimer(false, Memory.spawnerRooms[0].roomID, null);
+        }
+    }
+}
+
 module.exports = {
     claimer_tasks,
-    generate_claimer
+    generate_claimer,
+    automatic_spawnClaimers
 }
