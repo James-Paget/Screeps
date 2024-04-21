@@ -21,3 +21,16 @@ var manager_periodics = {
 module.exports = {
     manager_periodics
 }
+
+
+//####
+//##
+//## IMPROVE ENERGY DELIVERY -> NEAREST EXT/SPAWN SEEMS BAD AS THEY WIGGLE INEFFICIENTLY
+//##    MAYBE HAVE THEM PLACE IT IN MAIN STORAGE, AND PULL IT FROM THERE TOO
+//## THEN HAVE THEM MOVE IT TO THE TERMINAL FROM THERE
+//##
+//#####
+//##
+//## Then Make Bigger Gatherers Spawn, NOT loads of them
+//##
+//######

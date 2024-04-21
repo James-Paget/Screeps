@@ -33,9 +33,10 @@ function init_spawnerRooms(roomID){
     */
     var queueSet          = [];
     var unassignedSet     = [];
-    var towers            = [];
-    var mineralStorageSet = [];   //Stores minerals -> This holds IDs for storages used to hold minerals
-    var spawnerRoom_elem  = {roomID:roomID, queue:queueSet, unassigned:unassignedSet, mineralStorage:mineralStorageSet};
+    var mineralStorageSet = [];     //Stores minerals -> This holds IDs for storages used to hold minerals
+    var towers            = [];     //Stores IDs of towers in room -> auto updated by another function
+    var autoStructures    = [];     //Stores structure types, locations, and priorities (what, where and when to spawn)
+    var spawnerRoom_elem  = {roomID:roomID, queue:queueSet, unassigned:unassignedSet, mineralStorage:mineralStorageSet, towers:towers, autoStructures:autoStructures};
     Memory.spawnerRooms.push(spawnerRoom_elem);
 }
 function getSpawnerRoomIndex(roomID){

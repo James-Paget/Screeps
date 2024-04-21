@@ -177,7 +177,7 @@ function automatic_spawnClaimers(){
     - Currently only factors in energy room considerations
     */
     if(Memory.energyRooms.length > 0){
-        var base_lifeTime = 600;    //###### CURRENTLY A GUESS ###### -> NUMBER OF TICKS OF LIFE
+        var base_lifeTime = 600/3.0;    //###### CURRENTLY A GUESS ###### -> NUMBER OF TICKS OF LIFE
         //For energy rooms
         var roomsToService = Memory.energyRooms.length - Memory.spawnerRooms.length;    //Non-perma energy rooms
         var adjusted_lifeTime = Math.floor(base_lifeTime/roomsToService);
