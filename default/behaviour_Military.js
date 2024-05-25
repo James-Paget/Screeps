@@ -372,7 +372,7 @@ function generateCreepParts_meleeStrong(lvl, spawnerRoomID){
     var energyMax = Game.rooms[spawnerRoomID].energyCapacityAvailable;
     for(var i=0; i<lvl; i++){
         parts.unshift(ATTACK);parts.unshift(TOUGH);parts.unshift(MOVE);parts.unshift(MOVE);
-        var energyCost = _.sum(partSet, part => BODYPART_COST[part]);
+        var energyCost = _.sum(parts, part => BODYPART_COST[part]);
         if(energyCost > 0.5*energyMax){
             parts.shift();parts.shift();parts.shift();parts.shift();
         }
