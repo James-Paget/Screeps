@@ -16,8 +16,12 @@ var claimer_tasks = {
             }
             else{                                   //If you know your controller, go claim/reserve it
                 var controller = Game.getObjectById(creep.memory.houseKey.sourceID);
-                if(creep.reserveController(controller) == ERR_NOT_IN_RANGE){
+                var reserveResult = creep.reserveController(controller);
+                if(reserveResult == ERR_NOT_IN_RANGE){
                     creep.moveTo(controller);
+                }
+                if(reserveResult == ERR_INVALID_TARGET){    //Means the controller is owned by another player => Dont reserve it, claim it to reduced power faster
+                    creep.claimController(target);
                 }
             }
         }

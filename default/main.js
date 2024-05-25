@@ -134,3 +134,11 @@ function periodic_updateTowers_spawnerRooms(){
     if(Game.time.toString().slice(-1) == 8){
         updateTowers_spawnerRooms();}
 }
+
+/*
+Main problem currently is wasting resources on others contesting energyRooms
+--> e.g When they try to steal it, I still send miners, gatherers and claimers to it, resulting in big losses
+    --> Need a system to check if the energyRooms is compromised THEN stop sending resources there and send a 
+        strike team there instead to kill them.
+. Also seems to be a problem with claimer not reducing on an already claimed controller *****
+*/
