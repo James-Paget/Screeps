@@ -7,7 +7,7 @@ var defender_tasks  = require("behaviour_Defender");
 var {extractor_tasks} = require("behaviour_Extractor");
 var {claimer_tasks, generate_claimer, automatic_spawnClaimers} = require("behaviour_Claimer");
 var tower_tasks       = require("behaviour_Tower");
-var {military_tasks, generate_militia, automatic_clearCores}   = require("behaviour_Military");
+var {military_tasks, generate_coreClearers, generate_militia, automatic_clearCores}   = require("behaviour_Military");
 var respawnManager    = require("manager_Respawn");
 var {init_energyRoom, updateContainers_energyRooms, assignCreeps_energyRooms} = require("cycle_energyAcquire");
 var {manageMemory_energyRooms, manageMemory_queues, updateTowers_spawnerRooms} = require("manager_Memory");
@@ -55,7 +55,7 @@ module.exports.loop = function () {
     //## TEST THIS FUNCTION ## ------> THIS IS WORKING NOW (HEALERS BROKE)
     if(Game.time.toString().slice(-1) == 0){
         //console.log("Here RN");
-        //generate_militia(0, "W7S14", "W7S15")
+        //generate_coreClearers(0, "W7S14", "W7S15")
         //generate_claimer(false, "W7S14", null);
     }
 }
