@@ -68,7 +68,7 @@ var claimer_tasks = {
 function generate_claimer(isCapturer, spawnerRoomID, roomID){
     /*
     -Spawns a new claimer -> Either reserver or capturer
-    -The claimer will working in the "roomID" (name) room if specified, or look for next available space if 'null' is given instead
+    -The claimer will be working in the "roomID" (name) room if specified, or look for next available space if 'null' is given instead
     -This is a one-time spawn
 
     (1) Get details for the claimer
@@ -110,13 +110,18 @@ function get_claimerRequired(){
     var requiredRoomIDs = [];
     //(1)
     for(var i=0; i<Memory.energyRooms.length; i++){
-        requiredRoomIDs.push(Memory.energyRooms[i].ID);
+        requiredRoomIDs.push(Memory.energyRooms[i].ID); //Currently only candidates to consider now are energyRooms
     }
     //...
     //(2)
     for(var i=0; i<Memory.spawnerRooms.length; i++){
         for(var j=requiredRoomIDs.length-1; j>=0; j--){
-            if(Memory.spawnerRooms[i].roomID == requiredRoomIDs[j]){
+            //##################################################################
+            //#### SET AS FALSE BECAUSE HARD TO CHECK -> WHEN NO VISION ??? ####
+            //##################################################################
+            var room_permaClaimed = Memory.spawnerRooms[i].roomID == requiredRoomIDs[j];    //e.g is a spawner room owned by you
+            var room_ownedByOther = false;                                                  //e.g contains a spawner from another player -> dont waste resources try to reserve it
+            if(room_permaClaimed || room_ownedByOther){
                 requiredRoomIDs.splice(j,1);    //Remove jth element
                 break;  //As each room should only ever occur ONCE
             }
