@@ -21,7 +21,7 @@ var claimer_tasks = {
                     creep.moveTo(controller);
                 }
                 if(reserveResult == ERR_INVALID_TARGET){    //Means the controller is owned by another player => Dont reserve it, claim it to reduced power faster
-                    creep.claimController(controller);
+                    creep.attackController(controller);
                 }
             }
         }
