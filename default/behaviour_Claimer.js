@@ -21,7 +21,7 @@ var claimer_tasks = {
                     creep.moveTo(controller);
                 }
                 if(reserveResult == ERR_INVALID_TARGET){    //Means the controller is owned by another player => Dont reserve it, attack it to reduced power faster
-                    creep.attackController(controller);
+                    creep.attackController(controller);     //Note; The invalid range triggers before this error, so will move close by 1st condition, then attack by this condition
                 }
             }
         }
