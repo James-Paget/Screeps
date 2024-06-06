@@ -136,9 +136,20 @@ function periodic_updateTowers_spawnerRooms(){
 }
 
 /*
-Main problem currently is wasting resources on others contesting energyRooms
+(1) FINISH AUTO BUILDER
+[Just need to create list of auto builds]
+--> Make function to log all current structures in the auto build ****** GOOD IDEA
+----> Them implement into periodic caller
+
+(2) Test This -> ALSO STILL NOT BEATING CORE IN RESERVE -> IS THIS POSSIBLE?
+
+(3) Create new system;
+    If you have a main storage area (from spawnerRooms storage section) -> Then have energy deliver there, taken out by another creep
+    Else -> Do currently method of every man for themselves
+----> Also ensure to change to system prio for BIG creeps NOT lots of creeps
+
+(4) Main problem currently is wasting resources on others contesting energyRooms
 --> e.g When they try to steal it, I still send miners, gatherers and claimers to it, resulting in big losses
     --> Need a system to check if the energyRooms is compromised THEN stop sending resources there and send a 
         strike team there instead to kill them.
-. Also seems to be a problem with claimer not reducing on an already claimed controller *****
 */
