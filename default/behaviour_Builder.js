@@ -82,7 +82,7 @@ var building_tasks = {
         var creepsOwned  = _.filter(Game.creeps, function(creep) {return (creep.memory.spawnKey.roomID == spawnerRoomID && creep.memory.role == "Builder")}); //Owned by this spawner, of this type
         var creepNumberRequired = 3 -creepsOwned.length;    //<-- Specify the number of creeps wanted here
         if(creepNumberRequired > 0){    //If actually need any more workers
-            var workPerCreep = 3;       //A rough Guess at an upper bound/ideal value --> Can make it more sophisticated
+            var workPerCreep = 2;       //A rough Guess at an upper bound/ideal value --> Can make it more sophisticated
             var energyMax = Game.rooms[spawnerRoomID].energyCapacityAvailable;
             var partSet = [WORK,CARRY,MOVE];            //Base line body parts required
             for(var i=0; i<workPerCreep; i++){  //Attempts to spawn the most expensive (but not overkill) miner it can afford

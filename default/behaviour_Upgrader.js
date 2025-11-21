@@ -10,7 +10,7 @@ var upgrading_tasks = {
             //}
         }
         else{
-            if(creep.room.energyAvailable >= 0.8*creep.room.energyCapacityAvailable){   //Above 80% energy in order to start upgrading
+            if(creep.room.energyAvailable >= 0.5*creep.room.energyCapacityAvailable){   //Above 80% energy in order to start upgrading
                 var energyCaches = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_SPAWN && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_EXTENSION && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) )}});
                 var target = creep.pos.findClosestByPath(energyCaches);
                 if(creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
@@ -38,7 +38,7 @@ var upgrading_tasks = {
         var creepsOwned  = _.filter(Game.creeps, function(creep) {return (creep.memory.spawnKey.roomID == spawnerRoomID && creep.memory.role == "Upgrader")}); //Owned by this spawner, of this type
         var creepNumberRequired = 2 -creepsOwned.length;    //<-- Specify the number of creeps wanted here
         if(creepNumberRequired > 0){    //If actually need any more workers
-            var workPerCreep = 5;       //A rough Guess at an upper bound/ideal value --> Can make it more sophisticated
+            var workPerCreep = 2;       //A rough Guess at an upper bound/ideal value --> Can make it more sophisticated
             var energyMax = Game.rooms[spawnerRoomID].energyCapacityAvailable;
             var partSet = [WORK,CARRY,MOVE,MOVE];   //Base line body parts required
             for(var i=0; i<workPerCreep; i++){      //Attempts to spawn the most expensive (but not overkill) miner it can afford

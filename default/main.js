@@ -23,7 +23,7 @@ module.exports.loop = function () {
     // + CHANGE SPAWNER ROOM INIT NAME
     //## PUT THIS INOT A "RESTART COLONY" FUNCTION
     //## PUT THIS INOT A "RESTART COLONY" FUNCTION
-
+    
     //Ensure memory values are accurate and up to date
     periodic_updateContainers_energyRooms();
     periodic_updateTowers_spawnerRooms();
@@ -49,7 +49,7 @@ module.exports.loop = function () {
     calculate_transaction_automatic();
 
     //BIT BODGED
-    automatic_spawnClaimers();
+    // automatic_spawnClaimers();
     automatic_clearCores();
 
     //## TEST THIS FUNCTION ## ------> THIS IS WORKING NOW (HEALERS BROKE)
@@ -70,6 +70,14 @@ function creep_taskManager(){
     var creeps = Game.creeps;
     for(name in creeps)
     {
+        // if(name == "Upgrader74427326") {
+        //     var creep = creeps[name]
+        //     if(creep.room.controller) {
+        //         if(creep.signController(creep.room.controller, "Ello") == ERR_NOT_IN_RANGE) {
+        //             creep.moveTo(creep.room.controller);
+        //         }
+        //     }
+        // }
         if(creeps[name].memory.role == "Miner"){
             miner_tasks.task(creeps[name]);}
         if(creeps[name].memory.role == "Gatherer"){
