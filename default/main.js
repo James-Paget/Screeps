@@ -12,10 +12,21 @@ var respawnManager    = require("manager_Respawn");
 var {init_energyRoom, updateContainers_energyRooms, assignCreeps_energyRooms} = require("cycle_energyAcquire");
 var {manageMemory_energyRooms, manageMemory_queues, updateTowers_spawnerRooms} = require("manager_Memory");
 var {calculate_transaction_manual, calculate_transaction_automatic} = require("manager_Market");
+var restartMemory = require(manager_Misc)
 
 module.exports.loop = function () {
+    /*
+    (1) Setup colony restart functions
+    (2) Rework all spawn functions + death functions + etc to work with multi-spawners (per room) AND multi-spawners (several rooms)
+    (3) Setup auto-builder functions for all existing buildings
+    */
+
+
     //## PUT THIS INOT A "RESTART COLONY" FUNCTION
     //## PUT THIS INOT A "RESTART COLONY" FUNCTION
+
+    //restartMemory() <--- MAKE REQUIRED CHANGES HERE IN PARENT OBJECT
+
     //delete Memory.energyRooms;
     //delete Memory.spawnerRooms;
     //Memory.spawnerRooms[...].towers = [];
@@ -30,7 +41,6 @@ module.exports.loop = function () {
     manageMemory_queues();
     manageMemory_energyRooms();
     manageMemory_dead_cleanup();
-    //init_energyRoom(Game.spawns["Spawn1"].room, "E51N21");    //### MOVE THIS OUT ### ---> HAVE A PERIODIC CHECK FOR E_ROOMS, CONTAAINERS LOST, ETC --> e.g every 5/10/20 frames
 
     //Spawn & assign required dudes
     assignCreeps_energyRooms();         //this order is important, prevents nulls occurring when spawning and istantly assigning, gives a frame of breather room
