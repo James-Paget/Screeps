@@ -12,9 +12,9 @@ function manageMemory_setupMemory() {
         for(spawnerName in Game.spawns) {
             var spawnerRoomExists = false;
             for(spawnerRoomIndex in Memory.spawnerRooms) {                                  // Look if the spawner has a spawnerRoom already registered
-                if(Game.spawns[spawnerName].room == Memory.spawnerRooms[spawnerRoomIndex].roomID) { spawnerRoomExists=true;break; }
+                if(Game.spawns[spawnerName].room.name == Memory.spawnerRooms[spawnerRoomIndex].roomID) { spawnerRoomExists=true;break; }
             }
-            if(!spawnerRoomExists) { init_spawnerRooms(Game.spawns[spawnerName].room) }     // If no spawnerRoom registered, make one
+            if(!spawnerRoomExists) { init_spawnerRooms(Game.spawns[spawnerName].room.name) }     // If no spawnerRoom registered, make one
         }
     }
 }

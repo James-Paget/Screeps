@@ -64,7 +64,6 @@ module.exports.loop = function () {
 
     //## TEST THIS FUNCTION ## ------> THIS IS WORKING NOW (HEALERS BROKE)
     if(Game.time.toString().slice(-1) == 0){
-        //console.log("Here RN");
         //generate_coreClearers(0, "W7S14", "W7S15")
         //generate_militia(1, "W7S14", "W7S13")
         //generate_claimer(false, "W7S14", null);
@@ -120,7 +119,6 @@ function manageMemory_dead_cleanup(){
     //Clean dead dudes
     for(var memoryName in Memory.creeps){
         if(!Game.creeps[memoryName]){
-            //console.log("CREEP JUST REGISTERED AS DEAD");
             if(Memory.creeps[memoryName].role == "Miner"){
                 miner_tasks.death(Memory.creeps[memoryName].houseKey, Memory.creeps[memoryName].role, Memory.creeps[memoryName].ID);}
             if(Memory.creeps[memoryName].role == "Gatherer"){
