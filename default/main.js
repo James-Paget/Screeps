@@ -9,10 +9,9 @@ var {claimer_tasks, generate_claimer, automatic_spawnClaimers} = require("behavi
 var tower_tasks       = require("behaviour_Tower");
 var {military_tasks, generate_coreClearers, generate_militia, automatic_clearCores}   = require("behaviour_Military");
 var respawnManager    = require("manager_Respawn");
-var {init_energyRoom, updateContainers_energyRooms, assignCreeps_energyRooms} = require("cycle_energyAcquire");
-var {manageMemory_setupMemory, manageMemory_queues, updateTowers_spawnerRooms} = require("manager_Memory");
+var {init_energyRoom, assignCreeps_energyRooms} = require("cycle_energyAcquire");
+var {manageMemory_setupMemory, manageMemory_queues} = require("manager_Memory");
 var {calculate_transaction_manual, calculate_transaction_automatic} = require("manager_Market");
-var restartMemory = require("manager_Misc")
 
 module.exports.loop = function () {
     /*
@@ -37,8 +36,6 @@ module.exports.loop = function () {
     
     //Ensure memory values are accurate and up to date
     manageMemory_setupMemory();
-    periodic_updateContainers_energyRooms();
-    periodic_updateTowers_spawnerRooms();
     manageMemory_queues();
     manageMemory_dead_cleanup();
 
@@ -142,30 +139,3 @@ function manageMemory_dead_cleanup(){
         }
     }
 }
-function periodic_updateContainers_energyRooms(){
-    if(Game.time.toString().slice(-1) == 5){
-        updateContainers_energyRooms();}
-}
-function periodic_updateTowers_spawnerRooms(){
-    if(Game.time.toString().slice(-1) == 8){
-        updateTowers_spawnerRooms();}
-}
-
-/*
-(1) FINISH AUTO BUILDER
-[Just need to create list of auto builds]
---> Make function to log all current structures in the auto build ****** GOOD IDEA
-----> Them implement into periodic caller
-
-(2) Test This -> ALSO STILL NOT BEATING CORE IN RESERVE -> IS THIS POSSIBLE?
-
-(3) Create new system;
-    If you have a main storage area (from spawnerRooms storage section) -> Then have energy deliver there, taken out by another creep
-    Else -> Do currently method of every man for themselves
-----> Also ensure to change to system prio for BIG creeps NOT lots of creeps
-
-(4) Main problem currently is wasting resources on others contesting energyRooms
---> e.g When they try to steal it, I still send miners, gatherers and claimers to it, resulting in big losses
-    --> Need a system to check if the energyRooms is compromised THEN stop sending resources there and send a 
-        strike team there instead to kill them.
-*/

@@ -18,3 +18,5 @@ TODO list; <br />
 
 --> This will be an issue for multi-spawners in a single room
  ...return(structure.structureType == STRUCTURE_SPAWN)}})[0].id;
+
+ Auto structures only place most important at once -> then progress to next tier of importance + have builders innately not over-consume energy (only take excess)

@@ -2,13 +2,15 @@ function manageMemory_setupMemory() {
     /*
     . (1) Creates the baseline structure if not present
     . (2) Make spawnerRooms if not registered already
+    . (3) Populate information in spawnerRooms
+    . (4) Populate information in energyRooms
     */
     // (1)
     if(!Memory.spawnerRooms){ Memory.spawnerRooms = []; }
     if(!Memory.energyRooms){ Memory.energyRooms = []; }
 
-    // (2)
     if(Game.time.toString().slice(-1) == 5) {   // Periodically call this
+        // (2)
         for(spawnerName in Game.spawns) {
             var spawnerRoomExists = false;
             for(spawnerRoomIndex in Memory.spawnerRooms) {                                  // Look if the spawner has a spawnerRoom already registered
@@ -16,6 +18,12 @@ function manageMemory_setupMemory() {
             }
             if(!spawnerRoomExists) { init_spawnerRooms(Game.spawns[spawnerName].room.name) }     // If no spawnerRoom registered, make one
         }
+
+        // (3)
+        updateTowers_spawnerRooms();
+        updateMineralStorage_spawnerRooms();
+        // (4)
+        updateContainers_energyRooms();
     }
 }
 function manageMemory_queues(){
@@ -74,9 +82,12 @@ function getSpawnerRoomIndex(roomID){
     return requiredIndex;
 }
 function updateTowers_spawnerRooms(){
+    /*
+    . Populates the 'tower' list in spawnerRooms elements
+    */
     for(var spawnerRoomIndex in Memory.spawnerRooms){
         //Spawner room => never vision problems
-        var towers = Game.rooms[Memory.spawnerRooms[spawnerRoomIndex].roomID].find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType == STRUCTURE_TOWER)&&(structure.progress == null) )}});    //Is is a tower, and is finished building
+        var towers = Game.rooms[Memory.spawnerRooms[spawnerRoomIndex].roomID].find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType == STRUCTURE_TOWER)&&(structure.progress == null) )}});    //Is it a tower, and is it finished building
         //Add towers in this room to the list
         Memory.spawnerRooms[spawnerRoomIndex].towers = [];
         for(var towerIndex in towers){
@@ -84,7 +95,47 @@ function updateTowers_spawnerRooms(){
         }
     }
 }
+function updateMineralStorage_spawnerRooms(){
+    /*
+    . Populates the 'mineralStorage' list in spawnerRooms elements
+    */
+    for(var spawnerRoomIndex in Memory.spawnerRooms){
+        //Spawner room => never vision problems
+        var storage = Game.rooms[Memory.spawnerRooms[spawnerRoomIndex].roomID].find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType == STRUCTURE_STORAGE)&&(structure.progress == null) )}});    //Is it a storage structure, and is it finished building
+        //Add storage in this room to the list
+        Memory.spawnerRooms[spawnerRoomIndex].mineralStorage = [];
+        for(var storageIndex in storage){
+            Memory.spawnerRooms[spawnerRoomIndex].mineralStorage.push(storage[storageIndex].id);
+        }
+    }
+}
 
+
+function updateContainers_energyRooms(){
+    /*
+    -- Run this periodically, not too often
+    . Checks all sources of all energy rooms
+    . Removes old containers (that have been destroyed since)
+    . Adds new containers that have been added since
+    */
+    var thresholdDist_container = 4;
+    for(var roomIndex in Memory.energyRooms){                               //For each energy room
+        for(var sourceIndex in Memory.energyRooms[roomIndex].sources){      //For each source
+            var hasVision = Game.rooms[Memory.energyRooms[roomIndex].ID];   //No vision => no update
+            if(hasVision){
+                var sourceObject   = Game.getObjectById(Memory.energyRooms[roomIndex].sources[sourceIndex].ID);
+                var roomContainers = Game.rooms[Memory.energyRooms[roomIndex].ID].find(FIND_STRUCTURES, {filter:(structure) => {return(structure.structureType == STRUCTURE_CONTAINER)}}); //List all containers in given room
+                var containerIDs   = [];
+                for(var containerIndex in roomContainers){
+                    if( sourceObject.pos.inRangeTo(roomContainers[containerIndex], thresholdDist_container) ){
+                        containerIDs.push(roomContainers[containerIndex].id);
+                    }
+                }
+                Memory.energyRooms[roomIndex].sources[sourceIndex].containers = containerIDs;    //Replace old list with this
+            }
+        }
+    }
+}
 function remove_energyRooms(ID, spawnerRoomID, fullPurge=true) {
     /*
     . ID = Name of the energy room to be removed e.g. W1S1 (if null => remove any energy room where spawnerRoomID matches, irrespective of energy room's ID)
@@ -132,6 +183,5 @@ function remove_energyRooms(ID, spawnerRoomID, fullPurge=true) {
 module.exports = {
     getSpawnerRoomIndex,
     manageMemory_setupMemory,
-    manageMemory_queues,
-    updateTowers_spawnerRooms
+    manageMemory_queues
 };
