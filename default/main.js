@@ -10,7 +10,7 @@ var tower_tasks       = require("behaviour_Tower");
 var {military_tasks, generate_coreClearers, generate_militia, automatic_clearCores}   = require("behaviour_Military");
 var respawnManager    = require("manager_Respawn");
 var {init_energyRoom, updateContainers_energyRooms, assignCreeps_energyRooms} = require("cycle_energyAcquire");
-var {manageMemory_energyRooms, manageMemory_queues, updateTowers_spawnerRooms} = require("manager_Memory");
+var {manageMemory_setupMemory, manageMemory_queues, updateTowers_spawnerRooms} = require("manager_Memory");
 var {calculate_transaction_manual, calculate_transaction_automatic} = require("manager_Market");
 var restartMemory = require("manager_Misc")
 
@@ -36,14 +36,14 @@ module.exports.loop = function () {
     //## PUT THIS INOT A "RESTART COLONY" FUNCTION
     
     //Ensure memory values are accurate and up to date
+    manageMemory_setupMemory();
     periodic_updateContainers_energyRooms();
     periodic_updateTowers_spawnerRooms();
     manageMemory_queues();
-    manageMemory_energyRooms();
     manageMemory_dead_cleanup();
 
     //Spawn & assign required dudes
-    assignCreeps_energyRooms();         //this order is important, prevents nulls occurring when spawning and istantly assigning, gives a frame of breather room
+    assignCreeps_energyRooms();         //this order is important, prevents nulls occurring when spawning and instantly assigning, gives a frame of breather room
     respawnManager.spawnFromQueue();    //assign -> respawn => respawn -> frame gap -> assign
     respawnManager.extendQueue();
     

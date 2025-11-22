@@ -254,18 +254,6 @@ function init_energyRoom(room, spawnerRoomID){
         }
     }
 }
-function remove_energyRoom(room){
-    /*
-    . Removes the given energyRoom from the memory list structure
-    . This will prevent miners being smartly assigned sources for the room
-    */
-    for(var roomIndex in Memory.energyRooms){
-        if(Memory.energyRooms[roomIndex].ID == room.name){   //ID of room is its roomName here
-            Memory.energyRooms.splice(roomIndex,1);
-            break;
-        }
-    }
-}
 function removeCreep_energyRooms(houseKey, creepRole, creepID){
     /*
     Takes a creep and removes them from all relevent lists 

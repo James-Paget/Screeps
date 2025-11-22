@@ -22,6 +22,7 @@ var miscManager = {
         // + CHANGE E ROOM INIT NAME
         // + CHANGE SPAWNER ROOM INIT NAME
 
+        //init_spawnerRooms("ID_NAME")
         //init_energyRoom(Game.spawns["Spawn1"].room, "E51N21");    //### MOVE THIS OUT ### ---> HAVE A PERIODIC CHECK FOR E_ROOMS, CONTAAINERS LOST, ETC --> e.g every 5/10/20 frames
     }
 }
