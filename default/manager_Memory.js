@@ -1,16 +1,22 @@
 function manageMemory_setupMemory() {
     /*
     . (1) Creates the baseline structure if not present
+    . (2) Make spawnerRooms if not registered already
     */
     // (1)
     if(!Memory.spawnerRooms){ Memory.spawnerRooms = []; }
     if(!Memory.energyRooms){ Memory.energyRooms = []; }
 
     // (2)
-    for(i in Game.spawns) {
-        console.log(i)
+    if(Game.time.toString().slice(-1) == 5) {   // Periodically call this
+        for(spawnerName in Game.spawns) {
+            var spawnerRoomExists = false;
+            for(spawnerRoomIndex in Memory.spawnerRooms) {                                  // Look if the spawner has a spawnerRoom already registered
+                if(Game.spawns[spawnerName].room == Memory.spawnerRooms[spawnerRoomIndex].roomID) { spawnerRoomExists=true;break; }
+            }
+            if(!spawnerRoomExists) { init_spawnerRooms(Game.spawns[spawnerName].room) }     // If no spawnerRoom registered, make one
+        }
     }
-    //init_spawnerRooms("W7S14"); 
 }
 function manageMemory_queues(){
     //Remove old queued creeps --> prevents clogging
