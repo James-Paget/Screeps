@@ -9,6 +9,7 @@ var miscManager = {
         (2) REMOVE ENERGY_ROOM (E ROOM X FROM SPAWNER ROOM Y), 
         (3) ADD SPAWNER ROMM / ENERGY ROOM
         + ADD A FULL RESTART FUNCTION (BASICALLY JUST DELETE ALL AND MAKE SURE IT REASSEMBLES STRUCTURE)
+    ### TEST WORKS
     */
     restartMemory: function() {
         /*

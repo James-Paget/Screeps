@@ -12,7 +12,7 @@ var respawnManager    = require("manager_Respawn");
 var {init_energyRoom, updateContainers_energyRooms, assignCreeps_energyRooms} = require("cycle_energyAcquire");
 var {manageMemory_energyRooms, manageMemory_queues, updateTowers_spawnerRooms} = require("manager_Memory");
 var {calculate_transaction_manual, calculate_transaction_automatic} = require("manager_Market");
-var restartMemory = require(manager_Misc)
+var restartMemory = require("manager_Misc")
 
 module.exports.loop = function () {
     /*
