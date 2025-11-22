@@ -35,7 +35,7 @@ function manageMemory_queues(){
 
 function trim_spawnerRooms() {
     // Remove dead spawnerRooms
-    for(let i=Memory.spawnerRooms.length; i>=0; i--) {
+    for(let i=Memory.spawnerRooms.length-1; i>=0; i--) {
         var spawnerDead = true;
         for(spawnerName in Game.spawns) {
             if(Game.spawns[spawnerName].room.name == Memory.spawnerRooms[i].roomID) {
