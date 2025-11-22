@@ -1,7 +1,7 @@
 function manageMemory_setupMemory() {
     /*
     . (1) Creates the baseline structure if not present
-    . (2) Make spawnerRooms if not registered already
+    . (2) Make spawnerRooms if not registered already and remove unused/dead spawnerRooms
     . (3) Populate information in spawnerRooms
     . (4) Populate information in energyRooms
     */
@@ -11,13 +11,7 @@ function manageMemory_setupMemory() {
 
     if(Game.time.toString().slice(-1) == 5) {   // Periodically call this
         // (2)
-        for(spawnerName in Game.spawns) {
-            var spawnerRoomExists = false;
-            for(spawnerRoomIndex in Memory.spawnerRooms) {                                  // Look if the spawner has a spawnerRoom already registered
-                if(Game.spawns[spawnerName].room.name == Memory.spawnerRooms[spawnerRoomIndex].roomID) { spawnerRoomExists=true;break; }
-            }
-            if(!spawnerRoomExists) { init_spawnerRooms(Game.spawns[spawnerName].room.name) }     // If no spawnerRoom registered, make one
-        }
+        trim_spawnerRooms()
 
         // (3)
         updateTowers_spawnerRooms();
@@ -36,6 +30,31 @@ function manageMemory_queues(){
                 }
             }
         }
+    }
+}
+
+function trim_spawnerRooms() {
+    // Remove dead spawnerRooms
+    for(let i=Memory.spawnerRooms.length; i>=0; i--) {
+        var spawnerDead = true;
+        for(spawnerName in Game.spawns) {
+            if(Game.spawns[spawnerName].room.name == Memory.spawnerRooms[i].roomID) {
+                spawnerDead = false;
+                break;
+            }
+        }
+        if(spawnerDead) {
+            Memory.spawnerRooms.splice(i,1)
+        }
+    }
+
+    // Add missing spawnerRooms
+    for(spawnerName in Game.spawns) {
+        var spawnerRoomExists = false;
+        for(spawnerRoomIndex in Memory.spawnerRooms) {                                  // Look if the spawner has a spawnerRoom already registered
+            if(Game.spawns[spawnerName].room.name == Memory.spawnerRooms[spawnerRoomIndex].roomID) { spawnerRoomExists=true;break; }
+        }
+        if(!spawnerRoomExists) { init_spawnerRooms(Game.spawns[spawnerName].room.name) }     // If no spawnerRoom registered, make one
     }
 }
 
