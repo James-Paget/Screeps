@@ -180,7 +180,7 @@ var respawnManager = {
         . satisfaction = Percentage of maximum desired workload for a given role required for this work-order
         . additionalInfo = Extra details like nearby containers and spaces. Defaults to null if irrelevant
         */
-        const cushionFactor = 0.9;  // Leave wiggle room for spawnerRoom energy maximum
+        const cushionFactor = 0.75;  // Leave wiggle room for spawnerRoom energy maximum
 
         var creepParts = null;
         const creepValueMax = this.fetch_creepValueMaximum(roomID, role);
