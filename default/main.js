@@ -14,26 +14,6 @@ var {manageMemory_setupMemory, manageMemory_queues} = require("manager_Memory");
 var {calculate_transaction_manual, calculate_transaction_automatic} = require("manager_Market");
 
 module.exports.loop = function () {
-    /*
-    (1) Setup colony restart functions
-    (2) Rework all spawn functions + death functions + etc to work with multi-spawners (per room) AND multi-spawners (several rooms)
-    (3) Setup auto-builder functions for all existing buildings
-    */
-
-
-    //## PUT THIS INOT A "RESTART COLONY" FUNCTION
-    //## PUT THIS INOT A "RESTART COLONY" FUNCTION
-
-    //restartMemory() <--- MAKE REQUIRED CHANGES HERE IN PARENT OBJECT
-
-    //delete Memory.energyRooms;
-    //delete Memory.spawnerRooms;
-    //Memory.spawnerRooms[...].towers = [];
-    // + CHANGE E ROOM INIT NAME
-    // + CHANGE SPAWNER ROOM INIT NAME
-    //## PUT THIS INOT A "RESTART COLONY" FUNCTION
-    //## PUT THIS INOT A "RESTART COLONY" FUNCTION
-    
     //Ensure memory values are accurate and up to date
     manageMemory_setupMemory();
     manageMemory_queues();
@@ -66,43 +46,39 @@ module.exports.loop = function () {
         //generate_claimer(false, "W7S14", null);
     }
 }
-//##########
-//## NEED TO DEPLOY MILITIA TO KILL CORES AUTOMATICALLY
-//##
-//## NEED TO SETUP CREEPS TO RESERVE ENERGY ROOMS
-//##########
 
 function creep_taskManager(){
     var creeps = Game.creeps;
-    for(name in creeps)
-    {
-        // if(name == "Upgrader74427326") {
-        //     var creep = creeps[name]
-        //     if(creep.room.controller) {
-        //         if(creep.signController(creep.room.controller, "Ello") == ERR_NOT_IN_RANGE) {
-        //             creep.moveTo(creep.room.controller);
-        //         }
-        //     }
-        // }
-        if(creeps[name].memory.role == "Miner"){
-            miner_tasks.task(creeps[name]);}
-        if(creeps[name].memory.role == "Gatherer"){
-            gatherer_tasks.task(creeps[name]);}
-        if(creeps[name].memory.role == "Upgrader"){
-            upgrading_tasks.task(creeps[name]);}
-        if(creeps[name].memory.role == "Builder"){
-            building_tasks.task(creeps[name]);}
-        if(creeps[name].memory.role == "Repairer"){
-            repairing_tasks.task(creeps[name]);}
-        if(creeps[name].memory.role == "Defender"){
-            defender_tasks.task(creeps[name]);}
-        if(creeps[name].memory.role == "Extractor"){
-            extractor_tasks.task(creeps[name]);}
-        if(creeps[name].memory.role == "Military"){
-            military_tasks.task(creeps[name]);}
-        if(creeps[name].memory.role == "Claimer"){
-            claimer_tasks.task(creeps[name]);}
-        //...
+    for(creepName in creeps) {
+        if(creeps[creepName].memory.role!=null) {   // ** Note; All creeps require; spawnKey=[roomID, spawnID]
+            if( (creeps[creepName].memory.spawnKey[roomID]!=null)&&(creeps[creepName].memory.spawnKey[spawnID]!=null) ) {
+                if(creeps[creepName].memory.role == "Miner"){       // ** Note; Miner requires; spawnKey=[roomID, spawnID], houseKey=[roomID, sourceID] 
+                    if( (creeps[creepName].memory.houseKey[roomID]!=null)&&(creeps[creepName].memory.houseKey[sourceID]!=null) ) {
+                        miner_tasks.task(creeps[creepName]);
+                    }
+                }
+                if(creeps[creepName].memory.role == "Gatherer"){    // ** Note; Gatherer requires; spawnKey=[roomID, spawnID], houseKey=[roomID, sourceID] 
+                    if( (creeps[creepName].memory.houseKey[roomID]!=null)&&(creeps[creepName].memory.houseKey[sourceID]!=null) ) {
+                        gatherer_tasks.task(creeps[creepName]);
+                    }
+                }
+                if(creeps[creepName].memory.role == "Upgrader"){
+                    upgrading_tasks.task(creeps[creepName]);}
+                if(creeps[creepName].memory.role == "Builder"){
+                    building_tasks.task(creeps[creepName]);}
+                if(creeps[creepName].memory.role == "Repairer"){
+                    repairing_tasks.task(creeps[creepName]);}
+                if(creeps[creepName].memory.role == "Defender"){
+                    defender_tasks.task(creeps[creepName]);}
+                if(creeps[creepName].memory.role == "Extractor"){
+                    extractor_tasks.task(creeps[creepName]);}
+                if(creeps[creepName].memory.role == "Military"){
+                    military_tasks.task(creeps[creepName]);}
+                if(creeps[creepName].memory.role == "Claimer"){
+                    claimer_tasks.task(creeps[creepName]);}
+                //...
+            }       // If spawnKey is corrupted, do not try to perform tasks
+        }           // If its role is corrupted, do not try to perform tasks
     }
 }
 function tower_taskManager(){
@@ -116,25 +92,27 @@ function manageMemory_dead_cleanup(){
     //Clean dead dudes
     for(var memoryName in Memory.creeps){
         if(!Game.creeps[memoryName]){
-            if(Memory.creeps[memoryName].role == "Miner"){
-                miner_tasks.death(Memory.creeps[memoryName].houseKey, Memory.creeps[memoryName].role, Memory.creeps[memoryName].ID);}
-            if(Memory.creeps[memoryName].role == "Gatherer"){
-                gatherer_tasks.death(Memory.creeps[memoryName].houseKey, Memory.creeps[memoryName].role, Memory.creeps[memoryName].ID);}
-            if(Memory.creeps[memoryName].role == "Upgrader"){
-                upgrading_tasks.death();}
-            if(Memory.creeps[memoryName].role == "Builder"){
-                building_tasks.death();}
-            if(Memory.creeps[memoryName].role == "Repairer"){
-                repairing_tasks.death();}
-            if(Memory.creeps[memoryName].role == "Defender"){
-                defender_tasks.death();}
-            if(Memory.creeps[memoryName].role == "Extractor"){
-                extractor_tasks.death();}
-            if(Memory.creeps[memoryName].role == "Military"){
-                military_tasks.death();}
-            if(Memory.creeps[memoryName].role == "Claimer"){
-                claimer_tasks.death();}
-            //...
+            if(Memory.creeps[memoryName].role != null) {
+                if(Memory.creeps[memoryName].role == "Miner"){
+                    miner_tasks.death(Memory.creeps[memoryName].houseKey, Memory.creeps[memoryName].role, Memory.creeps[memoryName].ID);}
+                if(Memory.creeps[memoryName].role == "Gatherer"){
+                    gatherer_tasks.death(Memory.creeps[memoryName].houseKey, Memory.creeps[memoryName].role, Memory.creeps[memoryName].ID);}
+                if(Memory.creeps[memoryName].role == "Upgrader"){
+                    upgrading_tasks.death();}
+                if(Memory.creeps[memoryName].role == "Builder"){
+                    building_tasks.death();}
+                if(Memory.creeps[memoryName].role == "Repairer"){
+                    repairing_tasks.death();}
+                if(Memory.creeps[memoryName].role == "Defender"){
+                    defender_tasks.death();}
+                if(Memory.creeps[memoryName].role == "Extractor"){
+                    extractor_tasks.death();}
+                if(Memory.creeps[memoryName].role == "Military"){
+                    military_tasks.death();}
+                if(Memory.creeps[memoryName].role == "Claimer"){
+                    claimer_tasks.death();}
+                //...
+            }   // If has a corrupted role memory, delete anyway but without extra cleanup
             delete Memory.creeps[memoryName];
         }
     }

@@ -16,6 +16,12 @@ TODO list; <br />
  8.) Expand military types <br />
  9.) Do labs system <br />
 
+Focus on making the energyRoom creeps less fragile -> perform an early error check on their memory to ensure creeps will faulted memory are quickly found and dealt with -> suicide (or just reclaim into spawn again) them or try re-add memory (if can be determined)
+
+Multiple rooms
+Auto-kill energy cores
+Auto-claim nearby rooms of interest / [[energyRooms]]
+
 --> This will be an issue for multi-spawners in a single room
  ...return(structure.structureType == STRUCTURE_SPAWN)}})[0].id;
 

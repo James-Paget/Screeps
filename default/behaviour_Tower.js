@@ -1,7 +1,7 @@
 var tower_tasks = {
-    task : function(tower){
-        var isInvasion = tower.room.find(FIND_HOSTILE_CREEPS).length > 0;
-        if(isInvasion){
+    task : function(tower) {
+        var isUnderAttack = tower.room.find(FIND_HOSTILE_CREEPS).length > 0;
+        if(isUnderAttack){
             towerAttack_hostileCreeps(tower);}
         else{
             if(tower.store.getUsedCapacity(RESOURCE_ENERGY) >= 0.5*tower.store.getCapacity(RESOURCE_ENERGY)){  //Any repair when over half energy, in case of attack
