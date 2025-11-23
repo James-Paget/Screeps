@@ -51,9 +51,10 @@ function creep_taskManager(){
     var creeps = Game.creeps;
     for(creepName in creeps) {
         if(creeps[creepName].memory.role!=null) {   // ** Note; All creeps require; spawnKey=[roomID, spawnID]
-            if( (creeps[creepName].memory.spawnKey[roomID]!=null)&&(creeps[creepName].memory.spawnKey[spawnID]!=null) ) {
+            console.log( "creeps[creepName].memory.spawnKey[roomID] = "+creeps[creepName].memory.spawnKey["roomID"] )
+            if( (creeps[creepName].memory.spawnKey["roomID"]!=null)&&(creeps[creepName].memory.spawnKey["spawnID"]!=null) ) {
                 if(creeps[creepName].memory.role == "Miner"){       // ** Note; Miner requires; spawnKey=[roomID, spawnID], houseKey=[roomID, sourceID] 
-                    if( (creeps[creepName].memory.houseKey[roomID]!=null)&&(creeps[creepName].memory.houseKey[sourceID]!=null) ) {
+                    if( (creeps[creepName].memory.houseKey["roomID"]!=null)&&(creeps[creepName].memory.houseKey["sourceID"]!=null) ) {
                         miner_tasks.task(creeps[creepName]);
                     }
                 }
