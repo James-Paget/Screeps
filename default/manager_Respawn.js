@@ -87,7 +87,7 @@ var respawnManager = {
 
 
 
-    queue_creepGeneric(roomID, creepRole, creepParts, additionalInfo=null) {
+    queue_creepGeneric : function(roomID, creepRole, creepParts, additionalInfo=null) {
         /*
         . Queues up any creep independent of their role
         . Additional arguements needed can be parsed in as an object for 'additionalInfo={...}'
@@ -214,9 +214,9 @@ var respawnManager = {
             const segmentCost = _.sum(segmentParts, part => BODYPART_COST[part]);
             const segmentRepeats = Math.floor( (Math.min(cushionFactor*maximumRoomEnergy, requiredValue) -baseCost)/segmentCost );    // Pick to (A) Build only what is required, or (B) build biggest possible creep if can
             creepParts = []
-            for(part in baseParts) {creepParts.push(part)}
+            for(partIndex in baseParts) {creepParts.push(baseParts[partIndex])}
             for(var i=0; i<segmentRepeats; i++) {
-                for(part in segmentParts) {creepParts.push(part)}
+                for(partIndex in segmentParts) {creepParts.push(segmentParts[partIndex])}
             }
             // Do check at the end for atypical role conditions
             switch(role) {
