@@ -74,8 +74,8 @@ var respawnManager = {
         */
         for(var spawnerRoomIndex in Memory.spawnerRooms){
             if( (Memory.spawnerRooms[spawnerRoomIndex].queue.length == 0) && (Memory.spawnerRooms[spawnerRoomIndex].unassigned.length == 0) ){
-                queueCreeps_energyRooms(Memory.spawnerRooms[spawnerRoomIndex].roomID);
-                queueCreeps_spawnerRoom(Memory.spawnerRooms[spawnerRoomIndex].roomID);
+                this.queueCreeps_energyRooms(Memory.spawnerRooms[spawnerRoomIndex].roomID);
+                this.queueCreeps_spawnerRoom(Memory.spawnerRooms[spawnerRoomIndex].roomID);
 
                 // ### LEGACY ###
                 // queueCreeps_energyRooms();  //Can contribute 2 at once, maximum (miner and/or gatherer)
