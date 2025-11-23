@@ -212,7 +212,7 @@ var respawnManager = {
             }
             const baseCost    = _.sum(baseParts, part => BODYPART_COST[part]);
             const segmentCost = _.sum(segmentParts, part => BODYPART_COST[part]);
-            const segmentRepeats = floor( (min(cushionFactor*maximumRoomEnergy, requiredValue) -baseCost)/segmentCost );    // Pick to (A) Build only what is required, or (B) build biggest possible creep if can
+            const segmentRepeats = Math.floor( (Math.min(cushionFactor*maximumRoomEnergy, requiredValue) -baseCost)/segmentCost );    // Pick to (A) Build only what is required, or (B) build biggest possible creep if can
             creepParts = []
             for(part in baseParts) {creepParts.push(part)}
             for(var i=0; i<segmentRepeats; i++) {
@@ -259,7 +259,8 @@ var respawnManager = {
             {role: "Upgrader", satisfaction: 0.9}, 
             {role: "Extractor", satisfaction: 0.9}
         ]
-        for(condition in creepQueuePriority) {
+        for(conditionIndex in creepQueuePriority) {
+            var condition = creepQueuePriority[conditionIndex]
             var creepParts = this.fetch_creepParts(roomID, condition.role, condition.satisfaction);
             if(creepParts!=null) {
                 this.queue_creepGeneric(spawnerRoomID, condition.role, creepParts)
@@ -291,7 +292,8 @@ var respawnManager = {
             if(Memory.energyRooms[energyRoomIndex].spawnerRoomID == roomID) {       // When you find an energy room linked to this spawnerRoom
                 for(sourceIndex in Memory.energyRooms[energyRoomIndex].sources) {   // Go through each source and try create a miner+gatherer combo for it
                     // Check miner, gatherer, etc, conditions for each source before moving to next source => pair up faster
-                    for(condition in creepQueuePriority) {
+                    for(conditionIndex in creepQueuePriority) {
+                        var condition = creepQueuePriority[conditionIndex]
                         const creepParts = this.fetch_creepParts(
                             roomID, 
                             condition.role, 
