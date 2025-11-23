@@ -296,9 +296,9 @@ var respawnManager = {
                             condition.role, 
                             condition.satisfaction,
                             additionalInfo={
-                                containerNumber: Memory.energyRooms[energyRoomIndex].source[sourceIndex].containers.length,
-                                minerNumber: Memory.energyRooms[energyRoomIndex].source[sourceIndex].miners.length,
-                                freeSpace: Memory.energyRooms[energyRoomIndex].source[sourceIndex].free,
+                                containerNumber: Memory.energyRooms[energyRoomIndex].sources[sourceIndex].containers.length,
+                                minerNumber: Memory.energyRooms[energyRoomIndex].sources[sourceIndex].miners.length,
+                                freeSpace: Memory.energyRooms[energyRoomIndex].sources[sourceIndex].free,
                             }
                         );
                         if(creepParts!=null) {
