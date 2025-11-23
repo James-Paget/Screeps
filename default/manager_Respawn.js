@@ -221,14 +221,14 @@ var respawnManager = {
             // Do check at the end for atypical role conditions
             switch(role) {
                 case "Miner":
-                    if( (additionalInfo[minerNumber]!=null) && (additionalInfo[freeSpace]!=null) ) {
-                        if(additionalInfo[minerNumber]>=additionalInfo[freeSpace]) {
+                    if( (additionalInfo["minerNumber"]!=null) && (additionalInfo["freeSpace"]!=null) ) {
+                        if(additionalInfo["minerNumber"]>=additionalInfo["freeSpace"]) {
                             creepParts = null
                         }
                     }
                 case "Gatherer":
-                    if( additionalInfo[containerNumber]!=null ) {
-                        if(additionalInfo[containerNumber]<=0) {
+                    if( additionalInfo["containerNumber"]!=null ) {
+                        if(additionalInfo["containerNumber"]<=0) {
                             creepParts = null
                         }
                     }
