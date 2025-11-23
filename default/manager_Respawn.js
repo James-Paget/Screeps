@@ -287,8 +287,8 @@ var respawnManager = {
         ]
 
         for(energyRoomIndex in Memory.energyRooms) {
-            if(Memory.energyRooms[energyRoomIndex].spawnerRoomID == roomID) {   // When you find an energy room linked to this spawnerRoom
-                for(sourceIndex in Memory.energyRooms[roomIndex].sources) {     // Go through each source and try create a miner+gatherer combo for it
+            if(Memory.energyRooms[energyRoomIndex].spawnerRoomID == roomID) {       // When you find an energy room linked to this spawnerRoom
+                for(sourceIndex in Memory.energyRooms[energyRoomIndex].sources) {   // Go through each source and try create a miner+gatherer combo for it
                     // Check miner, gatherer, etc, conditions for each source before moving to next source => pair up faster
                     for(condition in creepQueuePriority) {
                         const creepParts = this.fetch_creepParts(
