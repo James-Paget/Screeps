@@ -263,7 +263,7 @@ var respawnManager = {
             var condition = creepQueuePriority[conditionIndex]
             var creepParts = this.fetch_creepParts(roomID, condition.role, condition.satisfaction);
             if(creepParts!=null) {
-                this.queue_creepGeneric(spawnerRoomID, condition.role, creepParts)
+                this.queue_creepGeneric(roomID, condition.role, creepParts)
                 break;
             }   // If null, skip queuing it and move to next priority
         }
@@ -306,7 +306,7 @@ var respawnManager = {
                         );
                         if(creepParts!=null) {
                             this.queue_creepGeneric(
-                                spawnerRoomID, 
+                                roomID, 
                                 condition.role, 
                                 creepParts, 
                                 additionalInfo={
