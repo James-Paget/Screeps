@@ -21,6 +21,7 @@ Focus on making the energyRoom creeps less fragile -> perform an early error che
 Multiple rooms
 Auto-kill energy cores
 Auto-claim nearby rooms of interest / [[energyRooms]]
+Remove generate creep parts from EACH CREEP MANAGER
 
 --> This will be an issue for multi-spawners in a single room
  ...return(structure.structureType == STRUCTURE_SPAWN)}})[0].id;

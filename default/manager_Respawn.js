@@ -142,7 +142,8 @@ var respawnManager = {
     fetch_creepRoleValue : function(roomID, role) {
         var totalValue = 0
         // Check living creeps
-        for(creep in Game.creeps) {
+        for(creepName in Game.creeps) {
+            const creep = Game.creeps[creepName]
             if(creep.memory.role == role) {                         // Role check
                 if(creep.memory.spawnKey != null) {             // Null check
                     if(creep.memory.spawnKey.roomID == roomID) {    // Correct spawnerRoom
