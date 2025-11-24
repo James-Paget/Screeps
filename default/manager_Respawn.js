@@ -101,18 +101,24 @@ var respawnManager = {
             // **NOTE; Miner and Gatherer require sourceID
             case "Miner":
                 miner_tasks.queue(roomID, additionalInfo["SourceID"], creepParts);
+                break;
             case "Gatherer":
                 gatherer_tasks.queue(roomID, additionalInfo["SourceID"], creepParts);
+                break;
             // SourceID not required
             case "Repairer":
                 repairing_tasks.queue(roomID, null, creepParts);
+                break;
             case "Builder":
                 building_tasks.queue(roomID, null, creepParts);
+                break;
             case "Upgrader":
                 upgrading_tasks.queue(roomID, null, creepParts);
+                break;
             case "Extractor":
                 var mineralID = getExtractionID(roomID);
                 extractor_tasks.queue(roomID, mineralID, creepParts);
+                break;
             // If role not specified above, ignore it and do not queue anything
         }
     },
@@ -162,15 +168,15 @@ var respawnManager = {
             }
         }
         // Check queued creeps
-        for(spawnerRoomIndex in Memory.spawnerRooms) {
-            if(Memory.spawnerRooms[spawnerRoomIndex].roomID == roomID) {
-                for(queueIndex in Memory.spawnerRooms[spawnerRoomIndex].queue) {
-                    if(Memory.spawnerRooms[spawnerRoomIndex].queue[queueIndex].role == role) {
-                        totalValue += _.sum(Memory.spawnerRooms[spawnerRoomIndex].queue[queueIndex].parts, part => BODYPART_COST[part]);
-                    }
-                }
-            }
-        }
+        // for(spawnerRoomIndex in Memory.spawnerRooms) {
+        //     if(Memory.spawnerRooms[spawnerRoomIndex].roomID == roomID) {
+        //         for(queueIndex in Memory.spawnerRooms[spawnerRoomIndex].queue) {
+        //             if(Memory.spawnerRooms[spawnerRoomIndex].queue[queueIndex].role == role) {
+        //                 totalValue += _.sum(Memory.spawnerRooms[spawnerRoomIndex].queue[queueIndex].parts, part => BODYPART_COST[part]);
+        //             }
+        //         }
+        //     }
+        // }
         return totalValue
     },
     fetch_creepParts : function(roomID, role, satisfaction, additionalInfo=null) {
@@ -195,21 +201,27 @@ var respawnManager = {
                 case "Miner":
                     baseParts = [MOVE, MOVE, WORK, CARRY];
                     segmentParts = [MOVE, MOVE, WORK, CARRY];
+                    break;
                 case "Gatherer":
                     baseParts = [MOVE, CARRY];
                     segmentParts = [MOVE, CARRY];
+                    break;
                 case "Repairer":
                     baseParts = [MOVE, MOVE, WORK, CARRY];
                     segmentParts = [MOVE, CARRY];
+                    break;
                 case "Builder":
                     baseParts = [MOVE, MOVE, WORK, CARRY];
                     segmentParts = [MOVE, MOVE, WORK, CARRY];
+                    break;
                 case "Upgrader":
                     baseParts = [MOVE, MOVE, WORK, CARRY];
                     segmentParts = [MOVE, MOVE, WORK, CARRY];
+                    break;
                 case "Extractor":
                     baseParts = [MOVE, MOVE, WORK, CARRY];
                     segmentParts = [MOVE, WORK, CARRY];
+                    break;
             }
             const baseCost    = _.sum(baseParts, part => BODYPART_COST[part]);
             const segmentCost = _.sum(segmentParts, part => BODYPART_COST[part]);
@@ -227,8 +239,10 @@ var respawnManager = {
             
             creepParts = []
             for(partIndex in baseParts) {creepParts.push(baseParts[partIndex])}
-            for(var i=0; i<segmentRepeats; i++) {
-                for(partIndex in segmentParts) {creepParts.push(segmentParts[partIndex])}
+            if(segmentRepeats > 0) {
+                for(var i=0; i<segmentRepeats; i++) {
+                    for(partIndex in segmentParts) {creepParts.push(segmentParts[partIndex])}
+                }
             }
             // Do check at the end for atypical role conditions
             switch(role) {
@@ -238,12 +252,14 @@ var respawnManager = {
                             creepParts = null
                         }
                     }
+                    break;
                 case "Gatherer":
                     if( additionalInfo["containerNumber"]!=null ) {
                         if(additionalInfo["containerNumber"]<=0) {
                             creepParts = null
                         }
                     }
+                    break;
             }
         }
         return creepParts
