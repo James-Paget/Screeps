@@ -130,11 +130,11 @@ var respawnManager = {
             case "Repairer":
                 return 0.5*maximumRoomEnergy;
             case "Builder":
-                return 0.75*maximumRoomEnergy;
+                return 0.6*maximumRoomEnergy;
             case "Upgrader":
                 return 1.0*maximumRoomEnergy;
             case "Extractor":
-                return 1.5*maximumRoomEnergy;
+                return 0.75*maximumRoomEnergy;
             default:
                 return 0;
         }
@@ -188,12 +188,13 @@ var respawnManager = {
         if(creepValueCurrent < creepValueMax*satisfaction) {            // If do not meet satisfaction requirement, need to make more creeps
             const requiredValue = creepValueMax*satisfaction-creepValueCurrent;
             const maximumRoomEnergy = Game.rooms[roomID].energyCapacityAvailable;
+            const availableRoomEnergy = Game.rooms[roomID].energyAvailable;
             var baseParts = [MOVE];        // One-time body parts (different for each role)
             var segmentParts = [MOVE];     // Repeated segment (different for each role)
             switch(role) {
                 case "Miner":
                     baseParts = [MOVE, MOVE, WORK, CARRY];
-                    segmentParts = [MOVE, WORK, CARRY];
+                    segmentParts = [MOVE, MOVE, WORK, CARRY];
                 case "Gatherer":
                     baseParts = [MOVE, CARRY];
                     segmentParts = [MOVE, CARRY];
@@ -212,7 +213,18 @@ var respawnManager = {
             }
             const baseCost    = _.sum(baseParts, part => BODYPART_COST[part]);
             const segmentCost = _.sum(segmentParts, part => BODYPART_COST[part]);
-            const segmentRepeats = Math.floor( (Math.min(cushionFactor*maximumRoomEnergy, requiredValue) -baseCost)/segmentCost );    // Pick to (A) Build only what is required, or (B) build biggest possible creep if can
+            var segmentRepeats = 0;//Math.floor( (Math.min(cushionFactor*maximumRoomEnergy, requiredValue) -baseCost)/segmentCost );    // Pick to (A) Build only what is required, or (B) build biggest possible creep if can
+            
+            // idealRepeats = (requiredValue -baseCost)/segmentCost
+            // maxRepeats = (cushionFactor*maximumRoomEnergy -baseCost)/segmentCost
+            // possibleRepeats = (availableRoomEnergy -baseCost)/segmentCost
+
+            if(availableRoomEnergy >= requiredValue) {  // If can afford the required value, make it
+                segmentRepeats = Math.floor( (requiredValue -baseCost)/segmentCost );
+            } else {    // If you cannot afford the required value, look for next best option
+                segmentRepeats = Math.floor( (availableRoomEnergy -baseCost)/segmentCost );
+            }
+            
             creepParts = []
             for(partIndex in baseParts) {creepParts.push(baseParts[partIndex])}
             for(var i=0; i<segmentRepeats; i++) {

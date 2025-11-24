@@ -27,3 +27,8 @@ Remove generate creep parts from EACH CREEP MANAGER
  ...return(structure.structureType == STRUCTURE_SPAWN)}})[0].id;
 
  Auto structures only place most important at once -> then progress to next tier of importance + have builders innately not over-consume energy (only take excess)
+
+// ### QUEUE INSTANTLY GETS FILLED WITH EXPENSIVE RUBBISH -> CANNOT AFFORD NEW MINERS AND QUEUE IS FILLED WITH HIGH COST MINERS
+// ### ALSO NEED TO MAKE CREEPS GET HEALED WHEN LOW TOO -> Possibly less expensive
+// ### MAKE LIMIT EXTRACTOR SIZE WHEN NO MINERALS -> STILL NEED EXTRACTOR TO MOVE MATERIAL AROUND HOWEVER
+// ###
