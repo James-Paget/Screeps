@@ -262,7 +262,7 @@ var respawnManager = {
                     break;
                 case "Gatherer":
                     if( (additionalInfo["containerNumber"]!=null) && (additionalInfo["gathererNumber"]!=null) && (additionalInfo["minerNumber"]!=null) ) {
-                        if( (additionalInfo["containerNumber"]<=0) && (additionalInfo["gathererNumber"]>=additionalInfo["minerNumber"]) ) {
+                        if( (additionalInfo["containerNumber"]<=0) || (additionalInfo["gathererNumber"]>=additionalInfo["minerNumber"]) ) {
                             creepParts = null;
                         }
                     }
