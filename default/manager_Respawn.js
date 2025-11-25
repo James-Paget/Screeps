@@ -100,10 +100,14 @@ var respawnManager = {
         switch(creepRole) {
             // **NOTE; Miner and Gatherer require sourceID
             case "Miner":
-                miner_tasks.queue(roomID, additionalInfo["SourceID"], creepParts);
+                if(additionalInfo["SourceID"] != null) {
+                    miner_tasks.queue(roomID, additionalInfo["SourceID"], creepParts);
+                }
                 break;
             case "Gatherer":
-                gatherer_tasks.queue(roomID, additionalInfo["SourceID"], creepParts);
+                if(additionalInfo["SourceID"] != null) {
+                    gatherer_tasks.queue(roomID, additionalInfo["SourceID"], creepParts);
+                }
                 break;
             // SourceID not required
             case "Repairer":
@@ -130,17 +134,17 @@ var respawnManager = {
        const maximumRoomEnergy = Game.rooms[roomID].energyCapacityAvailable
         switch(role) {
             case "Miner":
-                return 2.0*maximumRoomEnergy;
-            case "Gatherer":
-                return 2.0*maximumRoomEnergy;
-            case "Repairer":
-                return 0.5*maximumRoomEnergy;
-            case "Builder":
-                return 0.6*maximumRoomEnergy;
-            case "Upgrader":
                 return 1.0*maximumRoomEnergy;
+            case "Gatherer":
+                return 1.0*maximumRoomEnergy;
+            case "Repairer":
+                return 0.01*maximumRoomEnergy;
+            case "Builder":
+                return 0.01*maximumRoomEnergy;
+            case "Upgrader":
+                return 0.05*maximumRoomEnergy;
             case "Extractor":
-                return 0.75*maximumRoomEnergy;
+                return 0.2*maximumRoomEnergy;
             default:
                 return 0;
         }
@@ -208,7 +212,7 @@ var respawnManager = {
                     break;
                 case "Repairer":
                     baseParts = [MOVE, MOVE, WORK, CARRY];
-                    segmentParts = [MOVE, CARRY];
+                    segmentParts = [MOVE, MOVE, WORK, CARRY];
                     break;
                 case "Builder":
                     baseParts = [MOVE, MOVE, WORK, CARRY];
@@ -247,16 +251,22 @@ var respawnManager = {
             // Do check at the end for atypical role conditions
             switch(role) {
                 case "Miner":
+                    console.log("Miner Check")
+                    console.log("additionalInfo[minerNumber] = "+additionalInfo["minerNumber"])
+                    console.log("additionalInfo[freeSpace] = "+additionalInfo["freeSpace"])
                     if( (additionalInfo["minerNumber"]!=null) && (additionalInfo["freeSpace"]!=null) ) {
                         if(additionalInfo["minerNumber"]>=additionalInfo["freeSpace"]) {
                             creepParts = null
+                            console.log("   Miner RESET")
                         }
                     }
                     break;
                 case "Gatherer":
+                    console.log("Gatherer Check")
                     if( additionalInfo["containerNumber"]!=null ) {
                         if(additionalInfo["containerNumber"]<=0) {
                             creepParts = null
+                            console.log("   Gatherer RESET")
                         }
                     }
                     break;
@@ -278,10 +288,10 @@ var respawnManager = {
         . Scavenger (COLLECT ARBITRARY RESOURCE PARSED IN)
         */
         var creepQueuePriority = [
-            {role: "Repairer", satisfaction: 0.35},     // Get X% of required to get started
-            {role: "Builder", satisfaction: 0.35}, 
-            {role: "Upgrader", satisfaction: 0.35}, 
-            {role: "Extractor", satisfaction: 0.35}, 
+            {role: "Repairer", satisfaction: 0.15},     // Get X% of required to get started
+            {role: "Builder", satisfaction: 0.15}, 
+            {role: "Upgrader", satisfaction: 0.15}, 
+            {role: "Extractor", satisfaction: 0.15}, 
             {role: "Repairer", satisfaction: 0.9},      // Once established, increase to Y% of each (trying to reach close to 100% satisfaction)
             {role: "Builder", satisfaction: 0.9}, 
             {role: "Upgrader", satisfaction: 0.9}, 
@@ -334,8 +344,9 @@ var respawnManager = {
                             }
                         );
                         if(creepParts!=null) {
+                            console.log("Memory.energyRooms[energyRoomIndex].ID = "+Memory.energyRooms[energyRoomIndex].ID)
                             this.queue_creepGeneric(
-                                roomID, 
+                                roomID,//Memory.energyRooms[energyRoomIndex].ID, 
                                 condition.role, 
                                 creepParts, 
                                 additionalInfo={

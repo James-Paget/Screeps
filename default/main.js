@@ -14,6 +14,15 @@ var {manageMemory_setupMemory, manageMemory_queues} = require("manager_Memory");
 var {calculate_transaction_manual, calculate_transaction_automatic} = require("manager_Market");
 
 module.exports.loop = function () {
+    // ###
+    // ### ADDED SUICIDE + UNSHIFT LINE TO CYCLE ENERGY ASSIGNING CREEPS ON NULLS
+    // ### LOWERING VALUES ALL AROUND --> MIN(SINGLE VALUE, LOW PERCENT)
+    // ### NULL CHECK ON SOURCE ID CREEP QUEUE
+    // ###
+    // ### LOTS OF MINERS ARE BEING SPAWNED FOR NON-SPAWNER ENERGY ROOMS BUT NOT BEING ASSIGNED
+    // ### FOR ENERGY ROOM CREEPS, ROOMID == ROOM THEY WORK IN NOT SPAWNER ROOM --> NEED TO ADD SPAWNER ROOMID INTO QUEUE -> THATS WHY IT WAS PERFORMED MANUALLY BEFORE
+    // ###
+    
     //Ensure memory values are accurate and up to date
     manageMemory_setupMemory();
     manageMemory_queues();

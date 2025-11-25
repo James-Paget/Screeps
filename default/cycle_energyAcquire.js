@@ -352,7 +352,8 @@ function assignCreeps_energyRooms(){
                     }
                     //...
                 } else {    // If you cannot find a correct roomIndex or sourceIndex
-                    //pass
+                    Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned.shift();
+                    Game.creeps[creepName].suicide();
                 }
             }
             else{
