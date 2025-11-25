@@ -131,21 +131,23 @@ var respawnManager = {
         /*
         . Maximum target energy to allocate to all creeps (linked to the spawnerRoom) across the role collectively
         . Scales with the available energy of the spawnerRoom to ensure the satisfaction is relative to the current progression of the spawnerRoom
+
+        . Note; Max(300, X) so maximum is at least 1 creep (300 is max energy of a sole spawner)
         */
        const maximumRoomEnergy = Game.rooms[roomID].energyCapacityAvailable
         switch(role) {
             case "Miner":
-                return 1.0*maximumRoomEnergy;
+                return Math.max(300, 1.0*maximumRoomEnergy);
             case "Gatherer":
-                return 1.0*maximumRoomEnergy;
+                return Math.max(300, 1.0*maximumRoomEnergy);
             case "Repairer":
-                return 0.01*maximumRoomEnergy;
+                return Math.min(700, Math.max(300, 0.01*maximumRoomEnergy));    // Min() in place to prevent over-spending on repairers
             case "Builder":
-                return 0.01*maximumRoomEnergy;
+                return Math.min(700, Math.max(300, 0.01*maximumRoomEnergy));    // "" ""
             case "Upgrader":
-                return 0.05*maximumRoomEnergy;
+                return Math.max(300, 0.05*maximumRoomEnergy);
             case "Extractor":
-                return 0.2*maximumRoomEnergy;
+                return Math.max(300, 0.2*maximumRoomEnergy);
             default:
                 return 0;
         }
