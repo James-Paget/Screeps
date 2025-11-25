@@ -137,9 +137,9 @@ var respawnManager = {
        const maximumRoomEnergy = Game.rooms[roomID].energyCapacityAvailable
         switch(role) {
             case "Miner":
-                return Math.max(300, 1.0*maximumRoomEnergy);
+                return Math.max(300, 0.2*maximumRoomEnergy);
             case "Gatherer":
-                return Math.max(300, 1.0*maximumRoomEnergy);
+                return Math.max(300, 0.2*maximumRoomEnergy);
             case "Repairer":
                 return Math.min(700, Math.max(300, 0.01*maximumRoomEnergy));    // Min() in place to prevent over-spending on repairers
             case "Builder":
