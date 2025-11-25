@@ -121,8 +121,8 @@ var miner_tasks = {
         }
         */
     },
-    queue : function(roomID, sourceID, parts){
-        var creepSpec = {roomID:roomID, sourceID:sourceID, parts:parts, role:"Miner", time:Game.time};
+    queue : function(roomID, energyRoomID, sourceID, parts){
+        var creepSpec = {roomID:roomID, energyRoomID:energyRoomID, sourceID:sourceID, parts:parts, role:"Miner", time:Game.time};
         Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].queue.push(creepSpec);
     },
     respawn : function(creepName, spawnerID, creepSpec){
@@ -133,7 +133,7 @@ var miner_tasks = {
         - Spawns at the specified spawner ID, and this is registered as their 'home' spawner in spawnKey
         */
         var spawner  = Game.getObjectById(spawnerID);
-        var houseKey = {roomID:creepSpec.roomID , sourceID:creepSpec.sourceID};
+        var houseKey = {roomID:creepSpec.energyRoomID , sourceID:creepSpec.sourceID};
         var spawnKey = {roomID:spawner.room.name, spawnID:spawnerID};            //###THIS SHOULD BE THE ROOM OF THE SPAWNER, NOT THE ROOM THEY WORK IN##
         spawner.spawnCreep(creepSpec.parts, creepName, {memory:{role:creepSpec.role, spawnKey:spawnKey, houseKey:houseKey, ID:null, isMining:true}});
     },

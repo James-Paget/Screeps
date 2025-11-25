@@ -28,12 +28,5 @@ Remove generate creep parts from EACH CREEP MANAGER
 
  Auto structures only place most important at once -> then progress to next tier of importance + have builders innately not over-consume energy (only take excess)
 
-// ### ALSO NEED TO MAKE CREEPS GET HEALED WHEN LOW TOO -> Possibly less expensive ###
-// ###
-// ### ADDED SUICIDE + UNSHIFT LINE TO CYCLE ENERGY ASSIGNING CREEPS ON NULLS
+// ### ALSO NEED TO MAKE CREEPS GET HEALED WHEN LOW TOO -> Is less expensive
 // ### LOWERING VALUES ALL AROUND --> MIN(SINGLE VALUE, LOW PERCENT)
-// ### NULL CHECK ON SOURCE ID CREEP QUEUE
-// ###
-// ### LOTS OF MINERS ARE BEING SPAWNED FOR NON-SPAWNER ENERGY ROOMS BUT NOT BEING ASSIGNED
-// ### FOR ENERGY ROOM CREEPS, ROOMID == ROOM THEY WORK IN NOT SPAWNER ROOM --> NEED TO ADD SPAWNER ROOMID INTO QUEUE -> THATS WHY IT WAS PERFORMED MANUALLY BEFORE
-// ###

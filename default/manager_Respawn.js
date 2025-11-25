@@ -92,7 +92,8 @@ var respawnManager = {
         . Queues up any creep independent of their role
         . Additional arguements needed can be parsed in as an object for 'additionalInfo={...}'
 
-        . roomID = Room name which creep will be queued to spawn into
+        . roomID = Room name which creep will be queued to spawn into (spawnerRoom)
+        . energyRoomID = Only required for miners and gatherers. The name of the room they will work in (roomID in 'houseKey')
         . creepRole = Role of creep to be queued
         . creepParts = All parts of creep to be spawned
         . additionalInfo = Extra information in object form {..., ...} that can be parsed in if required; defaults to null
@@ -101,12 +102,12 @@ var respawnManager = {
             // **NOTE; Miner and Gatherer require sourceID
             case "Miner":
                 if(additionalInfo["SourceID"] != null) {
-                    miner_tasks.queue(roomID, additionalInfo["SourceID"], creepParts);
+                    miner_tasks.queue(roomID, additionalInfo["energyRoomID"], additionalInfo["SourceID"], creepParts);
                 }
                 break;
             case "Gatherer":
                 if(additionalInfo["SourceID"] != null) {
-                    gatherer_tasks.queue(roomID, additionalInfo["SourceID"], creepParts);
+                    gatherer_tasks.queue(roomID, additionalInfo["energyRoomID"], additionalInfo["SourceID"], creepParts);
                 }
                 break;
             // SourceID not required
@@ -263,10 +264,10 @@ var respawnManager = {
                     break;
                 case "Gatherer":
                     console.log("Gatherer Check")
+                    console.log("additionalInfo[containerNumber] = "+additionalInfo["containerNumber"])
                     if( additionalInfo["containerNumber"]!=null ) {
                         if(additionalInfo["containerNumber"]<=0) {
                             creepParts = null
-                            console.log("   Gatherer RESET")
                         }
                     }
                     break;
@@ -289,7 +290,7 @@ var respawnManager = {
         */
         var creepQueuePriority = [
             {role: "Repairer", satisfaction: 0.15},     // Get X% of required to get started
-            {role: "Builder", satisfaction: 0.15}, 
+            {role: "Builder", satisfaction: 0.10}, 
             {role: "Upgrader", satisfaction: 0.15}, 
             {role: "Extractor", satisfaction: 0.15}, 
             {role: "Repairer", satisfaction: 0.9},      // Once established, increase to Y% of each (trying to reach close to 100% satisfaction)
@@ -344,12 +345,12 @@ var respawnManager = {
                             }
                         );
                         if(creepParts!=null) {
-                            console.log("Memory.energyRooms[energyRoomIndex].ID = "+Memory.energyRooms[energyRoomIndex].ID)
                             this.queue_creepGeneric(
-                                roomID,//Memory.energyRooms[energyRoomIndex].ID, 
+                                roomID, 
                                 condition.role, 
                                 creepParts, 
                                 additionalInfo={
+                                    "energyRoomID":Memory.energyRooms[energyRoomIndex].ID,
                                     "SourceID":Memory.energyRooms[energyRoomIndex].sources[sourceIndex].ID
                                 }
                             )
