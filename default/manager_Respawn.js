@@ -141,9 +141,9 @@ var respawnManager = {
             case "Gatherer":
                 return Math.max(300, 0.2*maximumRoomEnergy);
             case "Repairer":
-                return Math.min(700, Math.max(300, 0.01*maximumRoomEnergy));    // Min() in place to prevent over-spending on repairers
+                return Math.min(300, Math.max(300, 0.01*maximumRoomEnergy));    // Min() in place to prevent over-spending on repairers
             case "Builder":
-                return Math.min(700, Math.max(300, 0.01*maximumRoomEnergy));    // "" ""
+                return Math.min(300, Math.max(300, 0.01*maximumRoomEnergy));    // "" ""
             case "Upgrader":
                 return Math.max(300, 0.05*maximumRoomEnergy);
             case "Extractor":
@@ -160,7 +160,7 @@ var respawnManager = {
             if(creep.memory.role == role) {                         // Role check
                 if(creep.memory.spawnKey != null) {             // Null check
                     if(creep.memory.spawnKey.roomID == roomID) {    // Correct spawnerRoom
-                        totalValue += _.sum(creep.body, part => BODYPART_COST[part]);
+                        totalValue += _.sum(creep.body, part => BODYPART_COST[part.type]);
                     }
                 }
             }
@@ -170,7 +170,7 @@ var respawnManager = {
         for(spawner in roomSpawners) {
             if(spawner.spawning) {
                 if(spawner.spawning.role == role) {
-                    totalValue += _.sum(spawner.spawning.body, part => BODYPART_COST[part]);
+                    totalValue += _.sum(spawner.spawning.body, part => BODYPART_COST[part.type]);
                 }
             }
         }
@@ -254,22 +254,16 @@ var respawnManager = {
             // Do check at the end for atypical role conditions
             switch(role) {
                 case "Miner":
-                    console.log("Miner Check")
-                    console.log("additionalInfo[minerNumber] = "+additionalInfo["minerNumber"])
-                    console.log("additionalInfo[freeSpace] = "+additionalInfo["freeSpace"])
                     if( (additionalInfo["minerNumber"]!=null) && (additionalInfo["freeSpace"]!=null) ) {
                         if(additionalInfo["minerNumber"]>=additionalInfo["freeSpace"]) {
-                            creepParts = null
-                            console.log("   Miner RESET")
+                            creepParts = null;
                         }
                     }
                     break;
                 case "Gatherer":
-                    console.log("Gatherer Check")
-                    console.log("additionalInfo[containerNumber] = "+additionalInfo["containerNumber"])
                     if( additionalInfo["containerNumber"]!=null ) {
                         if(additionalInfo["containerNumber"]<=0) {
-                            creepParts = null
+                            creepParts = null;
                         }
                     }
                     break;
