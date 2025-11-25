@@ -137,17 +137,17 @@ var respawnManager = {
        const maximumRoomEnergy = Game.rooms[roomID].energyCapacityAvailable
         switch(role) {
             case "Miner":
-                return Math.max(300, 0.75*maximumRoomEnergy);
+                return Math.max(300, 0.5*maximumRoomEnergy);
             case "Gatherer":
-                return Math.max(300, 0.75*maximumRoomEnergy);
+                return Math.max(300, 0.5*maximumRoomEnergy);
             case "Repairer":
                 return Math.max(300, 0.05*maximumRoomEnergy);    // Min() in place to prevent over-spending on repairers
             case "Builder":
                 return Math.max(300, 0.05*maximumRoomEnergy);    // "" ""
             case "Upgrader":
-                return Math.max(300, 0.3*maximumRoomEnergy);
+                return Math.max(300, 0.05*maximumRoomEnergy);
             case "Extractor":
-                return Math.max(300, 0.4*maximumRoomEnergy);
+                return Math.max(300, 0.05*maximumRoomEnergy);
             default:
                 return 0;
         }
@@ -261,8 +261,8 @@ var respawnManager = {
                     }
                     break;
                 case "Gatherer":
-                    if( additionalInfo["containerNumber"]!=null ) {
-                        if(additionalInfo["containerNumber"]<=0) {
+                    if( (additionalInfo["containerNumber"]!=null) && (additionalInfo["gathererNumber"]!=null) && (additionalInfo["minerNumber"]!=null) ) {
+                        if( (additionalInfo["containerNumber"]<=0) && (additionalInfo["gathererNumber"]>=additionalInfo["minerNumber"]) ) {
                             creepParts = null;
                         }
                     }
@@ -337,6 +337,7 @@ var respawnManager = {
                             additionalInfo={
                                 containerNumber: Memory.energyRooms[energyRoomIndex].sources[sourceIndex].containers.length,
                                 minerNumber: Memory.energyRooms[energyRoomIndex].sources[sourceIndex].miners.length,
+                                gathererNumber: Memory.energyRooms[energyRoomIndex].sources[sourceIndex].gatherers.length,
                                 freeSpace: Memory.energyRooms[energyRoomIndex].sources[sourceIndex].free,
                             }
                         );

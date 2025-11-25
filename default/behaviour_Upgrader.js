@@ -10,7 +10,7 @@ var upgrading_tasks = {
             //}
         }
         else{
-            if(creep.room.energyAvailable >= 0.5*creep.room.energyCapacityAvailable){   //Above 80% energy in order to start upgrading
+            if(creep.room.energyAvailable >= 0.5*creep.room.energyCapacityAvailable){   //Above X% energy in order to start upgrading
                 var energyCaches = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_SPAWN && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_EXTENSION && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) )}});
                 var target = creep.pos.findClosestByPath(energyCaches);
                 if(creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
