@@ -150,7 +150,7 @@ var respawnManager = {
             case "Extractor":
                 return Math.max(300, 0.15*maximumRoomEnergy);
             case "Claimer":
-                return Math.max(300, 0.3*maximumRoomEnergy);
+                return Math.max(300, 0.2*maximumRoomEnergy);
             default:
                 return 0;
         }
@@ -313,9 +313,6 @@ var respawnManager = {
                     }
                     break;
                 case "Claimer":
-                    // ###
-                    // ### ADD THIS: If no claim targets, don't spawn a claimer --> look in territory tab
-                    // ###
                     if(additionalInfo["claimerTargetNumber"]!=null) {
                         if(additionalInfo["claimerTargetNumber"]<=0) {
                             creepParts = null;
@@ -379,21 +376,17 @@ var respawnManager = {
                 condition.role, 
                 condition.satisfaction,
                 additionalInfo = {
-                    // ###
-                    // ### REPLACE THIS WILL A PULLED VALUE FROM TERRITORY
-                    // ###
-                    "claimerTargetNumber": 0
+                    "claimerTargetNumber": Memory.territory.claimerTargets.length
                 }
             );
             if(creepParts!=null) {
                 var additionalInfo = {}
                 switch(condition.role) {
                     case "Claimer":
+                        var claimRoomID = roomID;
+                        if(Memory.territory.claimerTargets.length > 0) { claimRoomID = Memory.territory.claimerTargets[0]; }
                         additionalInfo = {
-                            // ###
-                            // ### PULL ROOM ID FROM TERRITORY HERE
-                            // ###
-                            "claimRoomID": null
+                            "claimRoomID": claimRoomID
                         }
                         break
                 }
