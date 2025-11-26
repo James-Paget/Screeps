@@ -145,9 +145,31 @@ var respawnManager = {
             case "Builder":
                 return Math.max(300, 0.05*maximumRoomEnergy);    // "" ""
             case "Upgrader":
-                return Math.max(300, 0.05*maximumRoomEnergy);
+                return Math.max(300, 0.15*maximumRoomEnergy);
             case "Extractor":
-                return Math.max(300, 0.05*maximumRoomEnergy);
+                return Math.max(300, 0.15*maximumRoomEnergy);
+            default:
+                return 0;
+        }
+    },
+    fetch_creepNumberMaximum : function(role) {
+        /*
+        . Maximum number of creeps of a given role that are tied to the specific spawnerRoom
+        . For energy creeps, an energyRoom match is also required (unless it is null, in which case all creeps will be included with just matching spawnerRoom) 
+        */
+        switch(role) {
+            case "Miner":       // Per source
+                return 3;
+            case "Gatherer":    // "" ""
+                return 2;
+            case "Repairer":    // Per spawner room
+                return 2;
+            case "Builder":     // "" ""
+                return 2;
+            case "Upgrader":
+                return 2;
+            case "Extractor":
+                return 2;
             default:
                 return 0;
         }
@@ -251,6 +273,20 @@ var respawnManager = {
                     for(partIndex in segmentParts) {creepParts.push(segmentParts[partIndex])}
                 }
             }
+
+            // Do a check for maximum creep numbers
+            const creepNumberMaximum = this.fetch_creepNumberMaximum(role);
+            var creepNumberCurrent = creepNumberMaximum
+            if( (additionalInfo["energyRoomID"]!=null) && (additionalInfo["sourceID"]!=null) ) { // If is an energyRoom creep
+                creepNumberCurrent = fetch_creepNumber(role, roomID, energyRoomID=energyRoomID, sourceID=sourceID)
+            } else {    // If is a regular spawnerRoom creep
+                creepNumberCurrent = fetch_creepNumber(role, roomID)
+            }
+
+            if(creepNumberCurrent >= creepNumberMaximum) {
+                creepParts = null
+            }
+
             // Do check at the end for atypical role conditions
             switch(role) {
                 case "Miner":
@@ -270,6 +306,28 @@ var respawnManager = {
             }
         }
         return creepParts
+    },
+    fetch_creepNumber : function(role, spawnerRoomID, energyRoomID=null, sourceID=null) {
+        var totalNumber = 0
+        for(creepName in Game.creeps) {
+            var creep = Game.creeps[creepName]
+            if(creep.role == role) {
+                if(creep.memory.spawnKey!=null) {
+                    if(creep.memory.spawnKey.roomID == spawnerRoomID) {     // SpawnerRoom match
+                        if( (energyRoomID!=null) && (sourceID!=null) ) {        // If you want to check energy rooms instead, follow this branch
+                            if(creep.memory.houseKey!=null) {
+                                if( (creep.memory.houseKey.roomID == energyRoomID) && (creep.memory.houseKey.sourceID == sourceID) ) {
+                                    totalNumber++
+                                }
+                            }   // If cannot find key, just ignore creep
+                        } else {                                                // If you are just checking the spawnerRoom, match already found therefore increment
+                            totalNumber++
+                        }
+                    }
+                }   // If cannot find key, just ignore creep
+            }
+        }
+        return totalNumber
     },
     queueCreeps_spawnerRoom : function(roomID) {
         /*
