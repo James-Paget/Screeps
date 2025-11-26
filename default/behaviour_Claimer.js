@@ -71,6 +71,9 @@ var claimer_tasks = {
 
 function generate_claimer(isCapturer, spawnerRoomID, roomID){
     /*
+    #####
+    ### LEGACY NOW -> REPLACED BY TERRITORY SYSTEM
+    #####
     -Spawns a new claimer -> Either reserver or capturer
     -The claimer will be working in the "roomID" (name) room if specified, or look for next available space if 'null' is given instead
     -This is a one-time spawn

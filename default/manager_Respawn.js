@@ -76,11 +76,6 @@ var respawnManager = {
             if( (Memory.spawnerRooms[spawnerRoomIndex].queue.length == 0) && (Memory.spawnerRooms[spawnerRoomIndex].unassigned.length == 0) ){
                 this.queueCreeps_energyRooms(Memory.spawnerRooms[spawnerRoomIndex].roomID);
                 this.queueCreeps_spawnerRoom(Memory.spawnerRooms[spawnerRoomIndex].roomID);
-
-                // ### LEGACY ###
-                // queueCreeps_energyRooms();  //Can contribute 2 at once, maximum (miner and/or gatherer)
-                // this.populateQueue_general(Memory.spawnerRooms[spawnerRoomIndex].roomID);    //Can contribute 1 at once, maximum
-                // ### LEGACY ###
             }
         }
     },
@@ -101,12 +96,12 @@ var respawnManager = {
         switch(creepRole) {
             // **NOTE; Miner and Gatherer require sourceID
             case "Miner":
-                if(additionalInfo["SourceID"] != null) {
+                if( (additionalInfo["energyRoomID"] != null) && (additionalInfo["SourceID"] != null) ) {
                     miner_tasks.queue(roomID, additionalInfo["energyRoomID"], additionalInfo["SourceID"], creepParts);
                 }
                 break;
             case "Gatherer":
-                if(additionalInfo["SourceID"] != null) {
+                if( (additionalInfo["energyRoomID"] != null) && (additionalInfo["SourceID"] != null) ) {
                     gatherer_tasks.queue(roomID, additionalInfo["energyRoomID"], additionalInfo["SourceID"], creepParts);
                 }
                 break;
@@ -123,6 +118,12 @@ var respawnManager = {
             case "Extractor":
                 var mineralID = getExtractionID(roomID);
                 extractor_tasks.queue(roomID, mineralID, creepParts);
+                break;
+            case "Claimer":
+                // ** Note; Here sourceID refers to the ID of the roomController to be claimed -> can be left as null if unknown
+                if(additionalInfo["claimRoomID"] != null) { // sourceID is allowed to be null here -> claimer will determine it once it has entered the room
+                    claimer_tasks.queue(roomID, additionalInfo["claimRoomID"], null, creepParts);   //additionalInfo["sourceID"]
+                }
                 break;
             // If role not specified above, ignore it and do not queue anything
         }
@@ -148,6 +149,8 @@ var respawnManager = {
                 return Math.max(300, 0.15*maximumRoomEnergy);
             case "Extractor":
                 return Math.max(300, 0.15*maximumRoomEnergy);
+            case "Claimer":
+                return Math.max(300, 0.3*maximumRoomEnergy);
             default:
                 return 0;
         }
@@ -169,6 +172,8 @@ var respawnManager = {
             case "Upgrader":
                 return 2;
             case "Extractor":
+                return 2;
+            case "Claimer":
                 return 2;
             default:
                 return 0;
@@ -251,6 +256,10 @@ var respawnManager = {
                     baseParts = [MOVE, MOVE, WORK, CARRY];
                     segmentParts = [MOVE, WORK, CARRY];
                     break;
+                case "Claimer":
+                    baseParts = [MOVE, CLAIM];
+                    segmentParts = [MOVE, CLAIM];
+                    break;
             }
             const baseCost    = _.sum(baseParts, part => BODYPART_COST[part]);
             const segmentCost = _.sum(segmentParts, part => BODYPART_COST[part]);
@@ -303,6 +312,16 @@ var respawnManager = {
                         }
                     }
                     break;
+                case "Claimer":
+                    // ###
+                    // ### ADD THIS: If no claim targets, don't spawn a claimer --> look in territory tab
+                    // ###
+                    if(additionalInfo["claimerTargetNumber"]!=null) {
+                        if(additionalInfo["claimerTargetNumber"]<=0) {
+                            creepParts = null;
+                        }
+                    }
+                    break;
             }
         }
         return creepParts
@@ -350,13 +369,41 @@ var respawnManager = {
             {role: "Repairer", satisfaction: 0.9},      // Once established, increase to Y% of each (trying to reach close to 100% satisfaction)
             {role: "Builder", satisfaction: 0.9}, 
             {role: "Upgrader", satisfaction: 0.9}, 
-            {role: "Extractor", satisfaction: 0.9}
+            {role: "Extractor", satisfaction: 0.9},
+            {role: "Claimer", satisfaction: 0.9}        // Only high priority spawn for claimer since it should only be attempted once very established
         ]
         for(conditionIndex in creepQueuePriority) {
             var condition = creepQueuePriority[conditionIndex]
-            var creepParts = this.fetch_creepParts(roomID, condition.role, condition.satisfaction);
+            var creepParts = this.fetch_creepParts(
+                roomID, 
+                condition.role, 
+                condition.satisfaction,
+                additionalInfo = {
+                    // ###
+                    // ### REPLACE THIS WILL A PULLED VALUE FROM TERRITORY
+                    // ###
+                    "claimerTargetNumber": 0
+                }
+            );
             if(creepParts!=null) {
-                this.queue_creepGeneric(roomID, condition.role, creepParts)
+                var additionalInfo = {}
+                switch(condition.role) {
+                    case "Claimer":
+                        additionalInfo = {
+                            // ###
+                            // ### PULL ROOM ID FROM TERRITORY HERE
+                            // ###
+                            "claimRoomID": null
+                        }
+                        break
+                }
+
+                this.queue_creepGeneric(
+                    roomID, 
+                    condition.role, 
+                    creepParts,
+                    additionalInfo=additionalInfo
+                )
                 break;
             }   // If null, skip queuing it and move to next priority
         }
@@ -404,9 +451,9 @@ var respawnManager = {
                                 roomID, 
                                 condition.role, 
                                 creepParts, 
-                                additionalInfo={
-                                    "energyRoomID":Memory.energyRooms[energyRoomIndex].ID,
-                                    "SourceID":Memory.energyRooms[energyRoomIndex].sources[sourceIndex].ID
+                                additionalInfo = {
+                                    "energyRoomID": Memory.energyRooms[energyRoomIndex].ID,
+                                    "SourceID": Memory.energyRooms[energyRoomIndex].sources[sourceIndex].ID
                                 }
                             )
                             energyRoomChecked = true;
@@ -417,229 +464,7 @@ var respawnManager = {
                 }
             }
         }
-
-
-        // ### LEGACY ###
-        /*
-        -- Call this periodically or continually
-        . Checks through energyRoom data for unsaturation
-        . Calculates the type of creep (role, parts, etc) needed to satisfy this condition
-        . Adds required creeps to the spawn queue (Note, when checking, it will add miners before gatherers, which is good behaviour)
-
-        -- This function will only assign the first unit it finds that is required
-        -- It is then called often by the respawn manager to populate all required units
-
-        The spawnerRoom.queue      HOLDS [{roomID, sourceID, Parts, Role}, {...}, ...] <-- Specify what creeps to make                 <-*Only THIS list is touched here*
-        The spawnerRoom.unassigned HOLDS [creepNames, ...]                             <-- Specify the creeps who have just been made
-        */
-        //Only do this when all unassigned positions have been resolved -> so when choosing new spawns, only have to consider energyRooms, not spawnerRoom.unassigned
-        // var workerQueued = false;
-        // for(var roomIndex in Memory.energyRooms){
-        //     for(var sourceIndex in Memory.energyRooms[roomIndex].sources){
-        //         //Check mining is saturated
-        //         var saturationCondition_miners = getSaturationCondition_miners(Memory.energyRooms[roomIndex].spawnerRoomID, Memory.energyRooms[roomIndex].sources[sourceIndex]);    //Check mining is saturated
-        //         if(saturationCondition_miners != null){     //Not saturated => put new miners into the queue
-        //             //miner_tasks.queue(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex].ID, saturationCondition_miners.parts);         //#### RESULTS IN CIRCULARNESS
-        //             var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_miners.parts, role:"Miner", time:Game.time};
-        //             Memory.spawnerRooms[getSpawnerRoomIndex(Memory.energyRooms[roomIndex].spawnerRoomID)].queue.push(creepSpec);
-        //             workerQueued = true;
-        //         }
-        //         //Check gathering is saturated
-        //         var saturationCondition_gatherers = getSaturationCondition_gatherers(Memory.energyRooms[roomIndex].spawnerRoomID, Memory.energyRooms[roomIndex].sources[sourceIndex]);   //Check gatherers are saturated
-        //         if(saturationCondition_gatherers != null){                                                                              //Not saturated => put new gatherers into the queue
-        //             //gatherer_tasks.queue(Memory.energyRooms[roomIndex].ID, Memory.energyRooms[roomIndex].sources[sourceIndex].ID, saturationCondition_gatherers.parts);   //#### RESULTS IN CIRCULARNESS
-        //             var creepSpec = {roomID:Memory.energyRooms[roomIndex].ID, sourceID:Memory.energyRooms[roomIndex].sources[sourceIndex].ID, parts:saturationCondition_gatherers.parts, role:"Gatherer", time:Game.time};
-        //             Memory.spawnerRooms[getSpawnerRoomIndex(Memory.energyRooms[roomIndex].spawnerRoomID)].queue.push(creepSpec);
-        //             workerQueued = true;
-        //         }
-        //         //...
-
-        //         if(workerQueued){
-        //             break;}
-        //     }
-        //     if(workerQueued){
-        //         break;}
-        // }
-        // ### LEGACY ###
     },
-    // ### LEGACY ###
-    // function getSaturationCondition_miners(roomID, energyRooms_info){
-    //     /*
-    //     . Checks if the miners are saturated
-    //     . If they are NOT, returns what the next miner parts should be in order to fulfil saturation
-    //     . If they are, returns null
-
-    //     ---> roomID refers to the ID of the SPAWNER room
-
-    //     The number of parts assigned to the next worker is based on (1)the number of spaces around the source to mine from, 
-    //     (2)the amount of WORK already at source, and (3)the largest amount of energy that could be spent on a creep
-
-    //     --> Note; Related to "energyMax", if miners do not deliver to extensions, then there will always be a cap a 300, or else the colony could fail if all gatherers die at once
-    //             This is currently fixed by letting miners walk to spawns or ext. when their containers are full, however this means if gathering is not efficient, mining will not 
-    //             be either (as they are leaving their post)
-    //     */
-    //     var condition = null;
-    //     //(1) If any spaces free for a worker
-    //     if(energyRooms_info.free > energyRooms_info.miners.length){
-    //         if( (energyRooms_info.miners.length == 0) && (energyRooms_info.free > 1) ){    //Start off each source (that can hold more than 1 miner) with an always affordable miner
-    //             condition = {parts:[WORK,CARRY,MOVE]};  //Cheapest miner
-    //         }
-    //         else{
-    //             //(2) Sum WORK parts assigned to source
-    //             var workRequired    = 5+1;                      //Work required to full deplete any source  +1 for extra wiggle room (moving etc)
-    //             var total_workParts = 0;
-    //             for(var minerIndex in energyRooms_info.miners){
-    //                 total_workParts += _.filter(Game.getObjectById(energyRooms_info.miners[minerIndex]).body, function(part){return (part.type==WORK)}).length;}
-    //             var workNeeded = workRequired -total_workParts;
-    //             if(workNeeded > 0){                             //If actually need any more workers
-    //                 //(3) Energy max
-    //                 var energyMax = Game.rooms[roomID].energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
-    //                 //Now make decision
-    //                 var workNeeded_perWorker = Math.ceil(workNeeded / (energyRooms_info.free -energyRooms_info.miners.length)); //Spreads work over spaces possible to be mined ==> This is probably not a good way to do this for larger bases, but overall should improve flowrate of energy (e.g no sudden spikes of nothing when they die of old age)
-    //                 var partSet = [CARRY,MOVE];
-    //                 for(var i=0; i<workNeeded_perWorker; i++){          //Attempts to spawn the most expensive (but not overkill) miner it can => however need to still have cheap miner above as extensions imply unreachable goals GIVEN you have 0 miners, => have to fullly rely on passive income
-    //                     partSet.unshift(WORK);
-    //                     var energyCost = _.sum(partSet, part => BODYPART_COST[part]);
-    //                     if(energyCost > energyMax){
-    //                         partSet.shift();
-    //                         break;}
-    //                 }
-    //                 condition = {parts:partSet};    //... Could add more returns for a condition if needed
-    //             }
-    //         }
-    //     }
-    //     return condition;
-    // }
-    // function getSaturationCondition_gatherers(roomID, energyRooms_info){
-    //     /*
-    //     . Checks if the gatherers are saturated
-    //     . If they are NOT, returns what the next gatherer parts should be in order to fulfil saturation
-    //     . If they are, returns null
-
-    //     The number of parts assigned to the next worker is based on (1)if containers exist to gather from and (2)the distance to the source
-
-    //     --> Note; Related to "energyMax", make sure a cheap gatherer is spawned if no others are there to ensure some gathering always takes 
-    //             place, so miners can work efficiently, and gatherers are never falsely valued too highly so they never spawn (due to extensions)
-    //     */
-    //     var condition = null;
-    //     if(energyRooms_info.containers.length > 0){
-    //         if(energyRooms_info.gatherers.length == 0){         //If this is the first gatherer, make them cheap so gathering will occur
-    //             condition = {parts:[CARRY,MOVE,CARRY,MOVE]};
-    //         }
-    //         else{
-    //             //(1) Sum CARRY parts assigned to source
-    //             /*
-    //             var originObj = Game.rooms[roomID].find(FIND_STRUCTURES, {filter:(structure)=>{return ( structure.structureType == STRUCTURE_SPAWN )}})[0].pos;
-    //             var goalObj   = {pos:Game.getObjectById(energyRooms_info.ID).pos, range:1};
-    //             var travelDistance   = PathFinder.search(originObj, goalObj).path.length +8;   //From spawn to source, actual path +8 to account for getting stuck in motion, increasing time
-    //             travelDistance = Math.min(travelDistance, 40);   //--> Caps the total distance a source is imagined to be, prevents 20 gatherers for a spawn 1 room away
-    //             var carryRequired    = Math.max(Math.ceil(0.4*travelDistance), 3);             //CARRY required to fully empty whatever a source produces (10 energy tick^-1) --> assumed travelling always at 1 tile tick^-1 --> sets a min so incorrect linear dist is slightly corrected
-    //             */
-    //             var carryRequired    = 15;  //Fixed amount used here for simplicity in multi-room case --> Vision problems              ###### WAS 15 ######
-    //             var total_carryParts = 0;
-    //             for(var gathererIndex in energyRooms_info.gatherers){
-    //                 //###############################################################################
-    //                 //## ISSUE IN SIM --> GETTING NULL HERE FOR      Game.getObjectById(energyRooms_info.gatherers[gathererIndex])     WHEN THE CREEP IS SPAWNING
-    //                 //###############################################################################
-    //                 total_carryParts += _.filter(Game.getObjectById(energyRooms_info.gatherers[gathererIndex]).body, function(part){return (part.type==CARRY)}).length;}
-    //             var carryNeeded = carryRequired -total_carryParts;
-    //             if(carryNeeded > 0){          //If actually need any more workers
-    //                 //(3) Energy max
-    //                 var energyMax = Game.rooms[roomID].energyCapacityAvailable; //#### THIS WILL HAVE TO TAKE A READING FROM THE ROOM, FROM ROOMINDEX, IN MULTI ROOM CASE ####
-    //                 //Now make decision
-    //                 var carryNeeded_perWorker = Math.ceil(carryNeeded / Math.abs(3.0 -energyRooms_info.gatherers.length));   //Spreads work over multiple gatherers, not all on just one (3 workers used here)
-    //                 var partSet = [CARRY,MOVE];
-    //                 var partMax = 10;    //Max 3 sets of each => 3+initial = 4 full pairs       ####### WAS 5 ######
-    //                 for(var i=0; i<carryNeeded_perWorker; i++){                     //Attempts to spawn the most expensive (but not overkill) miner it can => however need to still have cheap miner above as extensions imply unreachable goals GIVEN you have 0 miners, => have to fullly rely on passive income
-    //                     partSet.unshift(MOVE);                                      //MOVES made alongside CARRYs to ensure they stay at max move speed (on regular ground)
-    //                     partSet.unshift(CARRY);
-    //                     var energyCost = _.sum(partSet, part => BODYPART_COST[part]);
-    //                     if(energyCost > energyMax){
-    //                         partSet.shift();
-    //                         partSet.shift();
-    //                         break;}
-    //                     if(i >= partMax-1){
-    //                         break;}
-    //                 }
-    //                 condition = {parts:partSet};    //... Could add more returns for a condition if needed
-    //             }
-    //         }
-    //     }
-    //     return condition;
-    // }
-    // ### LEGACY ###
-
-    // ###
-    // ### Make it populate each separately -> GO through each spawner room -> DO its own room creeps -> DO energy creeps 
-    // ### Both share queue -> 1 each take turns
-    // ### Use the list method for prio
-    // ###
-
-    populateQueue_general : function(roomID){
-        /*
-        . Adds creeps NOT related to energy rooms (Miners and Gatherers) to the spawning queue
-        . This is performed such that energyRooms are utilised well before excess energy is spent on these other workers
-
-        Priorities are;
-        (1) Repairer
-        (2) Builders
-        (3) Upgraders
-        (4) Army
-        */
-        //#############################################################################################################
-        //## REPLACE THIS WITH FUNCTIONAL CONDITION, MAKE IT FAR BETTER, THIS IS A TERRIBLE METRIC FOR WHEN TO SPAWN ##
-        //#############################################################################################################
-        //## REPLACE WITH SAME SYSTEM AS REPAIR TOWER --> SIMPLE LIST QUEUE ##
-        //####################################################################
-        var sourceOccupied_miners    = getSummed_potential_role(roomID, "Miner")    >= Game.rooms[roomID].find(FIND_SOURCES).length;
-        var sourceOccupied_gatherers = getSummed_potential_role(roomID, "Gatherer") >= Game.rooms[roomID].find(FIND_STRUCTURES, {filter:(structure)=>{return(structure.structureType == STRUCTURE_CONTAINER)}}).length;
-        if(sourceOccupied_miners && sourceOccupied_gatherers){
-            var repairerFilter = repairing_tasks.generateCreepParts(roomID);//getSummed_potential_role(roomID, "Repairer");
-            if(repairerFilter==null){    //<--- Repairers are being phased out, replaced with towers doing repair work alongside miners
-                var builderFilter  = building_tasks.generateCreepParts(roomID);
-                if(builderFilter==null){
-                    var upgraderFilter = upgrading_tasks.generateCreepParts(roomID);
-                    if(upgraderFilter==null){
-                        var extractorFilter = extractor_tasks.generateCreepParts(roomID);
-                        if(extractorFilter==null){
-                            var armyFilter     = defender_tasks.generateCreepParts(roomID);
-                            if(armyFilter==null){
-                                defender_tasks.queue(roomID, null, armyFilter);}
-                        }
-                        else{
-                            var mineralID = getExtractionID(roomID);
-                            extractor_tasks.queue(roomID, mineralID, extractorFilter);}
-                    }
-                    else{
-                        upgrading_tasks.queue(roomID, null, upgraderFilter);}
-                }
-                else{
-                    building_tasks.queue(roomID, null, builderFilter);}
-            }
-            else{
-                repairing_tasks.queue(roomID, null, repairerFilter);}
-        }
-    }
-}
-function getSummed_potential_role(roomID, role){
-    /*
-    . Sums all the creeps with the given role
-    . Sums creep that are currently alive AND that are queued up
-
-    #####
-    ## HOPEFULLY NO PROBLEM IN THE 1 FRAME IT IS IN UNASSIGNED => BUT SHOULD STILL EXIST IN BOARD AT THIS POINT SO SHOULD BE FINE, BUT WORTH TESTING
-    #####
-    */
-    var total = 0;
-    for(var creepName in Game.creeps){
-        if(Game.creeps[creepName].memory.role == role){
-            total++;}
-    }
-    for(var element in Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].queue){
-        if(Memory.spawnerRooms[getSpawnerRoomIndex(roomID)].queue[element].role == role){
-            total++;}
-    }
-    return total;
 }
 
 module.exports = respawnManager;

@@ -8,6 +8,12 @@ function manageMemory_setupMemory() {
     // (1)
     if(!Memory.spawnerRooms){ Memory.spawnerRooms = []; }
     if(!Memory.energyRooms){ Memory.energyRooms = []; }
+    if(!Memory.territory){ 
+        Memory.territory = {
+            claimerTargets: [],     // List of roomIDs (names) of rooms to be claimed
+            scavengerTargets: []    // "" ""
+        };
+    }
 
     if(Game.time.toString().slice(-1) == 5) {   // Periodically call this
         // (2)

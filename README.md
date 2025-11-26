@@ -29,4 +29,4 @@ Remove generate creep parts from EACH CREEP MANAGER
  Auto structures only place most important at once -> then progress to next tier of importance + have builders innately not over-consume energy (only take excess)
 
 // ### ALSO NEED TO MAKE CREEPS GET HEALED WHEN LOW TOO -> Is less expensive
-// ### LOWERING VALUES ALL AROUND --> MIN(SINGLE VALUE, LOW PERCENT)
+// ### CLAIMERS CAN BE SET TO GO AFTER LOCATIONS -> tie up with military with a 'territory' memory tab
