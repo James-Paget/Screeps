@@ -276,11 +276,11 @@ var respawnManager = {
 
             // Do a check for maximum creep numbers
             const creepNumberMaximum = this.fetch_creepNumberMaximum(role);
-            var creepNumberCurrent = creepNumberMaximum
-            if( (additionalInfo["energyRoomID"]!=null) && (additionalInfo["sourceID"]!=null) ) { // If is an energyRoom creep
-                creepNumberCurrent = this.fetch_creepNumber(role, roomID, energyRoomID=energyRoomID, sourceID=sourceID)
-            } else {    // If is a regular spawnerRoom creep
-                creepNumberCurrent = this.fetch_creepNumber(role, roomID)
+            var creepNumberCurrent = this.fetch_creepNumber(role, roomID);
+            if(additionalInfo != null) {
+                if( (additionalInfo["energyRoomID"]!=null) && (additionalInfo["sourceID"]!=null) ) { // If is an energyRoom creep, calculate for energy rooms instead (checks correct sourceID AS WELL AS spawnerRoom => signifcantly reduced matches found here)
+                    creepNumberCurrent = this.fetch_creepNumber(role, roomID, energyRoomID=energyRoomID, sourceID=sourceID);
+                }   // If is a regular spawnerRoom creep, leave as previously found value
             }
 
             if(creepNumberCurrent >= creepNumberMaximum) {
