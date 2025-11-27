@@ -16,7 +16,8 @@ var claimer_tasks = {
             }
             else{                                   //If you know your controller, go claim/reserve it
                 var controller = Game.getObjectById(creep.memory.houseKey.sourceID);
-                var reserveResult = creep.reserveController(controller);
+                // var reserveResult = creep.reserveController(controller);
+                var reserveResult = creep.claimController(controller);
                 if(reserveResult == ERR_NOT_IN_RANGE){
                     creep.moveTo(controller);
                 }

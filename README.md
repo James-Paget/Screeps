@@ -30,3 +30,7 @@ Remove generate creep parts from EACH CREEP MANAGER
 
 // ### ALSO NEED TO MAKE CREEPS GET HEALED WHEN LOW TOO -> Is less expensive
 // ### CLAIMERS CAN BE SET TO GO AFTER LOCATIONS -> tie up with military with a 'territory' memory tab
+
+Fix small extractor problem
+Setup militia spawns when being attacked (localy at least, then defend energy sites + claimer sites)
+Remove the 'gen-creep-parts' within each class -> legacy now
