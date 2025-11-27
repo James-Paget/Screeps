@@ -154,6 +154,20 @@ function getTarget_builder(creep){
                 target = creep.pos.findClosestByPath(resupplyTowers);
             }
             else{                           //(2)
+                // **Note; Last check in this section has priority (e.g, energy rooms here, not claimer rooms)
+                // Build in claimer rooms (if the claimerRoom is managed by the same spawnerRoom as this builder)
+                for(var roomIndex in Memory.claimerRooms){
+                    if(Memory.claimerRooms[roomIndex].spawnerRoomID == creep.memory.spawnKey.roomID){
+                        if(Game.rooms[Memory.claimerRooms[roomIndex].claimerRoomID]){   // Vision check
+                            var constructSites = Game.rooms[Memory.claimerRooms[roomIndex].claimerRoomID].find(FIND_CONSTRUCTION_SITES);
+                            if(constructSites.length > 0){
+                                target = constructSites[0]; //May be in other rooms, so cant simply check path diff => just complete them in order (fine assumption because 90% of time nothing will require building)
+                                break;
+                            }
+                        }
+                    }
+                }
+                // Build in energy rooms
                 for(var roomIndex in Memory.energyRooms){
                     if(Memory.energyRooms[roomIndex].spawnerRoomID == creep.memory.spawnKey.roomID){    //If this energy room is associated with this builder's spawn, check if he has any jobs he can do there
                         if(Game.rooms[Memory.energyRooms[roomIndex].ID]){                               //If you currently have vision of that room (this will change as creeps enter, leave and die in a room)
