@@ -76,6 +76,7 @@ var respawnManager = {
             if( (Memory.spawnerRooms[spawnerRoomIndex].queue.length <= 0) && (Memory.spawnerRooms[spawnerRoomIndex].unassigned.length <= 0) ){
                 this.queueCreeps_energyRooms(Memory.spawnerRooms[spawnerRoomIndex].roomID);
                 this.queueCreeps_spawnerRoom(Memory.spawnerRooms[spawnerRoomIndex].roomID);
+                this.queueCreeps_claimerRooms(Memory.spawnerRooms[spawnerRoomIndex].roomID);
             }
         }
     },
@@ -220,7 +221,7 @@ var respawnManager = {
         . satisfaction = Percentage of maximum desired workload for a given role required for this work-order
         . additionalInfo = Extra details like nearby containers and spaces. Defaults to null if irrelevant
         */
-        const cushionFactor = 0.75;  // Leave wiggle room for spawnerRoom energy maximum
+        const cushionFactor = 0.85;  // Leave wiggle room for spawnerRoom energy maximum
 
         var creepParts = null;
         const creepValueMax = this.fetch_creepValueMaximum(roomID, role);
@@ -269,10 +270,10 @@ var respawnManager = {
             // maxRepeats = (cushionFactor*maximumRoomEnergy -baseCost)/segmentCost
             // possibleRepeats = (availableRoomEnergy -baseCost)/segmentCost
 
-            if(availableRoomEnergy >= requiredValue) {  // If can afford the required value, make it
+            if(cushionFactor*availableRoomEnergy >= requiredValue) {  // If can afford the required value, make it
                 segmentRepeats = Math.floor( (requiredValue -baseCost)/segmentCost );
             } else {    // If you cannot afford the required value, look for next best option
-                segmentRepeats = Math.floor( (availableRoomEnergy -baseCost)/segmentCost );
+                segmentRepeats = Math.floor( (cushionFactor*availableRoomEnergy -baseCost)/segmentCost );
             }
             
             creepParts = []
@@ -289,6 +290,8 @@ var respawnManager = {
             if(additionalInfo != null) {
                 if( (additionalInfo["energyRoomID"]!=null) && (additionalInfo["sourceID"]!=null) ) { // If is an energyRoom creep, calculate for energy rooms instead (checks correct sourceID AS WELL AS spawnerRoom => signifcantly reduced matches found here)
                     creepNumberCurrent = this.fetch_creepNumber(role, roomID, energyRoomID=additionalInfo["energyRoomID"], sourceID=additionalInfo["sourceID"]);
+                } else if(additionalInfo["existingClaimerNumber"]) {
+                    creepNumberCurrent = additionalInfo["existingClaimerNumber"]
                 }
                 // If is a regular spawnerRoom creep, leave as previously found value
             }
@@ -312,13 +315,6 @@ var respawnManager = {
                         }
                     }
                     break;
-                // case "Claimer":
-                //     if(additionalInfo["claimerTargetNumber"]!=null) {
-                //         if(additionalInfo["claimerTargetNumber"]<=0) {
-                //             creepParts = null;
-                //         }
-                //     }
-                //     break;
             }
         }
         return creepParts
@@ -367,25 +363,10 @@ var respawnManager = {
             {role: "Builder", satisfaction: 0.9}, 
             {role: "Upgrader", satisfaction: 0.9}, 
             {role: "Extractor", satisfaction: 0.9},
-            {role: "Claimer", satisfaction: 0.9}        // Only high priority spawn for claimer since it should only be attempted once very established
         ]
         for(conditionIndex in creepQueuePriority) {
             var condition = creepQueuePriority[conditionIndex]
             var additionalInfo = {}
-            switch(condition.role) {
-                // ###
-                // ### Not a big fan of the management of claimers here --> redo this
-                // ###
-                case "Claimer":
-                    const claimerRoomID = null // ### NEED A GOOD SYSTEM TO SPREAD CLAIMERS ACROSS HERE, ADHEREING TO SIMILAR MAX NUM AS MINERS -> PER CLAIMERROOM NOT TOTALS USED ###
-                    additionalInfo = {
-                        "claimerRoomID": claimerRoomID
-                    }
-                    break;
-                default:    // Regular behaviour for standard creeps (e.g. mostly stay in spawn, less complex behaviour)
-                    additionalInfo = {}
-                    break;
-            }
 
             var creepParts = this.fetch_creepParts(
                 roomID, 
@@ -459,6 +440,54 @@ var respawnManager = {
                         }
                     }
                     if(energyRoomChecked) {break;}
+                }
+            }
+        }
+    },
+    queueCreeps_claimerRooms : function(roomID){
+        /*
+        . Decides which creeps to spawn that will travel to claimerRooms
+
+        ** Note; The creeps only need to be put in the unassigned set (then later the removed when assigned) AFTER they 
+        have been spawned from the queue, hence this is managed later when spawning from the queue
+
+        Creeps considered here include;
+        . Claimers
+        */
+        var creepQueuePriority = [
+            {role: "Claimer", satisfaction: 0.9},
+        ]
+
+        const spawnerRoomEnergyPercent = Game.rooms[roomID].energyAvailable / Game.rooms[roomID].energyCapacityAvailable;
+        if(spawnerRoomEnergyPercent >= 0.75) {  // Only consider claimers if you have excess energy
+            for(claimerRoomIndex in Memory.claimerRooms) {
+                if(Memory.claimerRooms[claimerRoomIndex].spawnerRoomID == roomID) {         // When you find an claimer room linked to this spawnerRoom
+                    var claimerRoomChecked = false;
+                    // Check conditions (claimer numbers, etc) for each claimerRoom
+                    for(conditionIndex in creepQueuePriority) {
+                        var condition = creepQueuePriority[conditionIndex]
+                        const creepParts = this.fetch_creepParts(
+                            roomID, 
+                            condition.role, 
+                            condition.satisfaction,
+                            additionalInfo={
+                                existingClaimerNumber: Memory.claimerRooms[claimerRoomIndex].claimers.length,
+                            }
+                        );
+                        if(creepParts!=null) {
+                            this.queue_creepGeneric(
+                                roomID, 
+                                condition.role, 
+                                creepParts, 
+                                additionalInfo = {
+                                    claimerRoomID: Memory.claimerRooms[claimerRoomIndex].claimerRoomID
+                                }
+                            )
+                            claimerRoomChecked = true;
+                            break;
+                        }
+                    }
+                    if(claimerRoomChecked) {break;}
                 }
             }
         }
