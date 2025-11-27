@@ -96,13 +96,13 @@ var respawnManager = {
         switch(creepRole) {
             // **NOTE; Miner and Gatherer require sourceID
             case "Miner":
-                if( (additionalInfo["energyRoomID"] != null) && (additionalInfo["SourceID"] != null) ) {
-                    miner_tasks.queue(roomID, additionalInfo["energyRoomID"], additionalInfo["SourceID"], creepParts);
+                if( (additionalInfo["energyRoomID"] != null) && (additionalInfo["sourceID"] != null) ) {
+                    miner_tasks.queue(roomID, additionalInfo["energyRoomID"], additionalInfo["sourceID"], creepParts);
                 }
                 break;
             case "Gatherer":
-                if( (additionalInfo["energyRoomID"] != null) && (additionalInfo["SourceID"] != null) ) {
-                    gatherer_tasks.queue(roomID, additionalInfo["energyRoomID"], additionalInfo["SourceID"], creepParts);
+                if( (additionalInfo["energyRoomID"] != null) && (additionalInfo["sourceID"] != null) ) {
+                    gatherer_tasks.queue(roomID, additionalInfo["energyRoomID"], additionalInfo["sourceID"], creepParts);
                 }
                 break;
             // SourceID not required
@@ -291,9 +291,8 @@ var respawnManager = {
                     creepNumberCurrent = this.fetch_creepNumber(role, roomID, energyRoomID=additionalInfo["energyRoomID"], sourceID=additionalInfo["sourceID"]);
                 }   // If is a regular spawnerRoom creep, leave as previously found value
             }
-
             if(creepNumberCurrent >= creepNumberMaximum) {
-                creepParts = null
+                creepParts = null;
             }
 
             // Do check at the end for atypical role conditions
@@ -433,6 +432,8 @@ var respawnManager = {
                             condition.role, 
                             condition.satisfaction,
                             additionalInfo={
+                                energyRoomID: Memory.energyRooms[energyRoomIndex].ID,
+                                sourceID: Memory.energyRooms[energyRoomIndex].sources[sourceIndex].ID,
                                 containerNumber: Memory.energyRooms[energyRoomIndex].sources[sourceIndex].containers.length,
                                 minerNumber: Memory.energyRooms[energyRoomIndex].sources[sourceIndex].miners.length,
                                 gathererNumber: Memory.energyRooms[energyRoomIndex].sources[sourceIndex].gatherers.length,
@@ -445,8 +446,8 @@ var respawnManager = {
                                 condition.role, 
                                 creepParts, 
                                 additionalInfo = {
-                                    "energyRoomID": Memory.energyRooms[energyRoomIndex].ID,
-                                    "SourceID": Memory.energyRooms[energyRoomIndex].sources[sourceIndex].ID
+                                    energyRoomID: Memory.energyRooms[energyRoomIndex].ID,
+                                    sourceID: Memory.energyRooms[energyRoomIndex].sources[sourceIndex].ID
                                 }
                             )
                             energyRoomChecked = true;
