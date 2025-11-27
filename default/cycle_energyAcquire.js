@@ -288,6 +288,22 @@ function removeCreep_energyRooms(houseKey, creepRole, creepID){
         }
     }
 }
+function searchClaimerRooms_roomIndex(spawnerRoomID, claimerRoomID) {
+    /*
+    . Returns the index of the element in claimerRooms that has roomID as its name
+    . Returns null if cannot find a match
+    */
+    var index = null
+    if(Memory.claimerRooms!=null) {
+        for(var claimerRoomIndex in Memory.claimerRooms){
+            if( (Memory.claimerRooms[claimerRoomIndex].spawnerRoomID == spawnerRoomID) && (Memory.claimerRooms[claimerRoomIndex].claimerRoomID == claimerRoomID) ){
+                index = claimerRoomIndex;
+                break;
+            }
+        }
+    }
+    return index
+}
 function searchEnergyRooms_roomIndex(roomID){
     var index = null;
     for(var roomIndex in Memory.energyRooms){
@@ -324,7 +340,7 @@ function getSource_freeSpace(room, cSource){
     }
     return totalFreeTiles;
 }
-function assignCreeps_energyRooms(){
+function assignCreeps(){
     /*
     --- Applies to all spawner rooms
     -- Call this function continually
@@ -339,6 +355,7 @@ function assignCreeps_energyRooms(){
         for(var i=0; i<unassignedLength; i++){
             var creepName = Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned[0];
             if(Memory.creeps[creepName]){   //Prevents a bug where the 1 time a creep, in sim, spawned with undefined memory => ignore his assignment and execute him
+                // Energy rooms
                 var roomIndex    = searchEnergyRooms_roomIndex(Memory.creeps[creepName].houseKey.roomID);
                 var sourceIndex  = searchEnergyRooms_sourceIndex(roomIndex, Memory.creeps[creepName].houseKey.sourceID);
                 if( (roomIndex!=null)&&(sourceIndex!=null) ) {
@@ -354,6 +371,18 @@ function assignCreeps_energyRooms(){
                 } else {    // If you cannot find a correct roomIndex or sourceIndex
                     Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned.shift();
                     Game.creeps[creepName].suicide();
+                }
+
+                // Claimer rooms
+                if(Memory.creeps[creepName].role == "Claimer") {
+                    const claimerRoomIndex = searchClaimerRooms_roomIndex(Memory.creeps[creepName].spawnKey.roomID, Memory.creeps[creepName].houseKey.roomID)
+                    if(claimerRoomIndex != null) {
+                        Memory.claimerRooms[claimerRoomIndex].claimers.push(Game.creeps[creepName].id);
+                        Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned.shift();
+                    } else {    // If you cannot find a correct claimerRoomIndex
+                        Memory.spawnerRooms[getSpawnerRoomIndex(spawnerRoomID)].unassigned.shift();
+                        Game.creeps[creepName].suicide();
+                    }
                 }
             }
             else{
@@ -375,4 +404,4 @@ module.exports = {
     getTarget_gatherer,
     init_energyRoom,
     removeCreep_energyRooms,
-    assignCreeps_energyRooms};
+    assignCreeps};

@@ -9,27 +9,18 @@ var {claimer_tasks, generate_claimer, automatic_spawnClaimers} = require("behavi
 var tower_tasks       = require("behaviour_Tower");
 var {military_tasks, generate_coreClearers, generate_militia, automatic_clearCores}   = require("behaviour_Military");
 var respawnManager    = require("manager_Respawn");
-var {init_energyRoom, assignCreeps_energyRooms} = require("cycle_energyAcquire");
+var {init_energyRoom, assignCreeps} = require("cycle_energyAcquire");
 var {manageMemory_setupMemory, manageMemory_queues} = require("manager_Memory");
 var {calculate_transaction_manual, calculate_transaction_automatic} = require("manager_Market");
 
 module.exports.loop = function () {
-    // ###
-    // ### ADDED SUICIDE + UNSHIFT LINE TO CYCLE ENERGY ASSIGNING CREEPS ON NULLS
-    // ### LOWERING VALUES ALL AROUND --> MIN(SINGLE VALUE, LOW PERCENT)
-    // ### NULL CHECK ON SOURCE ID CREEP QUEUE
-    // ###
-    // ### LOTS OF MINERS ARE BEING SPAWNED FOR NON-SPAWNER ENERGY ROOMS BUT NOT BEING ASSIGNED
-    // ### FOR ENERGY ROOM CREEPS, ROOMID == ROOM THEY WORK IN NOT SPAWNER ROOM --> NEED TO ADD SPAWNER ROOMID INTO QUEUE -> THATS WHY IT WAS PERFORMED MANUALLY BEFORE
-    // ###
-    
     //Ensure memory values are accurate and up to date
     manageMemory_setupMemory();
     manageMemory_queues();
     manageMemory_dead_cleanup();
 
     //Spawn & assign required dudes
-    assignCreeps_energyRooms();         //this order is important, prevents nulls occurring when spawning and instantly assigning, gives a frame of breather room
+    assignCreeps();         //this order is important, prevents nulls occurring when spawning and instantly assigning, gives a frame of breather room
     respawnManager.spawnFromQueue();    //assign -> respawn => respawn -> frame gap -> assign
     respawnManager.extendQueue();
     

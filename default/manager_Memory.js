@@ -8,12 +8,7 @@ function manageMemory_setupMemory() {
     // (1)
     if(!Memory.spawnerRooms){ Memory.spawnerRooms = []; }
     if(!Memory.energyRooms){ Memory.energyRooms = []; }
-    if(!Memory.territory){ 
-        Memory.territory = {
-            claimerTargets: [],     // List of roomIDs (names) of rooms to be claimed
-            scavengerTargets: []    // "" ""
-        };
-    }
+    if(!Memory.claimerRooms){ Memory.claimerRooms = []; }
 
     if(Game.time.toString().slice(-1) == 5) {   // Periodically call this
         // (2)
@@ -64,6 +59,43 @@ function trim_spawnerRooms() {
     }
 }
 
+function init_claimerRooms(spawnerRoomID, claimerRoomID){
+    /*
+    . Creates a space in "Memory.claimerRooms" for a new room to be auto-claimed
+    . spawnerRoomID = Name of spawnerRoom which will provide the claimers to capture the room (e.g. W7S14)
+    . claimerRoomID = Name of the room to be claimed by the claimers (e.g. W7S14)
+    */
+    // Check this entry doesn't already exist
+    var entryExists = false;
+    for(claimerRoomIndex in Memory.claimerRooms) {
+        if( (Memory.claimerRooms[claimerRoomIndex].spawnerRoomID = spawnerRoomID) && (Memory.claimerRooms[claimerRoomIndex].claimerRoomID = claimerRoomID) ) {
+            entryExists = true;
+            break;
+        }
+    }
+
+    if(!entryExists) {
+        var claimerRoom = {
+            spawnerRoomID: spawnerRoomID,
+            claimerRoomID: claimerRoomID,
+            claimers: []
+        }
+        Memory.claimerRooms.push(claimerRoom)
+    } else {console.log("**ClaimerRoom already exists**")}
+}
+function remove_claimerRooms(spawnerRoomID, claimerRoomID, fullPurge=true){
+    /*
+    . Removes a space in "Memory.claimerRooms" with matching parameters
+    . spawnerRoomID = Name of spawnerRoom which will provide the claimers to capture the room (e.g. W7S14)
+    . claimerRoomID = Name of the room to be claimed by the claimers (e.g. W7S14)
+    */
+    for(claimerRoomIndex in Memory.claimerRooms) {
+        if( (Memory.claimerRooms[claimerRoomIndex].spawnerRoomID = spawnerRoomID) && (Memory.claimerRooms[claimerRoomIndex].claimerRoomID = claimerRoomID) ) {
+            Memory.claimerRooms.splice(claimerRoomID, 1);
+            if(!fullPurge) {break;}
+        }
+    }
+}
 function init_spawnerRooms(roomID){
     /*
     . Creates a space in the "Memory.spawnerRooms" for a spawner in a room not currently assigned
