@@ -327,7 +327,7 @@ var respawnManager = {
         var totalNumber = 0
         for(creepName in Game.creeps) {
             var creep = Game.creeps[creepName]
-            if(creep.role == role) {
+            if(creep.memory.role == role) {
                 if(creep.memory.spawnKey!=null) {
                     if(creep.memory.spawnKey.roomID == spawnerRoomID) {     // SpawnerRoom match
                         if( (energyRoomID!=null) && (sourceID!=null) ) {        // If you want to check energy rooms instead, follow this branch
