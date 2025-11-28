@@ -315,6 +315,13 @@ var respawnManager = {
                         }
                     }
                     break;
+                case "Extractor":
+                    if(additionalInfo["extractorStructureNumber"]!=null) {
+                        if(additionalInfo["extractorStructureNumber"] <= 0) {
+                            creepParts = null;
+                        }
+                    }
+                    break;
             }
         }
         return creepParts
@@ -366,7 +373,9 @@ var respawnManager = {
         ]
         for(conditionIndex in creepQueuePriority) {
             var condition = creepQueuePriority[conditionIndex]
-            var additionalInfo = {}
+            var additionalInfo = {
+                extractorStructureNumber: Game.rooms[roomID].find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_EXTRACTOR) && (structure.progress == null) )}}).length,
+            }
 
             var creepParts = this.fetch_creepParts(
                 roomID, 
