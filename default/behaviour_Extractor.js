@@ -5,13 +5,17 @@ var extractor_tasks = {
         /*
         Note; Mention of material here can be minerals or energy
         */
-        if(creep.memory.jobOrder.length > 0){      //If you have any jobs to do
-            execute_next_jobOrder(creep);       //Do the first job in the queue
-        }
-        else{
-            //If no job orders, look for a new (automatic) one periodically
-            if(Game.time.toString().slice(-1) % 2 == 0){
-                determine_automaticJobOrder_extractor(creep);
+        if(creep.houseKey!=null) {
+            if(Game.getObjectById(creep.houseKey.sourceID)) {
+                if(creep.memory.jobOrder.length > 0){      //If you have any jobs to do
+                    execute_next_jobOrder(creep);       //Do the first job in the queue
+                }
+                else{
+                    //If no job orders, look for a new (automatic) one periodically
+                    if(Game.time.toString().slice(-1) % 2 == 0){
+                        determine_automaticJobOrder_extractor(creep);
+                    }
+                }
             }
         }
     },
