@@ -175,7 +175,7 @@ var respawnManager = {
             case "Extractor":
                 return 2;
             case "Claimer":
-                return 2;
+                return 1;
             default:
                 return 0;
         }

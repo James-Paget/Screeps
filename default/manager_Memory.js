@@ -105,13 +105,24 @@ function init_spawnerRooms(roomID){
         queue[{}]    = creeps in queue for that room (list[] of specs{})
         unassigned[] = creeps unassigned for that room (list[] of names)
     */
-    var queueSet          = [];
-    var unassignedSet     = [];     //**NOTE; Only required for energy room creeps (anywhere where creep ID is needed). Creep names temporarily stored here while spawning since their ID is not available while spawning. After, IDs are given to relevant locations and unassigned are removed
-    var mineralStorageSet = [];     //Stores minerals -> This holds IDs for storages used to hold minerals
-    var towers            = [];     //Stores IDs of towers in room -> auto updated by another function
-    var autoStructures    = [];     //Stores structure types, locations, and priorities (what, where and when to spawn)
-    var spawnerRoom_elem  = {roomID:roomID, queue:queueSet, unassigned:unassignedSet, mineralStorage:mineralStorageSet, towers:towers, autoStructures:autoStructures};
-    Memory.spawnerRooms.push(spawnerRoom_elem);
+    // Check this entry doesn't already exist
+    var entryExists = false;
+    for(spawnerRoomIndex in Memory.spawnerRooms) {
+        if(Memory.spawnerRooms[spawnerRoomIndex].roomID = roomID) {
+            entryExists = true;
+            break;
+        }
+    }
+
+    if(!entryExists) {
+        var queueSet          = [];
+        var unassignedSet     = [];     //**NOTE; Only required for energy room creeps (anywhere where creep ID is needed). Creep names temporarily stored here while spawning since their ID is not available while spawning. After, IDs are given to relevant locations and unassigned are removed
+        var mineralStorageSet = [];     //Stores minerals -> This holds IDs for storages used to hold minerals
+        var towers            = [];     //Stores IDs of towers in room -> auto updated by another function
+        var autoStructures    = [];     //Stores structure types, locations, and priorities (what, where and when to spawn)
+        var spawnerRoom_elem  = {roomID:roomID, queue:queueSet, unassigned:unassignedSet, mineralStorage:mineralStorageSet, towers:towers, autoStructures:autoStructures};
+        Memory.spawnerRooms.push(spawnerRoom_elem);
+    }
 }
 function remove_spawnerRooms(roomID, fullPurge=true) {
     /*
