@@ -108,7 +108,7 @@ function init_spawnerRooms(roomID){
     // Check this entry doesn't already exist
     var entryExists = false;
     for(spawnerRoomIndex in Memory.spawnerRooms) {
-        if(Memory.spawnerRooms[spawnerRoomIndex].roomID = roomID) {
+        if(Memory.spawnerRooms[spawnerRoomIndex].roomID == roomID) {
             entryExists = true;
             break;
         }
