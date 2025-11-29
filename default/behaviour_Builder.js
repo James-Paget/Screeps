@@ -147,7 +147,7 @@ function getTarget_builder(creep){
         else{
             //If not in refillMode, look for targets as usual
             //Look for (1) Towers to refill, (2) Construction sites within influence of spawner
-            var refill_threshold = 0.4;     //If more than x% of capacity is empty, start refills
+            var refill_threshold = 0.8;     //If more than x% of capacity is empty, start refills
             var resupplyTowers = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_TOWER) && (structure.store.getFreeCapacity(RESOURCE_ENERGY) > refill_threshold*structure.store.getCapacity(RESOURCE_ENERGY)) )}});
             if(resupplyTowers.length > 0){  //(1)
                 creep.memory.refillMode = true;
