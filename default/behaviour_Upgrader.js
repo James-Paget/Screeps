@@ -2,33 +2,50 @@ var {getSpawnerRoomIndex} = require("manager_Memory");
 
 var upgrading_tasks = {
     task : function(creep){
-        if(creep.memory.isUpgrading){
-            //if(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].queue.length == 0){    //Only upgrade when no one is being spawned at YOUR spawner, e.g excess energy ==> THIS SEEMS EXCESSIVE AND UNCESSARY GIVEN THE 80% CONDITION
-            if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE){
-                creep.moveTo(creep.room.controller);
+        if(!creep.memory.isRenewing) { creep.memory.isRenewing=false; }    // If creep doesn't have renewal memory setup, set it up now
+        if(creep.ticksToLive < 100) { creep.memory.isRenewing = true; }    // If under 100 ticks left, try to go back to spawn to renew
+
+        if(creep.memory.isRenewing==true) { // If renewing, move to spawner when it is free (NOT respawning)
+            const availableEnergy = Game.rooms[creep.spawnKey.roomID].energyAvailable;
+            if(creep.ticksToLive >= 500) { creep.memory.isRenewing == false; }
+            else {
+                const spawner = Game.rooms[creep.spawnKey.roomID].find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_SPAWN) && (structure.progress==null) )}});
+                if(spawner) {
+                    if((!spawner.spawning) && (availableEnergy>100)) {
+                        if(spawner.renewCreep(creep) == ERR_NOT_IN_RANGE) {
+                            creep.moveTo(spawner);
+                        }
+                    }
+                }
             }
-            //}
-        }
-        else{
-            if(creep.room.energyAvailable >= 0.5*creep.room.energyCapacityAvailable){   //Above X% energy in order to start upgrading
-                var energyCaches = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_SPAWN && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_EXTENSION && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) )}});
-                var target = creep.pos.findClosestByPath(energyCaches);
-                if(creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(target);
+        } else {    // If not renewing, behave normally
+            if(creep.memory.isUpgrading){
+                //if(Memory.spawnerRooms[getSpawnerRoomIndex(creep.memory.spawnKey.roomID)].queue.length == 0){    //Only upgrade when no one is being spawned at YOUR spawner, e.g excess energy ==> THIS SEEMS EXCESSIVE AND UNCESSARY GIVEN THE 80% CONDITION
+                if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(creep.room.controller);
                 }
             }
             else{
-                //Move out of the way
-                if(Game.flags["UpgraderWait"]){
-                    creep.moveTo(Game.flags["UpgraderWait"].pos);}
+                if(creep.room.energyAvailable >= 0.5*creep.room.energyCapacityAvailable){   //Above X% energy in order to start upgrading
+                    var energyCaches = creep.room.find(FIND_STRUCTURES, {filter : (structure) => {return ( (structure.structureType == STRUCTURE_SPAWN && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_EXTENSION && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) )}});
+                    var target = creep.pos.findClosestByPath(energyCaches);
+                    if(creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
+                        creep.moveTo(target);
+                    }
+                }
                 else{
-                    creep.moveTo(creep.room.controller);}
+                    //Move out of the way
+                    if(Game.flags["UpgraderWait"]){
+                        creep.moveTo(Game.flags["UpgraderWait"].pos);}
+                    else{
+                        creep.moveTo(creep.room.controller);}
+                }
             }
+            if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
+                creep.memory.isUpgrading = true;}
+            if(creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0){
+                creep.memory.isUpgrading = false;}
         }
-        if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
-            creep.memory.isUpgrading = true;}
-        if(creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0){
-            creep.memory.isUpgrading = false;}
     },
     generateCreepParts : function(spawnerRoomID){
         /*
