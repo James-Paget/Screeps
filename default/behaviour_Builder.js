@@ -133,69 +133,71 @@ function getTarget_builder(creep){
     resupplyTowers = towers that NEED a resupply
     */
     var target = null;
-    if(creep.memory.isBuilding){
-        if(creep.memory.refillMode){
-            //If in "refillMode", only refill towers until your tower is completely full, then toggle off refillMode
-            var resupplyTowers = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_TOWER) && (structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) )}});
-            target = creep.pos.findClosestByPath(resupplyTowers);
-            if(target){
-                if( (resupplyTowers.length == 0) || (target.store.getFreeCapacity(RESOURCE_ENERGY) >= 0.9*target.store.getCapacity(RESOURCE_ENERGY)) ){         //Cancel refill mode when all towers are full OR your tower is almost entirely full
-                    delete creep.memory.refillMode;
-                }
-            }
-        }
-        else{
-            //If not in refillMode, look for targets as usual
-            //Look for (1) Towers to refill, (2) Construction sites within influence of spawner
-            var refill_threshold = 0.8;     //If more than x% of capacity is empty, start refills
-            var resupplyTowers = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_TOWER) && (structure.store.getFreeCapacity(RESOURCE_ENERGY) > refill_threshold*structure.store.getCapacity(RESOURCE_ENERGY)) )}});
-            if(resupplyTowers.length > 0){  //(1)
-                creep.memory.refillMode = true;
+    const energyPercent = (Game.rooms[creep.memory.spawnKey.roomID].energyAvailable)/(Game.rooms[creep.memory.spawnKey.roomID].energyCapacityAvailable)
+    if(energyPercent >= 0.8) {      // Only perform any building duties if you have excess energy beyond this threhold
+        if(creep.memory.isBuilding){
+            if(creep.memory.refillMode){
+                //If in "refillMode", only refill towers until your tower is completely full, then toggle off refillMode
+                var resupplyTowers = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_TOWER) && (structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) )}});
                 target = creep.pos.findClosestByPath(resupplyTowers);
-            }
-            else{                           //(2)
-                // **Note; Last check in this section has priority (e.g, energy rooms here, not claimer rooms)
-                // Build in claimer rooms (if the claimerRoom is managed by the same spawnerRoom as this builder)
-                for(var roomIndex in Memory.claimerRooms){
-                    if(Memory.claimerRooms[roomIndex].spawnerRoomID == creep.memory.spawnKey.roomID){
-                        if(Game.rooms[Memory.claimerRooms[roomIndex].claimerRoomID]){   // Vision check
-                            var constructSites = Game.rooms[Memory.claimerRooms[roomIndex].claimerRoomID].find(FIND_CONSTRUCTION_SITES);
-                            if(constructSites.length > 0){
-                                target = constructSites[0]; //May be in other rooms, so cant simply check path diff => just complete them in order (fine assumption because 90% of time nothing will require building)
-                                break;
+                if(target){
+                    if( (resupplyTowers.length == 0) || (target.store.getFreeCapacity(RESOURCE_ENERGY) >= 0.9*target.store.getCapacity(RESOURCE_ENERGY)) ){         //Cancel refill mode when all towers are full OR your tower is almost entirely full
+                        delete creep.memory.refillMode;
+                    }
+                }
+            } else {
+                //If not in refillMode, look for targets as usual
+                //Look for (1) Towers to refill, (2) Construction sites within influence of spawner
+                var refill_threshold = 0.4;     //If more than x% of capacity is empty, start refills
+                var resupplyTowers = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_TOWER) && (structure.store.getFreeCapacity(RESOURCE_ENERGY) > refill_threshold*structure.store.getCapacity(RESOURCE_ENERGY)) )}});
+                if(resupplyTowers.length > 0){  //(1)
+                    creep.memory.refillMode = true;
+                    target = creep.pos.findClosestByPath(resupplyTowers);
+                }
+                else{                           //(2)
+                    // **Note; Last check in this section has priority (e.g, energy rooms here, not claimer rooms)
+                    // Build in claimer rooms (if the claimerRoom is managed by the same spawnerRoom as this builder)
+                    for(var roomIndex in Memory.claimerRooms){
+                        if(Memory.claimerRooms[roomIndex].spawnerRoomID == creep.memory.spawnKey.roomID){
+                            if(Game.rooms[Memory.claimerRooms[roomIndex].claimerRoomID]){   // Vision check
+                                var constructSites = Game.rooms[Memory.claimerRooms[roomIndex].claimerRoomID].find(FIND_CONSTRUCTION_SITES);
+                                if(constructSites.length > 0){
+                                    target = constructSites[0]; //May be in other rooms, so cant simply check path diff => just complete them in order (fine assumption because 90% of time nothing will require building)
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    // Build in energy rooms
+                    for(var roomIndex in Memory.energyRooms){
+                        if(Memory.energyRooms[roomIndex].spawnerRoomID == creep.memory.spawnKey.roomID){    //If this energy room is associated with this builder's spawn, check if he has any jobs he can do there
+                            if(Game.rooms[Memory.energyRooms[roomIndex].ID]){                               //If you currently have vision of that room (this will change as creeps enter, leave and die in a room)
+                                var constructSites = Game.rooms[Memory.energyRooms[roomIndex].ID].find(FIND_CONSTRUCTION_SITES);
+                                if(constructSites.length > 0){
+                                    target = constructSites[0]; //May be in other rooms, so cant simply check path diff => just complete them in order (fine assumption because 90% of time nothing will require building)
+                                    break;
+                                }
                             }
                         }
                     }
                 }
-                // Build in energy rooms
-                for(var roomIndex in Memory.energyRooms){
-                    if(Memory.energyRooms[roomIndex].spawnerRoomID == creep.memory.spawnKey.roomID){    //If this energy room is associated with this builder's spawn, check if he has any jobs he can do there
-                        if(Game.rooms[Memory.energyRooms[roomIndex].ID]){                               //If you currently have vision of that room (this will change as creeps enter, leave and die in a room)
-                            var constructSites = Game.rooms[Memory.energyRooms[roomIndex].ID].find(FIND_CONSTRUCTION_SITES);
-                            if(constructSites.length > 0){
-                                target = constructSites[0]; //May be in other rooms, so cant simply check path diff => just complete them in order (fine assumption because 90% of time nothing will require building)
-                                break;
-                            }
-                        }
-                    }
-                }
             }
-        }
-    }
-    else{
-        //For look place to gather resources from in spawner room
-        if(creep.room.name == creep.memory.spawnKey.roomID){
-            //If in spawner room, look for closest storage (extension or spawner)
-            // --> WAS CAUSING ERRORS
-            var possibleTargets = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType == STRUCTURE_EXTENSION)&&(structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) )}});
-            if(possibleTargets.length == 0){
-                possibleTargets = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType == STRUCTURE_SPAWN)&&(structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) )}});
-            }
-            target = creep.pos.findClosestByPath(possibleTargets);
         }
         else{
-            //If NOT in home spawner room, just travel to the spawner generally, re-adjust later
-            target = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter:(structure) => {return(structure.structureType == STRUCTURE_SPAWN)}})[0];
+            //For look place to gather resources from in spawner room
+            if(creep.room.name == creep.memory.spawnKey.roomID){
+                //If in spawner room, look for closest storage (extension or spawner)
+                // --> WAS CAUSING ERRORS
+                var possibleTargets = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType == STRUCTURE_EXTENSION)&&(structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) )}});
+                if(possibleTargets.length == 0){
+                    possibleTargets = creep.room.find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType == STRUCTURE_SPAWN)&&(structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0) )}});
+                }
+                target = creep.pos.findClosestByPath(possibleTargets);
+            }
+            else{
+                //If NOT in home spawner room, just travel to the spawner generally, re-adjust later
+                target = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter:(structure) => {return(structure.structureType == STRUCTURE_SPAWN)}})[0];
+            }
         }
     }
     return target;
