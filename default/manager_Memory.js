@@ -4,6 +4,7 @@ function manageMemory_setupMemory() {
     . (2) Make spawnerRooms if not registered already and remove unused/dead spawnerRooms
     . (3) Populate information in spawnerRooms
     . (4) Populate information in energyRooms
+    . (5) Update labs specification
     */
     // (1)
     if(!Memory.spawnerRooms){ Memory.spawnerRooms = []; }
@@ -19,6 +20,8 @@ function manageMemory_setupMemory() {
         updateMineralStorage_spawnerRooms();
         // (4)
         updateContainers_energyRooms();
+        // (5)
+        updateLabSpecification_spawnerRooms();
     }
 }
 function manageMemory_queues(){
@@ -116,11 +119,15 @@ function init_spawnerRooms(roomID){
 
     if(!entryExists) {
         var queueSet          = [];
-        var unassignedSet     = [];     //**NOTE; Only required for energy room creeps (anywhere where creep ID is needed). Creep names temporarily stored here while spawning since their ID is not available while spawning. After, IDs are given to relevant locations and unassigned are removed
-        var mineralStorageSet = [];     //Stores minerals -> This holds IDs for storages used to hold minerals
-        var towers            = [];     //Stores IDs of towers in room -> auto updated by another function
-        var autoStructures    = [];     //Stores structure types, locations, and priorities (what, where and when to spawn)
-        var spawnerRoom_elem  = {roomID:roomID, queue:queueSet, unassigned:unassignedSet, mineralStorage:mineralStorageSet, towers:towers, autoStructures:autoStructures};
+        var unassignedSet     = [];     // **NOTE; Only required for energy room creeps (anywhere where creep ID is needed). Creep names temporarily stored here while spawning since their ID is not available while spawning. After, IDs are given to relevant locations and unassigned are removed
+        var mineralStorageSet = [];     // Stores minerals -> This holds IDs for storages used to hold minerals
+        var towers            = [];     // Stores IDs of towers in room -> auto updated by another function
+        var autoStructures    = [];     // Stores structure types, locations, and priorities (what, where and when to spawn)
+        var labSpecification  = {       // Stores information about the labs structures present in a spawnerRoom, and the products and reactants wanted for each
+            labs: [],       // Holds lab elements = {labItem:String, labPosition:Position, labID:ID}
+            groups: []      // Holds labs groups = {reactantA:ID, reactantB:ID, product:ID} <- IDs of the labs to perform this work
+        };                      // ** Note; This grouping allows a single lab to be invovled in multiple reactions / receive product but also be a reactant to another task
+        var spawnerRoom_elem  = {roomID:roomID, queue:queueSet, unassigned:unassignedSet, mineralStorage:mineralStorageSet, towers:towers, autoStructures:autoStructures, labSpecification:labSpecification};
         Memory.spawnerRooms.push(spawnerRoom_elem);
     }
 }
@@ -204,6 +211,97 @@ function updateContainers_energyRooms(){
         }
     }
 }
+
+function updateLabSpecification_spawnerRooms(spawnerRoomID) {
+    /*
+    . Periodically populates the labSpecification element in spawnerRooms to specify details about labs in the room
+    . This works alongside a grouping and lab mineral specification given by the player to set production of certain products
+
+    (1) Check a valid spawnerRoom exists
+    (2) Check if a labSpec. is already stored
+    (3) Find all labs in the room
+    */
+    // (1)
+    const spawnerRoomIndex = getSpawnerRoomIndex(spawnerRoomID);
+    if(spawnerRoomIndex != null) {
+        // (2)
+        // Create labSpecification element if not already present
+        if(!Memory.spawnerRooms[spawnerRoomIndex].labSpecification) {
+            Memory.spawnerRooms[spawnerRoomIndex].labSpecification = {
+                labs: [],
+                groups: []
+            }
+        }
+
+        // (3)
+        var updatedLabSpecification_labs = [];
+        const labs = Game.rooms[Memory.spawnerRooms[spawnerRoomIndex].roomID].find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType == STRUCTURE_LAB)&&(structure.progress == null) )}});
+        for(labIndex in labs) {
+            var labKnown = false
+            for(knownLabIndex in Memory.spawnerRooms[spawnerRoomIndex].labSpecification.labs) {
+                if(labs[labIndex].id == Memory.spawnerRooms[spawnerRoomIndex].labSpecification[knownLabIndex].ID) { // If this lab has already been recorded, re-add the known version
+                    updatedLabSpecification_labs.push( Memory.spawnerRooms[spawnerRoomIndex].labSpecification[knownLabIndex] );
+                    labKnown = true;
+                    break;
+                }
+            }
+            if(!labKnown) {
+                updatedLabSpecification_labs.push(
+                    {
+                        ID:labs[labIndex].id,       // ID of the lab
+                        storedType:null,            // What mineral/item to put into this lab
+                        posX:labs[labIndex].pos.x,
+                        posY:labs[labIndex].pos.y,  
+                    }
+                );
+            }
+        }
+        Memory.spawnerRooms[spawnerRoomIndex].labSpecification = updatedLabSpecification_labs
+        // ** Note; Do NOT change the groups, only change this as a one-off triggered by the user (when they set what they want the room to produce)
+    }
+}
+
+function set_labSpecification(spawnerRoomID, labTypes=[], groups=[]) {
+    /*
+    . Sets a labSpecification for a given spawnerRoom
+    . This details how the labs should be used to generate new product
+
+    . This must be manually set per spawnerRoom (NOT automatic)
+
+    . The provided specification should be of the format:
+    labTypes = [
+        {
+            ID: LAB_ID,
+            storedType: STRING_MINERAL_NAME
+        }
+    ]
+    groups = [
+        {
+            reactantA: LAB_ID,
+            reactantB: LAB_ID,
+            product: LAB_ID,
+        },
+        ...
+    ]
+    */
+    const spawnerRoomIndex = getSpawnerRoomIndex(spawnerRoomID);
+    if(spawnerRoomIndex != null) {
+        if(Memory.spawnerRooms[spawnerRoomIndex].labSpecification) {
+            // Update stored types for each lab. ** Note; Doesn't reset non-spcified labs, it ONLY sets what is given and nothing more
+            for(labTypeIndex in labTypes) {
+                for(labSpecIndex in Memory.spawnerRooms[spawnerRoomIndex].labSpecification.labs) {
+                    if(Memory.spawnerRooms[spawnerRoomIndex].labSpecification.labs[labSpecIndex].ID == labTypes[labTypeIndex].ID) { // If a matching ID is found, then update its storedType
+                        Memory.spawnerRooms[spawnerRoomIndex].labSpecification.labs[labSpecIndex].storedType = labTypes[labTypeIndex].storedType;
+                        break;
+                    }
+                }
+            }
+            // Update the groups
+            Memory.spawnerRooms[spawnerRoomIndex].labSpecification.groups = groups;
+        }
+    }
+}
+
 function remove_energyRooms(ID, spawnerRoomID, fullPurge=true) {
     /*
     . ID = Name of the energy room to be removed e.g. W1S1 (if null => remove any energy room where spawnerRoomID matches, irrespective of energy room's ID)
