@@ -256,7 +256,7 @@ function updateLabSpecification_spawnerRooms() {
                     );
                 }
             }
-            Memory.spawnerRooms[spawnerRoomIndex].labSpecification = updatedLabSpecification_labs
+            Memory.spawnerRooms[spawnerRoomIndex].labSpecification.labs = updatedLabSpecification_labs
             // ** Note; Do NOT change the groups, only change this as a one-off triggered by the user (when they set what they want the room to produce)
         }
     }
