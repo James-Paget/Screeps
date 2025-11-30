@@ -3,21 +3,12 @@ var gatherer_tasks  = require("behaviour_Gatherer");
 var upgrading_tasks = require("behaviour_Upgrader");
 var building_tasks  = require("behaviour_Builder");
 var repairing_tasks = require("behaviour_Repairer");
+var scientist_tasks = require("behaviour_Scientist");
 var defender_tasks  = require("behaviour_Defender");
 var {getExtractionID, extractor_tasks} = require("behaviour_Extractor");
 var {claimer_tasks}   = require("behaviour_Claimer");
 var {getSpawnerRoomIndex} = require("manager_Memory");
 var {military_tasks} = require("behaviour_Military");
-
-/*
-The current solution for spawning;
-. Certain roles (like builders, repairers, etc) spawn up to a fixed quantity -------------> MAKE BUILDERS SCALE WITH # OF CONSTRUCTION SITES IN FUTURE
-. Creeps involved in energyRooms (miners and gatherers) are periodically spawned based on saturation needs
--   For example; A function will check whether any new creeps are needed, and if so will output the parts, 
-                room and source desired. On another tick, a function will then look through spawned assigned 
-                creeps of given roles, and assign them to the location they were intended for. This is separate 
-                because the ID of a creep can only be accessed after spawning.
-*/
 
 var respawnManager = {
     spawnFromQueue : function(){
@@ -51,6 +42,8 @@ var respawnManager = {
                             defender_tasks.respawn(creepName, spawnerID, creepSpec);}
                         if(Memory.spawnerRooms[spawnerRoomIndex].queue[0].role == "Extractor"){
                             extractor_tasks.respawn(creepName, spawnerID, creepSpec);}
+                        if(Memory.spawnerRooms[spawnerRoomIndex].queue[0].role == "Scientist"){
+                            scientist_tasks.respawn(creepName, spawnerID, creepSpec);}
                         if(Memory.spawnerRooms[spawnerRoomIndex].queue[0].role == "Military"){
                             military_tasks.respawn(creepName, spawnerID, creepSpec);}
                         if(Memory.spawnerRooms[spawnerRoomIndex].queue[0].role == "Claimer"){
@@ -120,6 +113,9 @@ var respawnManager = {
                 var mineralID = getExtractionID(roomID);
                 extractor_tasks.queue(roomID, mineralID, creepParts);
                 break;
+            case "Scientist":
+                scientist_tasks.queue(roomID, null, creepParts);
+                break;
             case "Claimer":
                 // ** Note; Here sourceID refers to the ID of the roomController to be claimed -> can be left as null if unknown
                 if(additionalInfo["claimerRoomID"] != null) { // sourceID is allowed to be null here -> claimer will determine it once it has entered the room
@@ -150,6 +146,8 @@ var respawnManager = {
                 return Math.max(300, 0.15*maximumRoomEnergy);
             case "Extractor":
                 return Math.max(300, 0.15*maximumRoomEnergy);
+            case "Scientist":
+                return Math.max(300, 0.05*maximumRoomEnergy);
             case "Claimer":
                 return Math.max(300, 0.2*maximumRoomEnergy);
             default:
@@ -174,6 +172,8 @@ var respawnManager = {
                 return 2;
             case "Extractor":
                 return 2;
+            case "Scientist":
+                return 0;//1;   // ### TEMPORARILY DISABLED ###
             case "Claimer":
                 return 1;
             default:
@@ -257,6 +257,10 @@ var respawnManager = {
                     baseParts = [MOVE, MOVE, WORK, CARRY];
                     segmentParts = [MOVE, WORK, CARRY];
                     break;
+                case "Scientist":
+                    baseParts = [MOVE, CARRY];
+                    segmentParts = [MOVE, CARRY];
+                    break;
                 case "Claimer":
                     baseParts = [MOVE, CLAIM];
                     segmentParts = [MOVE, CLAIM];
@@ -322,6 +326,13 @@ var respawnManager = {
                         }
                     }
                     break;
+                case "Scientist":
+                    if( (additionalInfo["labStructureNumber"]!=null) && (additionalInfo["storageStructureNumber"]!=null) ) {
+                        if( (additionalInfo["labStructureNumber"] < 3) || (additionalInfo["storageStructureNumber"] <= 0) ) {  // Need at least 3 labs to create any product
+                            creepParts = null;
+                        }
+                    }
+                    break;
             }
         }
         return creepParts
@@ -370,11 +381,14 @@ var respawnManager = {
             {role: "Builder", satisfaction: 0.9}, 
             {role: "Upgrader", satisfaction: 0.9}, 
             {role: "Extractor", satisfaction: 0.9},
+            {role: "Scientist", satisfaction: 0.9},
         ]
         for(conditionIndex in creepQueuePriority) {
             var condition = creepQueuePriority[conditionIndex]
             var additionalInfo = {
                 extractorStructureNumber: Game.rooms[roomID].find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_EXTRACTOR) && (structure.progress == null) )}}).length,
+                labStructureNumber: Game.rooms[roomID].find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_LAB) && (structure.progress == null) )}}).length,
+                storageStructureNUmber: Game.rooms[roomID].find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_STORAGE) && (structure.progress == null) )}}).length,
             }
 
             var creepParts = this.fetch_creepParts(

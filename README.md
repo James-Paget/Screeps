@@ -26,13 +26,10 @@ Remove the 'gen-creep-parts' within each class -> legacy now
 
 If a claimerRoom gets RCL level 3 or more, make sure it is set as (1) a spawnerRoom, (2) Its own energyRoom and (3) Removed as a claimer room --> will be self sufficient by this point
 
-Do labs -> spawnerRoom preferences, IDs, positions (check close, etc)
+Do labs -> Worker (1) to ferry materials from storage to labs and vice versa -> trigger reactions when ready separately maybe OR by them?
+    Do scientist behaviour
 
-// ###
-// ### CHECK UPGRADER RENEWAL IS WORKING
-// ###
-// ### EXTRACTOR NOT MOVING
-// ###
+
 
 e.g.
 set_labSpecification(
