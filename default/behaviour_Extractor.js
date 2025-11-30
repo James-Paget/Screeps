@@ -6,7 +6,7 @@ var extractor_tasks = {
         Note; Mention of material here can be minerals or energy
         */
         if(creep.houseKey!=null) {                              // Prevent wrongly spawned extractors causing problems (extractor in a room with no extractors check)
-            if(Game.getObjectById(creep.houseKey.sourceID)) {   //
+            if(Game.getObjectById(creep.memory.houseKey.sourceID)) {   //
                 if(creep.memory.jobOrder.length > 0){      //If you have any jobs to do
                     execute_next_jobOrder(creep);       //Do the first job in the queue
                 }

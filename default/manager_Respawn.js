@@ -165,11 +165,11 @@ var respawnManager = {
             case "Miner":       // Per source
                 return 3;
             case "Gatherer":    // "" ""
-                return 2;
+                return 3;
             case "Repairer":    // Per spawner room
-                return 2;
+                return 1;
             case "Builder":     // "" ""
-                return 2;
+                return 1;
             case "Upgrader":
                 return 2;
             case "Extractor":
