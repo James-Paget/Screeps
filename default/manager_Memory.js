@@ -239,8 +239,8 @@ function updateLabSpecification_spawnerRooms() {
             for(labIndex in labs) {
                 var labKnown = false
                 for(knownLabIndex in Memory.spawnerRooms[spawnerRoomIndex].labSpecification.labs) {
-                    if(labs[labIndex].id == Memory.spawnerRooms[spawnerRoomIndex].labSpecification[knownLabIndex].ID) { // If this lab has already been recorded, re-add the known version
-                        updatedLabSpecification_labs.push( Memory.spawnerRooms[spawnerRoomIndex].labSpecification[knownLabIndex] );
+                    if(labs[labIndex].id == Memory.spawnerRooms[spawnerRoomIndex].labSpecification.labs[knownLabIndex].ID) { // If this lab has already been recorded, re-add the known version
+                        updatedLabSpecification_labs.push( Memory.spawnerRooms[spawnerRoomIndex].labSpecification.labs[knownLabIndex] );
                         labKnown = true;
                         break;
                     }
