@@ -212,7 +212,7 @@ function updateContainers_energyRooms(){
     }
 }
 
-function updateLabSpecification_spawnerRooms(spawnerRoomID) {
+function updateLabSpecification_spawnerRooms() {
     /*
     . Periodically populates the labSpecification element in spawnerRooms to specify details about labs in the room
     . This works alongside a grouping and lab mineral specification given by the player to set production of certain products
@@ -221,43 +221,44 @@ function updateLabSpecification_spawnerRooms(spawnerRoomID) {
     (2) Check if a labSpec. is already stored
     (3) Find all labs in the room
     */
-    // (1)
-    const spawnerRoomIndex = getSpawnerRoomIndex(spawnerRoomID);
-    if(spawnerRoomIndex != null) {
-        // (2)
-        // Create labSpecification element if not already present
-        if(!Memory.spawnerRooms[spawnerRoomIndex].labSpecification) {
-            Memory.spawnerRooms[spawnerRoomIndex].labSpecification = {
-                labs: [],
-                groups: []
-            }
-        }
-
-        // (3)
-        var updatedLabSpecification_labs = [];
-        const labs = Game.rooms[Memory.spawnerRooms[spawnerRoomIndex].roomID].find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType == STRUCTURE_LAB)&&(structure.progress == null) )}});
-        for(labIndex in labs) {
-            var labKnown = false
-            for(knownLabIndex in Memory.spawnerRooms[spawnerRoomIndex].labSpecification.labs) {
-                if(labs[labIndex].id == Memory.spawnerRooms[spawnerRoomIndex].labSpecification[knownLabIndex].ID) { // If this lab has already been recorded, re-add the known version
-                    updatedLabSpecification_labs.push( Memory.spawnerRooms[spawnerRoomIndex].labSpecification[knownLabIndex] );
-                    labKnown = true;
-                    break;
+    for(spawnerRoomIndex in Memory.spawnerRooms) {
+        // (1)
+        if(spawnerRoomIndex != null) {
+            // (2)
+            // Create labSpecification element if not already present
+            if(!Memory.spawnerRooms[spawnerRoomIndex].labSpecification) {
+                Memory.spawnerRooms[spawnerRoomIndex].labSpecification = {
+                    labs: [],
+                    groups: []
                 }
             }
-            if(!labKnown) {
-                updatedLabSpecification_labs.push(
-                    {
-                        ID:labs[labIndex].id,       // ID of the lab
-                        storedType:null,            // What mineral/item to put into this lab
-                        posX:labs[labIndex].pos.x,
-                        posY:labs[labIndex].pos.y,  
+
+            // (3)
+            var updatedLabSpecification_labs = [];
+            const labs = Game.rooms[Memory.spawnerRooms[spawnerRoomIndex].roomID].find(FIND_STRUCTURES, {filter:(structure) => {return( (structure.structureType == STRUCTURE_LAB)&&(structure.progress == null) )}});
+            for(labIndex in labs) {
+                var labKnown = false
+                for(knownLabIndex in Memory.spawnerRooms[spawnerRoomIndex].labSpecification.labs) {
+                    if(labs[labIndex].id == Memory.spawnerRooms[spawnerRoomIndex].labSpecification[knownLabIndex].ID) { // If this lab has already been recorded, re-add the known version
+                        updatedLabSpecification_labs.push( Memory.spawnerRooms[spawnerRoomIndex].labSpecification[knownLabIndex] );
+                        labKnown = true;
+                        break;
                     }
-                );
+                }
+                if(!labKnown) {
+                    updatedLabSpecification_labs.push(
+                        {
+                            ID:labs[labIndex].id,       // ID of the lab
+                            storedType:null,            // What mineral/item to put into this lab
+                            posX:labs[labIndex].pos.x,
+                            posY:labs[labIndex].pos.y,  
+                        }
+                    );
+                }
             }
+            Memory.spawnerRooms[spawnerRoomIndex].labSpecification = updatedLabSpecification_labs
+            // ** Note; Do NOT change the groups, only change this as a one-off triggered by the user (when they set what they want the room to produce)
         }
-        Memory.spawnerRooms[spawnerRoomIndex].labSpecification = updatedLabSpecification_labs
-        // ** Note; Do NOT change the groups, only change this as a one-off triggered by the user (when they set what they want the room to produce)
     }
 }
 
