@@ -31,3 +31,18 @@ Do labs -> spawnerRoom preferences, IDs, positions (check close, etc)
 // ###
 // ### CHECK UPGRADER RENEWAL IS WORKING
 // ###
+// ### EXTRACTOR NOT MOVING
+// ###
+
+e.g.
+set_labSpecification(
+    "W7S14",
+    labTypes = [
+        {ID: "65a3a9dbdb25a66404f518ea", storedType: "oxygen"},
+        {ID: "65a417062dbeec16e9be18a1", storedType: "hydrogen"},
+        {ID: "6586a0a206dc475f2963c9cc", storedType: "hydroxide"},
+    ],
+    groups = [
+        {reactantA: "65a3a9dbdb25a66404f518ea", reactantB: "65a417062dbeec16e9be18a1", product: "6586a0a206dc475f2963c9cc"},
+    ]
+);

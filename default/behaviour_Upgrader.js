@@ -6,9 +6,9 @@ var upgrading_tasks = {
         if(creep.ticksToLive < 100) { creep.memory.isRenewing = true; }    // If under 100 ticks left, try to go back to spawn to renew
 
         if(creep.memory.isRenewing==true) { // If renewing, move to spawner when it is free (NOT respawning)
-            const availableEnergy = Game.rooms[creep.memory.spawnKey.roomID].energyAvailable;
-            if(creep.ticksToLive >= 500) { creep.memory.isRenewing == false; }
+            if(creep.ticksToLive >= 500) { creep.memory.isRenewing = false; }
             else {
+                const availableEnergy = Game.rooms[creep.memory.spawnKey.roomID].energyAvailable;
                 const spawners = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_SPAWN) && (structure.progress==null) )}});
                 if(spawners.length > 0) {
                     const spawner = spawners[0]
