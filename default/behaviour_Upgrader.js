@@ -9,11 +9,14 @@ var upgrading_tasks = {
             const availableEnergy = Game.rooms[creep.memory.spawnKey.roomID].energyAvailable;
             if(creep.ticksToLive >= 500) { creep.memory.isRenewing == false; }
             else {
-                const spawner = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_SPAWN) && (structure.progress==null) )}});
-                if(spawner) {
-                    if((!spawner.spawning) && (availableEnergy>100)) {
-                        if(spawner.renewCreep(creep) == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(spawner);
+                const spawners = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter:(structure) => {return ( (structure.structureType == STRUCTURE_SPAWN) && (structure.progress==null) )}});
+                if(spawners.length > 0) {
+                    const spawner = spawners[0]
+                    if(spawner) {
+                        if((!spawner.spawning) && (availableEnergy>100)) {
+                            if(spawner.renewCreep(creep) == ERR_NOT_IN_RANGE) {
+                                creep.moveTo(spawner);
+                            }
                         }
                     }
                 }
