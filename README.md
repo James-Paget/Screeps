@@ -30,3 +30,7 @@ Setup militia spawns when being attacked (localy at least, then defend energy si
 Remove the 'gen-creep-parts' within each class -> legacy now
 
 If a claimerRoom gets RCL level 3 or more, make sure it is set as (1) a spawnerRoom, (2) Its own energyRoom and (3) Removed as a claimer room --> will be self sufficient by this point
+
+// ###
+// ### CHECK UPGRADER RENEWAL IS WORKING
+// ###
