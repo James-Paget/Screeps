@@ -134,7 +134,7 @@ function getTarget_builder(creep){
     */
     var target = null;
     const energyPercent = (Game.rooms[creep.memory.spawnKey.roomID].energyAvailable)/(Game.rooms[creep.memory.spawnKey.roomID].energyCapacityAvailable)
-    if(energyPercent >= 0.7) {      // Only perform any building duties if you have excess energy beyond this threhold
+    if(energyPercent >= 0.85) {      // Only perform any building duties if you have excess energy beyond this threhold
         if(creep.memory.isBuilding){
             if(creep.memory.refillMode){
                 //If in "refillMode", only refill towers until your tower is completely full, then toggle off refillMode

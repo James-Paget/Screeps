@@ -46,6 +46,14 @@ function getTarget_miner(creep){
                 else{           //=> Will need to path to the room generally to gain vision
                     target = {room:{name:creep.memory.houseKey.roomID}, pos:creep.pos.findClosestByPath(creep.room.find(Game.map.findRoute(creep.room.name, creep.memory.houseKey.roomID)[0].exit))};   //## PATHING TO CONTAINERS, ASSUMED ALL INSIDE ROOM IN QUESTION, => JUST SAME AS PATHING TO SOURCE IN THAT ROOM ##
                 }
+            } else {
+                if(manualDelivery){     //Deliver to spawn MANUALLY (always vision)
+                    var deliveryTargets = Game.rooms[creep.memory.spawnKey.roomID].find(FIND_STRUCTURES, {filter : (structure) => {return ((structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0) || (structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0))}});
+                    if(creep.room.name == creep.memory.spawnKey.roomID){        //Same room      => direct pathing
+                        target = creep.pos.findClosestByPath(deliveryTargets);}
+                    else{                                                       //Different room => indirect pathing (will become direct after)
+                        target = deliveryTargets[0];}
+                }
             }
         }
         if(manualDelivery){     //Deliver to spawn MANUALLY (always vision)

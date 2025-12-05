@@ -28,7 +28,9 @@ If a claimerRoom gets RCL level 3 or more, make sure it is set as (1) a spawnerR
 
 Do labs -> Worker (1) to ferry materials from storage to labs and vice versa -> trigger reactions when ready separately maybe OR by them?
     Do scientist behaviour
-
+###
+### NEED A STORAGE > 0 CHECK ON SCIENTIST
+###
 
 
 e.g.
